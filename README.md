@@ -33,17 +33,17 @@ least Android 5.0 (API 21).
 
 - Many LF commands appear to work.
 
-- LF graphs are not available yet.
+- LF graphs are not available yet. (Issue #1, Issue #2)
 
-- Scripting doesn't work properly, but most of the ground work is there.
+- Scripting doesn't work properly, but most of the ground work is there. (Issue #3)
 
-- Most HF card functions don't work properly yet (likely to be a firmware issue).
+- Most HF card functions don't work properly yet (likely to be a firmware issue). (Issue #4)
 
 - `hf mf hardnested` commands use a lot of memory. In the event of running out of memory, it will
   close the application without warning.
 
 - Anything output from `printf` won't be displayed.  `PrintAndLog` will be displayed, but will not
-  be written to disk.
+  be written to disk. (Issue #5)
 
 - Probably doesn't exit or sleep cleanly, causing high battery use. Swipe the app away from the App
   Switcher when done, and unplug the PM3.
