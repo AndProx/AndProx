@@ -8,6 +8,8 @@ This is intended to become a replacement for [Proxdroid][3] and other "root requ
 This uses the [Android USB Host API][2] and [mik3y's USB Serial for Android driver][4] in order to
 access the Proxmark's USB ACM interface from user-space Java code.
 
+**[Opt-in to the beta on Google Play](https://play.google.com/apps/testing/au.id.micolous.andprox)**
+
 ![lf tune](https://github.com/AndProx/AndProx/raw/master/assets/v2_phone/lf-tune.png)
 
 ![lf t55xx detect](https://github.com/AndProx/AndProx/raw/master/assets/v2_phone/t55xx-detect.png)
@@ -54,7 +56,7 @@ least Android 5.0 (API 21).
 
 ## Getting started
 
-1. Install the APK.
+1. [Install the APK.](https://play.google.com/apps/testing/au.id.micolous.andprox)
 
 2. Plug your Proxmark3 into your Android device.
 
