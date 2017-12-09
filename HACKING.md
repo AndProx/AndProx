@@ -3,7 +3,7 @@
 This project uses git submodules.  You'll need to grab them with a command like:
 
 ```
-$ git clone --recurse-submodules https://github.com/micolous/AndProx.git
+$ git clone --recurse-submodules https://github.com/AndProx/AndProx.git
 ```
 
 Shallow clones won't work.  If you see missing compile dependencies from Gradle, you've probably done it wrong.
