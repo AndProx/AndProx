@@ -1,0 +1,12 @@
+[submodule "third_party/usb-serial-for-android"]
+	path = third_party/usb-serial-for-android
+	url = https://github.com/AndProx/usb-serial-for-android.git
+	branch = proxmark3
+[submodule "third_party/GraphView"]
+	path = third_party/GraphView
+	url = https://github.com/AndProx/GraphView.git
+	branch = master
+[submodule "third_party/proxmark3"]
+	path = third_party/proxmark3
+	url = https://github.com/micolous/proxmark3.git
+	branch = android-hacks

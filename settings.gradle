@@ -1,0 +1,5 @@
+include ':app', ':natives'
+include ':usb-serial-for-android'
+project(':usb-serial-for-android').projectDir = new File('third_party/usb-serial-for-android/usbSerialForAndroid')
+include ':GraphView'
+project(':GraphView').projectDir = new File('third_party/GraphView')

@@ -1,0 +1,115 @@
+/*
+ * This file is part of AndProx, an application for using Proxmark3 on Android.
+ *
+ * Copyright 2016 Michael Farrell <micolous+git@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Under section 7 of the GNU General Public License v3, the following "further
+ * restrictions" apply to this program:
+ *
+ *  (b) You must preserve reasonable legal notices and author attributions in
+ *      the program.
+ *  (c) You must not misrepresent the origin of this program, and need to mark
+ *      modified versions in reasonable ways as different from the original
+ *      version (such as changing the name and logos).
+ *  (d) You may not use the names of licensors or authors for publicity
+ *      purposes, without explicit written permission.
+ */
+
+apply plugin: 'com.android.library'
+
+dependencies {
+
+    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.0') {
+        exclude group: 'javax.inject'
+    }
+
+    compile 'commons-io:commons-io:2.5'
+
+    compile project(':usb-serial-for-android')
+}
+
+task copyScripts(type: Copy) {
+    description = 'Copy scripts from proxmark3 client'
+    from '../third_party/proxmark3/client/scripts'
+    into 'build/assets/scripts'
+    include '*.lua'
+}
+
+task copyLuaLibs(type: Copy) {
+    description = 'Copy scripts from proxmark3 client'
+    from '../third_party/proxmark3/client/lualibs'
+    into 'build/assets/lualibs'
+    include '*.lua'
+}
+
+task copyHardnestedTables(type: Copy) {
+    description = 'Copy Hardnested Tables from proxmark3 client'
+    from '../third_party/proxmark3/client/hardnested'
+    into 'build/assets/hardnested'
+    include '**/*.bin.z'
+    include '**/*.bin'
+}
+
+android {
+    // In the context of NDK, the target API level is the MINIMUM API level.
+    // As a result, this library needs to shoot pretty low.
+    // We currently target 21:
+    // - usb-serial-android supports API 19+
+    // - to support all the arches, we need at least API 21+
+    //
+    // https://android.googlesource.com/platform/ndk/+/master/docs/user/common_problems.md#target-api-set-higher-than-device-api
+    compileSdkVersion 21
+    buildToolsVersion '26.0.2'
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+        ndk.abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_PLATFORM=android-21", "-DANDROID_TOOLCHAIN=clang"
+            }
+        }
+    }
+
+    preBuild.dependsOn copyScripts, copyLuaLibs, copyHardnestedTables
+
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets', 'build/assets/']
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }
+    }
+}
+
+sourceCompatibility = "1.6"
+targetCompatibility = "1.6"

@@ -1,0 +1,116 @@
+/*
+ * This file is part of AndProx, an application for using Proxmark3 on Android.
+ *
+ * Copyright 2016 Michael Farrell <micolous+git@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Under section 7 of the GNU General Public License v3, the following "further
+ * restrictions" apply to this program:
+ *
+ *  (b) You must preserve reasonable legal notices and author attributions in
+ *      the program.
+ *  (c) You must not misrepresent the origin of this program, and need to mark
+ *      modified versions in reasonable ways as different from the original
+ *      version (such as changing the name and logos).
+ *  (d) You may not use the names of licensors or authors for publicity
+ *      purposes, without explicit written permission.
+ */
+
+apply plugin: 'com.android.application'
+
+def getVersionCode = { ->
+    try {
+        def code = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'tag', '--list'
+            standardOutput = code
+        }
+        return code.toString().split("\n").size() + 1
+    }
+    catch (ignored) {
+        return -1
+    }
+}
+
+def getVersionName = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags', '--dirty'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (ignored) {
+        return "unknown"
+    }
+}
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+    defaultConfig {
+        applicationId "au.id.micolous.andprox"
+        // Must be at least the API version declared by all dependencies
+        // Highest is natives @ API 21+
+        minSdkVersion 21
+        targetSdkVersion 26
+        versionCode getVersionCode()
+        versionName getVersionName()
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk.abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+    }
+    dataBinding {
+        enabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile project(':usb-serial-for-android')
+
+    // GPLv2 with linking exception
+    compile project(':GraphView')
+    //compile 'com.jjoe64:graphview:4.2.1'
+
+
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:support-v4:26.1.0'
+
+    testCompile 'junit:junit:4.12'
+    compile project(path: ':natives')
+}
+
+
+
+
+
+repositories {
+    google()
+}

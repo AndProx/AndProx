@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ This file is part of AndProx, an application for using Proxmark3 on Android.
+  ~
+  ~ Copyright 2016 Michael Farrell <micolous+git@gmail.com>
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Under section 7 of the GNU General Public License v3, the following "further
+  ~ restrictions" apply to this program:
+  ~
+  ~  (b) You must preserve reasonable legal notices and author attributions in
+  ~      the program.
+  ~  (c) You must not misrepresent the origin of this program, and need to mark
+  ~      modified versions in reasonable ways as different from the original
+  ~      version (such as changing the name and logos).
+  ~  (d) You may not use the names of licensors or authors for publicity
+  ~      purposes, without explicit written permission.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="au.id.micolous.andprox">
+
+    <!--
+     We need a mouse cursor for now, but not a touchscreen. This should let the app run on
+     ChromeOS / ARC, once android.hardware.usb.host is available.
+
+     See: https://developer.android.com/topic/arc/manifest.html
+    -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.faketouch"
+        android:required="true" />
+
+    <!--
+      We need to be able to have USB Host support to plug in the Proxmark3. This application is
+      totally useless without this.
+    -->
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".AndProxApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+        <activity
+            android:name=".hw.TuneResultActivity"
+            android:label="Antenna Tuning Result" />
+        <activity android:name=".activities.CliActivity" />
+        <activity android:name=".activities.SysInfoActivity" />
+        <activity
+            android:name=".activities.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:theme="@style/AppTheme.NoActionBar" />
+    </application>
+
+</manifest>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of AndProx, an application for using Proxmark3 on Android.
+  ~
+  ~ Copyright 2016 Michael Farrell <micolous+git@gmail.com>
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Under section 7 of the GNU General Public License v3, the following "further
+  ~ restrictions" apply to this program:
+  ~
+  ~  (b) You must preserve reasonable legal notices and author attributions in
+  ~      the program.
+  ~  (c) You must not misrepresent the origin of this program, and need to mark
+  ~      modified versions in reasonable ways as different from the original
+  ~      version (such as changing the name and logos).
+  ~  (d) You may not use the names of licensors or authors for publicity
+  ~      purposes, without explicit written permission.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable name="tuneResult" type="au.id.micolous.andprox.natives.TuneResult" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/activity_tune_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="au.id.micolous.andprox.hw.TuneResultActivity">
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="165dp"
+                        android:layout_weight="0.82"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/lf_antenna"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                             />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv125Volts"
+                            android:text='@{String.format("%5.2fv @ 125.00 kHz", (double)tuneResult.getMilliVolts125k/1000.0)}' />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv134Volts"
+                            android:text='@{String.format("%5.2fv @ 134.00 kHz", (double)tuneResult.getMilliVolts134k/1000.0)}' />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tvOptimalVolts"
+                            android:text='@{String.format("Optimal: %5.2fv @ %3.2f kHz", (double)tuneResult.getLFPeakMillivolts/1000.0, tuneResult.getLFPeakFrequency), default="Optimal: 30.45v @ 130.00 kHz"}' />
+
+                    </LinearLayout>
+
+                    <RatingBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rtgLF"
+                        android:numStars="2"
+                        android:isIndicator="true"
+                        android:rating="@{tuneResult.getLFAntennaRating}" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="165dp"
+                        android:layout_weight="0.82"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="@string/hf_antenna"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv1356Volts"
+                            android:text='@{String.format("%5.2fv @ 13.56 MHz", (double)tuneResult.getMilliVolts13M/1000.0)}' />
+
+                    </LinearLayout>
+
+                    <RatingBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rtgHF"
+                        android:numStars="2"
+                        android:isIndicator="true"
+                        android:rating="@{tuneResult.getHFAntennaRating}" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:id="@+id/gphTuning" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</layout>

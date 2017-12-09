@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file is part of AndProx, an application for using Proxmark3 on Android.
+  ~
+  ~ Copyright 2016 Michael Farrell <micolous+git@gmail.com>
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it
+  ~ under the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or (at your option)
+  ~ any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+  ~ more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License along with
+  ~ this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~
+  ~ Under section 7 of the GNU General Public License v3, the following "further
+  ~ restrictions" apply to this program:
+  ~
+  ~  (b) You must preserve reasonable legal notices and author attributions in
+  ~      the program.
+  ~  (c) You must not misrepresent the origin of this program, and need to mark
+  ~      modified versions in reasonable ways as different from the original
+  ~      version (such as changing the name and logos).
+  ~  (d) You may not use the names of licensors or authors for publicity
+  ~      purposes, without explicit written permission.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="au.id.micolous.andprox.activities.MainActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/connect"
+            android:onClick="btnConnect"
+            android:id="@+id/btnConnect" />
+
+        <TextView
+            android:id="@+id/tvIntroText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/intro_text_default"
+            android:textAppearance="@android:style/TextAppearance.Material.Medium" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/offline_mode"
+            android:onClick="btnOfflineMode"
+            android:id="@+id/btnOfflineMode" />
+
+        <Button
+            android:id="@+id/btnSysInfoMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="btnSysInfoMain"
+            android:text="@string/system_info_btn" />
+
+        <Button
+            android:id="@+id/btnAbout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="btnAbout"
+            android:text="@string/about_andprox_btn" />
+
+    </LinearLayout>
+</RelativeLayout>
