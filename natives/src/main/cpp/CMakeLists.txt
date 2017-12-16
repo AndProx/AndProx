@@ -48,9 +48,6 @@ add_library(hardnested_nosimd OBJECT
             ${PM3_ROOT}/client/hardnested/hardnested_bf_core.c
             ${PM3_ROOT}/client/hardnested/hardnested_bitarray_core.c)
 
-target_compile_options(hardnested_nosimd BEFORE PRIVATE
-                       -mno-mmx -mno-sse2 -mno-avx -mno-avx2 -mno-avx512f)
-
 target_include_directories(hardnested_nosimd PRIVATE
                            ${PM3_ROOT}/common
                            ${PM3_ROOT}/client
@@ -59,6 +56,9 @@ set(X86_CPUS x86 x86_64 i686)
 message(STATUS "CMAKE_SYSTEM_PROCESSOR := ${CMAKE_SYSTEM_PROCESSOR}")
 if("${CMAKE_SYSTEM_PROCESSOR}" IN_LIST X86_CPUS)
     message(STATUS "Building optimised x86/x86_64 binaries")
+    target_compile_options(hardnested_nosimd BEFORE PRIVATE
+                           -mno-mmx -mno-sse2 -mno-avx -mno-avx2 -mno-avx512f)
+
     ## x86 / MMX
     add_library(hardnested_mmx OBJECT
                 ${PM3_ROOT}/client/hardnested/hardnested_bf_core.c
