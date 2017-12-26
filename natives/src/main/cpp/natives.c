@@ -34,6 +34,7 @@
 #include <ui.h>
 #include <cmdmain.h>
 #include <unistd.h>
+#include <errno.h>
 #include "natives.h"
 #include "uart_android.h"
 #include "fakemain.h"

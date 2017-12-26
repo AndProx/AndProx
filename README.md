@@ -128,6 +128,16 @@ this program:
 * (d) You may not use the names of licensors or authors for publicity purposes, without explicit
   written permission.
 
+> **Note:** While most of the Proxmark3 client is licensed under GPLv2+, [loclass][8] components are
+> licensed under GPLv2 only, and not compatible with GPLv3+ used for AndProx. These components have
+> been removed from the standard build of AndProx, so IClass support (`hf iclass`) is not available.
+>
+> The firmware image is mostly licensed under GPLv2+, but `armsrc/optimized_cipher.c` is part of
+> [loclass][8] which is licensed under GPLv2 only. The Proxmark3 firmware should be considered under
+> the GPLv2, but AndProx does not modify or include it in the APK.
+>
+> For more detail, [see the Proxmark3 issue tracker #527][9].
+
 [0]: https://github.com/AndProx/AndProx
 [1]: https://github.com/Proxmark/proxmark3
 [2]: https://developer.android.com/guide/topics/connectivity/usb/host.html
@@ -136,3 +146,5 @@ this program:
 [5]: https://github.com/appsthatmatter/GraphView
 [6]: https://github.com/AndProx/AndProx/releases
 [7]: https://play.google.com/apps/testing/au.id.micolous.andprox
+[8]: https://github.com/holiman/loclass
+[9]: https://github.com/Proxmark/proxmark3/issues/527

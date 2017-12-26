@@ -182,6 +182,7 @@ add_library(natives SHARED
             natives.c
             fakemain.c
             uart_android.c
+            bitwise.c
 
             ${PM3_ROOT}/client/guidummy.cpp
             ${PM3_ROOT}/client/ui.c
@@ -195,11 +196,6 @@ add_library(natives SHARED
             ${PM3_ROOT}/common/polarssl/des.c
             ${PM3_ROOT}/common/polarssl/aes.c
             ${PM3_ROOT}/client/mfkey.c
-            ${PM3_ROOT}/client/loclass/cipher.c
-            ${PM3_ROOT}/client/loclass/cipherutils.c
-            ${PM3_ROOT}/client/loclass/ikeys.c
-            ${PM3_ROOT}/client/loclass/elite_crack.c
-            ${PM3_ROOT}/client/loclass/fileutils.c
 
             ${PM3_ROOT}/client/mifarehost.c
             ${PM3_ROOT}/common/parity.c
@@ -219,7 +215,6 @@ add_library(natives SHARED
             ${PM3_ROOT}/client/cmdhf15.c
             ${PM3_ROOT}/client/cmdhfepa.c
             ${PM3_ROOT}/client/cmdhflegic.c
-            ${PM3_ROOT}/client/cmdhficlass.c
             ${PM3_ROOT}/client/cmdhfmf.c
             ${PM3_ROOT}/client/cmdhfmfu.c
             ${PM3_ROOT}/client/cmdhfmfhard.c
@@ -284,6 +279,14 @@ add_library(natives SHARED
             ${SIMD_TARGETS}
             $<TARGET_OBJECTS:liblua>
 )
+
+# IClass code disabled (GPLv2 only)
+#            ${PM3_ROOT}/client/cmdhficlass.c
+#            ${PM3_ROOT}/client/loclass/cipher.c
+#            ${PM3_ROOT}/client/loclass/cipherutils.c
+#            ${PM3_ROOT}/client/loclass/ikeys.c
+#            ${PM3_ROOT}/client/loclass/elite_crack.c
+#            ${PM3_ROOT}/client/loclass/fileutils.c
 
 #             fakecmdscript.c
 
