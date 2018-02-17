@@ -277,13 +277,7 @@ add_library(natives SHARED
 
             ${PM3_ROOT}/common/protocols.c
 
-            ${PM3_ROOT}/zlib/deflate.c
-            ${PM3_ROOT}/zlib/adler32.c
-            ${PM3_ROOT}/zlib/trees.c
-            ${PM3_ROOT}/zlib/zutil.c
-            ${PM3_ROOT}/zlib/inflate.c
-            ${PM3_ROOT}/zlib/inffast.c
-            ${PM3_ROOT}/zlib/inftrees.c
+
 
             scripting_android.c
             ${PM3_ROOT}/client/cmdscript.c
@@ -297,6 +291,14 @@ add_library(natives SHARED
 
 #             fakecmdscript.c
 
+# Proxmark3's version of zlib: (disabled)
+#            ${PM3_ROOT}/zlib/deflate.c
+#            ${PM3_ROOT}/zlib/adler32.c
+#            ${PM3_ROOT}/zlib/trees.c
+#            ${PM3_ROOT}/zlib/zutil.c
+#            ${PM3_ROOT}/zlib/inflate.c
+#            ${PM3_ROOT}/zlib/inffast.c
+#            ${PM3_ROOT}/zlib/inftrees.c
 
 ## General compile options.
 target_include_directories(natives PRIVATE
@@ -314,12 +316,14 @@ target_include_directories(natives PRIVATE
 
 target_compile_definitions(natives PRIVATE
     EXTERNAL_PRINTANDLOG
-    Z_SOLO
-    Z_PREFIX
-    NO_GZIP
-    ZLIB_PM3_TUNED
     PM3_GIT_VER="${PM3_GIT_VER}"
     PM3_TS="${PM3_TS}")
 
+# Defines needed for Proxmark3's version of zlib: (disabled)
+#    Z_SOLO
+#    Z_PREFIX
+#    NO_GZIP
+#    ZLIB_PM3_TUNED
+
 target_link_libraries(natives
-                      android log)
+                      android log z)
