@@ -23,13 +23,12 @@ See `COMPATIBILITY.md`.
 - Cross compiles to `armeabi`, `armeabi-v7a`, `arm64-v8a`, `x86` and `x86_64`.  Only really tested
   on ARM.
 
-- Many LF commands appear to work.
+- Many LF commands appear to work. Some devices need a Y cable and external power source for HF
+  commands.  See `COMPATIBILITY.md` for details.
 
 - LF graphs are not available yet. (Issue #1, Issue #2)
 
 - Scripting doesn't work properly, but most of the ground work is there. (Issue #3)
-
-- Most HF card functions don't work properly yet (likely to be a firmware issue). (Issue #4)
 
 - `hf mf hardnested` commands use a lot of memory. In the event of running out of memory, it will
   close the application without warning.
@@ -111,7 +110,7 @@ this program:
   written permission.
 
 AndProx includes several third-party components under other licenses.  More detail of these
-components is shown in `third_party/README.md.`
+components is shown in `third_party/README.md`.
 
 [0]: https://github.com/AndProx/AndProx
 [1]: https://github.com/Proxmark/proxmark3

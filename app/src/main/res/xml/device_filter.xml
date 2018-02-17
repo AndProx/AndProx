@@ -30,8 +30,22 @@
   -->
 
 <resources>
-    <!-- 2d2d:504d - Proxmark3 (old) -->
+    <!--
+    This file declares which device IDs we want to listen to, so Android automatically loads us when
+    one of them is plugged in.
+
+    It *does not* declare access controls for particular devices.
+    -->
+
+    <!--
+    2d2d:504d - Proxmark3 (old)
+    Don't include this, as this firmware is quite old and not compatible with 3.0.0. Users can still
+    manually connect, but it just won't auto-start.
+
+    This is still used on devices that haven't had a bootloader reflash.
+
     <usb-device vendor-id="11565" product-id="20557" />
+    -->
 
     <!-- 9ac4:4b8f - Proxmark3 (new) -->
     <usb-device vendor-id="39620" product-id="19343" />

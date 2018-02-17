@@ -9,11 +9,13 @@
 
 Changes:
 
-- Added: Antenna tuning GUI, with graphs!
-- Added: HID IClass support, EMV support.
-- Fixed a number of resource leaks.
-- Fix an issue where AndProx would crash on some devices when pressing `ENTER` with a hardware keyboard.
-- Make it obvious when AndProx is waiting for PM3.
+- New: Antenna tuning GUI, with graphs!
+- New: HID IClass support, EMV support.
+- New: AndProx now reports when it is waiting for PM3.
+- Fixed: Several resource leaks.
+- Fixed: Pressing `ENTER` with a hardware keyboard on some devices would crash AndProx.
+- Cleanup: PM3 now uses Android's zlib.
+- Cleanup: Removed some unused USB serial drivers.
 
 ## v2.0.2, released 2017-12-26
 
