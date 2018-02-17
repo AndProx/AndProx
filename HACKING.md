@@ -1,3 +1,18 @@
+# Hacking notes
+
+This document contains notes about how to hack on AndProx, design philosophy, and code changes made
+to PM3.
+
+In this file, you'll find:
+
+* [Getting the code](#getting-the-code) from the git repository.
+
+* [Testing / Developing AndProx](#developing--testing-andprox), including how to debug on
+  [virtual](#with-an-emulator) and [physical hardware](#with-physical-hardware).
+
+* [Code Layout](#code-layout), including [communication flow](#communication-flow) and [key
+  differences between AndProx and upstream PM3](#key-differences).
+
 # Getting the code
 
 This project uses [git submodules][1].  You'll need to grab them with a command like:
@@ -9,7 +24,7 @@ $ git clone --recurse-submodules https://github.com/AndProx/AndProx.git
 Shallow clones won't work.  If you see missing compile dependencies (eg: `:GraphView`,
 `:usb-serial-for-android`) from Gradle, you probably haven't pulled the submodules.
 
-# Testing / Developing AndProx
+# Testing / developing AndProx
 
 AndProx can be imported into Android Studio using the Gradle files provided in this project.  Do not
 check in Android Studio project files into the source repository.
@@ -97,45 +112,112 @@ with a [USB-OTG cable][3] or USB-C to USB-A dongle.
 # Code layout
 
 * `app`: Contains the front-end Android application.  `au.id.micolous.andprox` namespace.
+
 * `natives`: JNI wrappers for the Proxmark3 client code and build scripts for the PM3 client.
-* `third_party`: Contains third-party code which we link to.
+
+* `third_party`: Contains third-party code which we link to:
+
   * `GraphView`: Charting and graphing library for Android.
+
   * `proxmark3`: Upstream proxmark3 client with minimal modifications.
+
   * `usb-serial-for-android`: Userspace Android library for interfacing with USB serial devices.
 
-## Communication flow
+AndProx uses a minimally modified version of the Proxmark3 mainline codebase.  Any modifications
+made are pushed upstream, so that they no longer have to be carried in a separate branch of PM3.
 
-AndProx uses a minimally modified version of the Proxmark3 mainline codebase.  These modifications:
+There are some replacement modules in `natives/src/main/cpp/` which implement Android-specific
+functionality:
 
-* Fake enough of the client's main code to get the command interpreter running, as well as tell
-  modules where to find and write out their files.
+* A JNI interface for PM3 client, so that it can run as a library.
 
-* Exposes core functionality of the PM3 client via JNI.
+* Stubs for the client's main code to get the command interpreter running, as well as tell modules
+  where to find and write out their files.
 
-* Plumb logging into Android space with JNI.
+* A new tuning API, to allow meaningful graphs to be rendered in Android.
 
-* Implement `uart_android`, which offloads serial communications into `NativeSerialWrapper` and
-  `usb-serial-for-android` via JNI.
+* JNI replacement of `PrintAndLog`, to bring logs into Android space with JNI.
 
-* Completely replace PM3's build system with CMake.
+* JNI implementation of `uart.h` (`uart_android.c`), which lets PM3 use `NativeSerialWrapper` and
+  `usb-serial-for-android` (an Android userspace USB-serial driver, written in Java).
+
+* Use CMake rather than Makefiles, for better integration with Android build tools, and
+  AndProx-specific requirements.
+
+Occasionally, PM3 pulls in extra libraries.  When this happens, the changes need to be also
+implemented in AndProx's CMake file.
+
+# Communication flow
+
+## Setting up the library
+
+1. `Natives.initProxmark` sets up the PM3 initial state.
+
+2. AndProx connects to the PM3's USB serial device using `usb-serial-for-android`, and wraps the
+   connection in `NativeSerialWrapper`.
+
+3. AndProx calls `Natives.setSerialPort(NativeSerialWrapper)`.
+
+4. `setSerialPort` calls out to `uart_android_open`, and sets up a `serial_port` struct with
+   references to the Java object for use in JNI.
+
+## Commands
+
+A typical command follows this process:
+
+1.  The command is entered by the user into `CliActivity`.
+
+2.  `CliActivity` spawns an `SendCommandTask`.
+
+3.  `SendCommandTask` calls `Natives.sendCmd` (JNI bindings).
+
+4.  `Natives.sendCmd` calls `CommandReceived` (PM3's main command entry point).
+
+5.  PM3 dispatches the command through its regular command parser.
+
+6.  The specific command in PM3 calls `SendCommand`.
+
+7.  `SendCommand` stuffs the requested command into `txcmd` buffer.
+
+8.  `txcmd` buffer is picked up by the `uart_receiver` thread, and send with `uart_send`
+    (in `uart_android.c`).
+
+9.  AndProx `uart_android.c` converts the buffer into Java types and passes it up to
+    `NativeSerialWrapper` in Java.
+
+10. `NativeSerialWrapper` passes off to `UsbSerialPort` (usb-serial-for-android).
+
+11. `usb-serial-for-android` uses Android's USB Host API to send the command to the PM3 device.
+
+12. The `uart_receiver` thread polls `uart_receive` (in `uart_android.c`).
+
+13. AndProx `uart_android.c` polls `NativeSerialWrapper` over JNI, and converts Java types back into
+    standard C types.
+
+14. `uart_receiver` stores the command in a buffer, where it can later be collected in
+    `WaitForResponse`.
+
+# Key differences
+
+In general, AndProx aims to _minimise_ changes to Proxmark3, and work towards upstreaming any
+required changes that can't be kept in a separate file.  This is done to minimise the effort
+required to update to newer versions of PM3, or to switch to other distributions.
 
 Most PM3 commands should "just work" -- commands are passed in to the interpreter in the same way
 that the regular C client would.  There is a `uart_receiver` thread like the mainline client, which
 can dispatch events into the command buffer as normal.  The `uart` functions are all wrapped, but
 expose the exact same API.
 
-In general, AndProx aims to minimise future changes to Proxmark3, and work towards upstreaming any
-required changes.
-
-Occasionally, PM3 pulls in extra libraries.  When this happens, the changes need to be also
-implemented in AndProx's CMake file.
-
-## Key differences
+There are some platform-specific differences:
 
 * AndProx has no stdin/out, so `printf` and `gets` won't work.  This breaks a lot of the interactive
   scripting in Lua.
 
 * ncurses and readline are also unavailable.
+
+* AndProx uses Android's zlib rather than PM3's. PM3's `inflate` function strips out support for
+  some zlib functionality that is never used (like fixed block coding), and has some extra
+  functionality in `deflate`. But only `inflate` is ever used in the client.
 
 
 [1]: https://git-scm.com/book/en/v2/Git-Tools-Submodules

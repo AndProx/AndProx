@@ -29,11 +29,9 @@
  */
 package au.id.micolous.andprox.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
@@ -51,7 +49,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import au.id.micolous.andprox.R;
-import au.id.micolous.andprox.SendCommandTask;
+import au.id.micolous.andprox.tasks.SendCommandTask;
 import au.id.micolous.andprox.hw.TuneTask;
 import au.id.micolous.andprox.natives.Natives;
 
