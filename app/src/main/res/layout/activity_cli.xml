@@ -15,7 +15,7 @@
         android:layout_marginStart="8dp"
         android:ems="10"
         android:fontFamily="monospace"
-        android:hint="Enter a command..."
+        android:hint="@string/command_hint"
         android:imeOptions="actionGo"
         android:inputType="textVisiblePassword"
         android:typeface="monospace"

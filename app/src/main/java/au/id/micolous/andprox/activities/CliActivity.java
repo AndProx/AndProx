@@ -23,9 +23,10 @@ import au.id.micolous.andprox.SendCommandTask;
 import au.id.micolous.andprox.hw.TuneTask;
 import au.id.micolous.andprox.natives.Natives;
 
-public class CliActivity extends AppCompatActivity {
+public class CliActivity extends AppCompatActivity implements SendCommandTask.DoneCallback {
     private static final String TAG = "CliActivity";
 
+    private EditText etCommandInput;
     private TextView tvOutputBuffer;
     private BroadcastReceiver mUsbReceiver;
     private String lastCommand = null;
@@ -35,10 +36,11 @@ public class CliActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cli);
 
-        tvOutputBuffer = (TextView)findViewById(R.id.tvOutputBuffer);
+        tvOutputBuffer = findViewById(R.id.tvOutputBuffer);
         tvOutputBuffer.setMovementMethod(new ScrollingMovementMethod());
 
-        ((EditText)findViewById(R.id.etCommandInput)).setOnEditorActionListener((v, actionId, event) -> {
+        etCommandInput = findViewById(R.id.etCommandInput);
+        etCommandInput.setOnEditorActionListener((v, actionId, event) -> {
             // Check if "Go" button on soft keyboard was pressed, or ENTER was pressed on hardware
             // keyboard.
             if (actionId == EditorInfo.IME_ACTION_GO ||
@@ -53,7 +55,11 @@ public class CliActivity extends AppCompatActivity {
                 tvOutputBuffer.append("\nproxmark3> " + cmd);
 
                 Log.i(TAG, "Sending command: " + cmd);
-                new SendCommandTask().execute(cmd);
+                new SendCommandTask(this).execute(cmd);
+
+                // Lock the edit field to indicate we are waiting for proxmark3
+                etCommandInput.setEnabled(false);
+                etCommandInput.setHint(R.string.command_waiting);
                 return true;
             }
             return false;
@@ -130,5 +136,12 @@ public class CliActivity extends AppCompatActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCommandFinished() {
+        // Unlock the edit field
+        etCommandInput.setEnabled(true);
+        etCommandInput.setHint(R.string.command_hint);
     }
 }
