@@ -63,6 +63,10 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
     private BroadcastReceiver mUsbReceiver;
     private String lastCommand = null;
 
+    private void writePrompt(String cmd) {
+        Natives.javaPrintAndLog("proxmark3> " + cmd);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,9 +88,15 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
                     lastCommand = cmd;
                 }
                 v.setText("");
-                tvOutputBuffer.append("\nproxmark3> " + cmd);
+
+                // Send "hw tune" to our nicer tuning UI graphs.
+                if ("hw tune".equals(cmd)) {
+                    tuneAntenna();
+                    return true;
+                }
 
                 Log.i(TAG, "Sending command: " + cmd);
+                writePrompt(cmd);
                 new SendCommandTask(this).execute(cmd);
 
                 // Lock the edit field to indicate we are waiting for proxmark3
@@ -161,8 +171,7 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
                 return true;
 
             case R.id.miTuneAntenna:
-                TuneTask t = new TuneTask(this);
-                t.execute();
+                tuneAntenna();
                 return true;
 
             case R.id.miRecall:
@@ -177,6 +186,13 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // Tunes the antennas
+    public void tuneAntenna() {
+        writePrompt("hw tune");
+        TuneTask t = new TuneTask(this);
+        t.execute();
     }
 
     @Override

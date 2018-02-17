@@ -38,7 +38,7 @@ import com.jjoe64.graphview.DefaultLabelFormatter;
  * We pass the divisors, multiplied by -1, as raw data in TuneResult.
  *
  * This class tells the label formatter to convert those divisors to raw kHz for the X (frequency)
- * axis.
+ * axis, and converts millivolts to volts.
  */
 
 public class FrequencyLabelFormatter extends DefaultLabelFormatter {
@@ -46,8 +46,6 @@ public class FrequencyLabelFormatter extends DefaultLabelFormatter {
     @Override
     public String formatLabel(double value, boolean isValueX) {
         if (isValueX) {
-            // We should convert this.
-
             // There are 256 divisor, and the frequency is mapped as:
             //    freq_khz = 12000 / (-n + 1)
             // Divisor 95 is 125kHz, and 89 is 133.3 kHz (~134kHz)
@@ -56,11 +54,13 @@ public class FrequencyLabelFormatter extends DefaultLabelFormatter {
             // frequency order instead.
 
             value = 12000. / (-value + 1);
+        } else {
+            value /= 1000.;
         }
         String s = super.formatLabel(value, isValueX);
 
         if (isValueX) {
-            s += "k";
+            s += "kHz";
         } else {
             s += "v";
         }

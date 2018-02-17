@@ -63,7 +63,7 @@ public class Natives {
      * Used internally by natives.c to surface PrintAndLog events into Java space.
      * @param log A log line
      */
-    static void javaPrintAndLog(String log) {
+    public static void javaPrintAndLog(String log) {
         Log.d(TAG, log);
 
         if (printAndLogHandler != null) {
@@ -114,6 +114,11 @@ public class Natives {
      * @param cmd A command string.
      */
     public native static void sendCmd(String cmd);
+
+    public static TuneResult sendCmdTune() {
+        return sendCmdTune(true, true);
+    }
+    public native static TuneResult sendCmdTune(boolean lf, boolean hf);
 
     public native static String getProxmarkClientVersion();
 

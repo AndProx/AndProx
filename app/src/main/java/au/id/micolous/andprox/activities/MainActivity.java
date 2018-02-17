@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalArgumentException e) {
             Log.d(TAG, "couldn't unregister USB permission receiver", e);
         }
-        
+
         try {
             unregisterReceiver(mUsbDeviceChangeReceiver);
         } catch (IllegalArgumentException e) {

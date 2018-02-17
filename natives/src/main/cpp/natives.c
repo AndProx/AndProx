@@ -35,6 +35,7 @@
 #include <cmdmain.h>
 #include <unistd.h>
 #include <errno.h>
+#include <usb_cmd.h>
 #include "natives.h"
 #include "uart_android.h"
 #include "fakemain.h"
@@ -249,4 +250,51 @@ JNIEXPORT jstring JNICALL
 Java_au_id_micolous_andprox_natives_Natives_getProxmarkClientBuildTimestamp(JNIEnv *env,
                                                                             jclass type) {
     return (*env)->NewStringUTF(env, PM3_TS);
+}
+
+JNIEXPORT jobject JNICALL
+Java_au_id_micolous_andprox_natives_Natives_sendCmdTune__ZZ(JNIEnv *env, jclass type, jboolean lf,
+                                                            jboolean hf) {
+
+    int timeout = 0, arg = 0;
+    if (lf) {
+        arg |= FLAG_TUNE_LF;
+    }
+    if (hf) {
+        arg |= FLAG_TUNE_HF;
+    }
+
+    UsbCommand c = {CMD_MEASURE_ANTENNA_TUNING, {arg, 0, 0}};
+    SendCommand(&c);
+
+    UsbCommand resp;
+    while (!WaitForResponseTimeout(CMD_MEASURED_ANTENNA_TUNING, &resp, 1000)) {
+        timeout++;
+        if (timeout > 7) {
+            PrintAndLog("No response from Proxmark. Aborting...");
+            return NULL;
+        }
+    }
+
+    int graphSize = 256;
+    jint graphData[graphSize];
+    jintArray graphDataArray = (*env)->NewIntArray(env, graphSize);
+    if (graphDataArray == NULL) {
+        // OOM
+        PrintAndLog("Unable to allocate graphdata buffer");
+        return NULL;
+    }
+
+    for (int i=0; i<graphSize; i++) {
+        graphData[i] = ((jint)(resp.d.asBytes[i]) & 0xFF) << 9;
+        // Upstream has "- 128" here, but this isn't actually correct.
+    }
+
+    (*env)->SetIntArrayRegion(env, graphDataArray, 0, graphSize, graphData);
+
+    jclass cls = (*env)->FindClass(env, "au/id/micolous/andprox/natives/TuneResult");
+    jmethodID meth = (*env)->GetMethodID(env, cls, "<init>", "(JJJ[I)V");
+    jobject a = (*env)->NewObject(env, cls, meth, resp.arg[0], resp.arg[1], resp.arg[2], graphDataArray);
+    (*env)->DeleteLocalRef(env, graphDataArray);
+    return a;
 }

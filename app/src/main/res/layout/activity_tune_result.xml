@@ -72,19 +72,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/tv125Volts"
-                        android:text='@{String.format("%5.2fv @ 125.00 kHz", (double)tuneResult.getMilliVolts125k/1000.0)}' />
+                        android:text='@{String.format("%5.2fv @ 125.00 kHz", tuneResult.getVolts125k)}' />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/tv134Volts"
-                        android:text='@{String.format("%5.2fv @ 134.00 kHz", (double)tuneResult.getMilliVolts134k/1000.0)}' />
+                        android:text='@{String.format("%5.2fv @ 134.00 kHz", tuneResult.getVolts134k)}' />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/tvOptimalVolts"
-                        android:text='@{String.format("Optimal: %5.2fv @ %3.2f kHz", (double)tuneResult.getLFPeakMillivolts/1000.0, tuneResult.getLFPeakFrequency), default="Optimal: 30.45v @ 130.00 kHz"}' />
+                        android:text='@{String.format("Optimal: %5.2fv @ %3.2f kHz", tuneResult.getLFPeakVolts, tuneResult.getLFPeakFrequency), default="Optimal: 30.45v @ 130.00 kHz"}' />
 
                 </LinearLayout>
 
@@ -119,7 +119,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/tv1356Volts"
-                        android:text='@{String.format("%5.2fv @ 13.56 MHz", (double)tuneResult.getMilliVolts13M/1000.0)}' />
+                        android:text='@{String.format("%5.2fv @ 13.56 MHz", tuneResult.getVolts13M)}' />
 
                 </LinearLayout>
 

@@ -35,17 +35,20 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
+
+import java.util.Locale;
 
 import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
+import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.natives.TuneResult;
 
 /**
- * Created by michael on 23/12/16.
+ * Background task for tuning the antenna.
  */
 public class TuneTask extends AsyncTask<Void, Void, TuneResult> {
     private static final String TAG = "TuneTask";
-    private AndProxApplication app = AndProxApplication.getInstance();
     private ProgressDialog mProgressDialog;
     private Context mContext;
 
@@ -63,31 +66,44 @@ public class TuneTask extends AsyncTask<Void, Void, TuneResult> {
 
     @Override
     protected TuneResult doInBackground(Void... voids) {
-        // TODO: implement this
-        return null;
-
-        /*
         try {
-            return app.device.cmdTune();
-        } catch (IOException e) {
+            return Natives.sendCmdTune();
+        } catch (Exception e) {
             Log.e(TAG, "tune error", e);
             return null;
         }
-        */
     }
 
     @Override
     protected void onPostExecute(TuneResult tuneResult) {
         mProgressDialog.hide();
         if (tuneResult != null) {
-            // Show the result
+            // Show results in the standard log
+            Natives.javaPrintAndLog(String.format(Locale.ENGLISH, "LF antenna: %3.2f V @ 125 kHz", tuneResult.getVolts125k()));
+            Natives.javaPrintAndLog(String.format(Locale.ENGLISH, "LF antenna: %3.2f V @ 134 kHz", tuneResult.getVolts134k()));
+            Natives.javaPrintAndLog(String.format(Locale.ENGLISH, "LF optimal: %3.2f V @ %3.2f kHz", tuneResult.getLFPeakVolts(), tuneResult.getLFPeakFrequency()));
+            Natives.javaPrintAndLog(String.format(Locale.ENGLISH, "HF antenna: %3.2f V @ 13.56 MHz", tuneResult.getVolts13M()));
+
+            if (tuneResult.getLFAntennaRating() == 0) {
+                Natives.javaPrintAndLog("Your LF antenna is unusable");
+            } else if (tuneResult.getLFAntennaRating() == 1) {
+                Natives.javaPrintAndLog("Your LF antenna is marginal");
+            }
+
+            if (tuneResult.getHFAntennaRating() == 0) {
+                Natives.javaPrintAndLog("Your HF antenna is unusable");
+            } else if (tuneResult.getHFAntennaRating() == 1) {
+                Natives.javaPrintAndLog("Your HF antenna is marginal");
+            }
+
+            // Show the result activity
             Intent intent = new Intent(mContext, TuneResultActivity.class);
             intent.putExtra(TuneResultActivity.TUNE_RESULT_KEY, tuneResult);
             mContext.startActivity(intent);
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setMessage("sorry!")
-                    .setTitle("not implemented yet");
+            builder.setMessage("Proxmark3 did not return a valid response.")
+                    .setTitle("Error tuning antennas");
             builder.show();
         }
     }

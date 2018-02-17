@@ -38,8 +38,11 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.Locale;
+
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.databinding.ActivityTuneResultBinding;
+import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.natives.TuneResult;
 
 public class TuneResultActivity extends AppCompatActivity {
@@ -55,7 +58,7 @@ public class TuneResultActivity extends AppCompatActivity {
         // The official proxmark3 gui represents these as raw values, but we should represent it in
         // frequency order instead.
         //
-        // The number given is volts??
+        // The number given is millivolts
         int[] graphData = result.getGraphData();
 
         for (int x=255; x >= 0; x--) {
@@ -72,7 +75,7 @@ public class TuneResultActivity extends AppCompatActivity {
         TuneResult tuneResult = getIntent().getParcelableExtra(TUNE_RESULT_KEY);
         binding.setTuneResult(tuneResult);
 
-        GraphView gphTuning = (GraphView) findViewById(R.id.gphTuning);
+        GraphView gphTuning = findViewById(R.id.gphTuning);
         LineGraphSeries<DataPoint> tuningSeries = getLineGraph(tuneResult);
         gphTuning.addSeries(tuningSeries);
 
