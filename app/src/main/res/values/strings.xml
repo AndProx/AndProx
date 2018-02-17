@@ -56,7 +56,7 @@
     <string name="connection_timeout">Timed out waiting for response from Proxmark3. Power cycle the Proxmark3 before continuing.</string>
 
     <string name="usb_disconnected_title">Proxmark3 disconnected</string>
-    <string name="usb_disconnected">The USB cable to the Proxmark3 was unplugged. AndProx will now terminate the running session.</string>
+    <string name="usb_disconnected">The USB cable to the Proxmark3 was unplugged.</string>
 
     <string name="connect">Connect</string>
 
@@ -86,4 +86,10 @@
     <string name="command_waiting">Waiting for Proxmark3…</string>
     <string name="clipboard_denied">Couldn\'t access clipboard</string>
     <string name="clipboard_copied">Copied to clipboard</string>
+    <string name="copying_assets">Copying assets…</string>
+    <string name="connecting_pm3">Connecting to Proxmark3…</string>
+    <string name="wait_long">This may take a few moments</string>
+    <string name="wait_short">This normally takes a moment</string>
+    <string name="error_copying">Error copying files</string>
+    <string name="ok">OK</string>
 </resources>

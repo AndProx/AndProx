@@ -33,7 +33,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -104,27 +106,36 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-                    UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (device != null) {
+                        Log.e(TAG, "USB device disconnected");
                         Natives.stopReaderThread();
                         Natives.unsetSerialPort();
 
-                        Log.e(TAG, "USB device disconnected");
+                        // Lock the edit field to indicate we can't run
+                        etCommandInput.setEnabled(false);
+                        etCommandInput.setHint(R.string.usb_disconnected_title);
+
                         AlertDialog.Builder builder = new AlertDialog.Builder(CliActivity.this);
                         builder.setMessage(R.string.usb_disconnected)
-                                .setTitle(R.string.usb_disconnected_title);
+                                .setTitle(R.string.usb_disconnected_title)
+                                .setCancelable(false)
+                                .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
                         builder.show();
-                        finish();
                     }
                 }
             }
         };
+
+        IntentFilter filter = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        registerReceiver(mUsbReceiver, filter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Natives.registerPrintAndLogHandler(null);
+        unregisterReceiver(mUsbReceiver);
     }
 
 
