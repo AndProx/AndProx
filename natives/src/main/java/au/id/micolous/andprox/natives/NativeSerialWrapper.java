@@ -38,7 +38,6 @@ import java.io.IOException;
 /**
  * API wrapper between uart_android.c and usb-serial-for-android.
  */
-
 public class NativeSerialWrapper {
     private static final String TAG = "NativeSerialWrapper";
     private UsbSerialPort mPort;

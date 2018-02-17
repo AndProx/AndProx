@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016-2017 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -115,13 +115,32 @@ public class Natives {
      */
     public native static void sendCmd(String cmd);
 
+    /**
+     * Tunes all the antennas on the PM3, and returns a TuneResult describing the parameters of the
+     * antennas.
+     * @return A TuneResult on success, else null.
+     */
     public static TuneResult sendCmdTune() {
         return sendCmdTune(true, true);
     }
+
+    /**
+     * Tunes the antennas on the PM3, and returns a TuneResult describing the parameters of the
+     * antennas.
+     * @param lf If true, tune low frequency antenna.
+     * @param hf If true, tune high frequency antenna.
+     * @return A TuneResult on success, else null.
+     */
     public native static TuneResult sendCmdTune(boolean lf, boolean hf);
 
+    /**
+     * Gets the version number of the Proxmark3 client.
+     */
     public native static String getProxmarkClientVersion();
 
+    /**
+     * Gets the build timestamp of the Proxmark3 client.
+     */
     public native static String getProxmarkClientBuildTimestamp();
 
     /**

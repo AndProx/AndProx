@@ -35,7 +35,6 @@ import android.os.Parcelable;
 /**
  * Wraps a tuning result from the PM3.
  */
-
 public class TuneResult implements Parcelable {
     public static final Creator<TuneResult> CREATOR = new Creator<TuneResult>() {
         @Override
@@ -87,22 +86,37 @@ public class TuneResult implements Parcelable {
         return mGraphData;
     }
 
+    /**
+     * The voltage of the low frequency antenna at 125 kHz, in volts.
+     */
     public double getVolts125k() {
         return mVolts125k;
     }
 
+    /**
+     * The voltage of the low frequency antenna at 134 kHz, in volts.
+     */
     public double getVolts134k() {
         return mVolts134k;
     }
 
+    /**
+     * The peak voltage of the low frequency antenna, in volts.
+     */
     public double getLFPeakVolts() {
         return mLFPeakVolts;
     }
 
+    /**
+     * The frequency at which the low frequency antenna reaches peak voltage, in kHz.
+     */
     public double getLFPeakFrequency() {
         return mLFPeakFrequency;
     }
 
+    /**
+     * The voltage of the high frequency antenna at 13.56 MHz, in volts.
+     */
     public double getVolts13M() {
         return mVolts13M;
     }

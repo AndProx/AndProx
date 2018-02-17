@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -37,6 +37,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import au.id.micolous.andprox.AndProxApplication;
@@ -50,17 +51,19 @@ import au.id.micolous.andprox.natives.TuneResult;
 public class TuneTask extends AsyncTask<Void, Void, TuneResult> {
     private static final String TAG = "TuneTask";
     private ProgressDialog mProgressDialog;
-    private Context mContext;
+    private WeakReference<Context> mContext;
 
     public TuneTask(Context context) {
-        mContext = context;
+        mContext = new WeakReference<>(context);
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        mProgressDialog = ProgressDialog.show(mContext,
-                mContext.getString(R.string.tuning_antenna), mContext.getString(R.string.tuning_antenna_desc),
+        Context c = mContext.get();
+
+        mProgressDialog = ProgressDialog.show(c,
+                c.getString(R.string.tuning_antenna), c.getString(R.string.tuning_antenna_desc),
                 true, false);
     }
 
@@ -77,6 +80,8 @@ public class TuneTask extends AsyncTask<Void, Void, TuneResult> {
     @Override
     protected void onPostExecute(TuneResult tuneResult) {
         mProgressDialog.hide();
+        Context c = mContext.get();
+
         if (tuneResult != null) {
             // Show results in the standard log
             Natives.javaPrintAndLog(String.format(Locale.ENGLISH, "LF antenna: %3.2f V @ 125 kHz", tuneResult.getVolts125k()));
@@ -97,13 +102,13 @@ public class TuneTask extends AsyncTask<Void, Void, TuneResult> {
             }
 
             // Show the result activity
-            Intent intent = new Intent(mContext, TuneResultActivity.class);
+            Intent intent = new Intent(c, TuneResultActivity.class);
             intent.putExtra(TuneResultActivity.TUNE_RESULT_KEY, tuneResult);
-            mContext.startActivity(intent);
+            c.startActivity(intent);
         } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-            builder.setMessage("Proxmark3 did not return a valid response.")
-                    .setTitle("Error tuning antennas");
+            AlertDialog.Builder builder = new AlertDialog.Builder(c);
+            builder.setMessage(R.string.tuning_error)
+                    .setTitle(R.string.tuning_error_title);
             builder.show();
         }
     }

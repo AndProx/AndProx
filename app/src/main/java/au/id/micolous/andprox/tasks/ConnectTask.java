@@ -139,7 +139,7 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
         boolean success = false;
         try {
             port.open(connection);
-            port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+            //port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 
             NativeSerialWrapper nsw = new NativeSerialWrapper(port);
             Natives.initProxmark();

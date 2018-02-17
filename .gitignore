@@ -25,3 +25,5 @@ manifest-merger-release-report.txt
 *.zip
 *scan_*/
 *.py[co]
+
+device-*.png
