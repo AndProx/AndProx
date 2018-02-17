@@ -84,4 +84,6 @@
 
     <string name="command_hint">Enter a command…</string>
     <string name="command_waiting">Waiting for Proxmark3…</string>
+    <string name="clipboard_denied">Couldn\'t access clipboard</string>
+    <string name="clipboard_copied">Copied to clipboard</string>
 </resources>

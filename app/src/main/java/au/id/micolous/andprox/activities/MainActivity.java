@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -31,6 +31,7 @@
 package au.id.micolous.andprox.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -57,7 +58,6 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         deviceInfo.append(String.format(Locale.ENGLISH, "Found %d USB device(s):\n", deviceList.size()));
 
         for (UsbDevice d : deviceList.values()) {
-            deviceInfo.append(String.format(Locale.ENGLISH, "- %s (%04x : %04x)\n", d.getDeviceName(), d.getVendorId(), d.getProductId()));
+            deviceInfo.append(String.format(Locale.ENGLISH, "- %s (%04x:%04x)\n", d.getDeviceName(), d.getVendorId(), d.getProductId()));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 deviceInfo.append(String.format(Locale.ENGLISH, "  Name: %s\n", d.getProductName()));
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         deviceInfo.append(String.format(Locale.ENGLISH, "\nFound %d suitable driver(s):\n", availableDrivers.size()));
 
         for (UsbSerialDriver d : availableDrivers) {
-            deviceInfo.append(String.format(Locale.ENGLISH, "- %s (%04x : %04x)\n",
+            deviceInfo.append(String.format(Locale.ENGLISH, "- %s (%04x:%04x)\n",
                     d.getDevice().getDeviceName(), d.getDevice().getVendorId(), d.getDevice().getProductId()));
 
             for (UsbSerialPort p : d.getPorts()) {

@@ -34,7 +34,10 @@ import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
+import java.util.Locale;
 
 import au.id.micolous.andprox.natives.Natives;
 
@@ -45,6 +48,7 @@ import au.id.micolous.andprox.natives.Natives;
 public class AndProxApplication extends Application {
     private static AndProxApplication sInstance;
     private String mExtraDeviceInfo = "";
+    private static final String TAG = "AndProxApplication";
 
     public AndProxApplication() {
         sInstance = this;
@@ -58,13 +62,26 @@ public class AndProxApplication extends Application {
         return sInstance;
     }
 
+    /**
+     * Dumps all device information that is useful for debugging AndProx.
+     *
+     * This always returns strings in English, and is only ever used for the SysInfoActivity.
+     */
     public static String getDeviceInfo() {
-        return String.format("AndProx Version: %s\nPM3 Client Version: %s\nBuild timestamp: %s\nModel: %s (%s)\nManufacturer: %s (%s)\nAndroid OS: %s (%s)\n\nUSB Host: %s\n%s",
+        return String.format(Locale.ENGLISH,
+                        "AndProx Version: %s\n" +
+                        "PM3 Client Version: %s\n" +
+                        "Build timestamp: %s\n" +
+                        "Model: %s (%s)\n" +
+                        "Manufacturer: %s (%s)\n" +
+                        "Android OS: %s (%s)\n\n" +
+                        "USB Host: %s\n" +
+                        "%s", // extra device info
                 // Version:
                 getVersionString(),
                 Natives.getProxmarkClientVersion(),
                 Natives.getProxmarkClientBuildTimestamp(),
-                // Model
+                // Model:
                 Build.MODEL,
                 Build.DEVICE,
                 // Manufacturer / brand:
@@ -75,8 +92,7 @@ public class AndProxApplication extends Application {
                 Build.ID,
                 // USB:
                 hasUsbHostSupport() ? "yes" : "no",
-                getInstance().mExtraDeviceInfo
-        );
+                getInstance().mExtraDeviceInfo);
     }
 
     public static String getVersionString() {
