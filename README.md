@@ -16,27 +16,7 @@ access the Proxmark's USB ACM interface from user-space Java code.
 
 ## Compatibility
 
-AndProx requires an Android device with [USB Host support][2].  This can either be provided via a
-USB OTG cable, USB Type C to USB Type A adapter, or ports directly on the device.
-
-AndProx does not work with App Runtime for ChromeOS (ARC), because [ARC does not support USB
-Host][5].
-
-This project targets the [mainline firmware][1], so some functionality may not be available or
-broken if you use another branch.  It is suggested that you build your firmware from whatever commit
-`third_party/proxmark3` points at.  Other firmwares may contain incompatible RPC messages.
-
-This software is primarily tested on a Google Pixel Phone and Hardkernel ODroid U3.  It requires at
-least Android 5.0 (API 21).
-
-> **Note:** Some hardware, like the Nexus 4, _does not support USB Host mode_.
-
-> **Note:** Some hardware, like Sony Android TV devices, _doesn't properly expose CDC ACM devices to
-> userspace Android software_. You should absolutely not have the `cdc_acm` Linux kernel module
-> loaded on your device.
-
-> **Note:** [If you have the `cdc_acm` kernel module on your device, you must unload or unbind it
-> first.][4]
+See `COMPATIBILITY.md`.
 
 ## Functionality / Known Issues
 
@@ -137,7 +117,6 @@ components is shown in `third_party/README.md.`
 [1]: https://github.com/Proxmark/proxmark3
 [2]: https://developer.android.com/guide/topics/connectivity/usb/host.html
 [3]: https://github.com/Proxmark/proxmark3/wiki/android
-[4]: https://github.com/AndProx/AndProx/issues/8
-[5]: https://developer.android.com/topic/arc/manifest.html#incompat-entries
+[4]: https://github.com/mik3y/usb-serial-for-android
 [6]: https://github.com/AndProx/AndProx/releases
 [7]: https://play.google.com/apps/testing/au.id.micolous.andprox
