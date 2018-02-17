@@ -182,7 +182,6 @@ add_library(natives SHARED
             natives.c
             fakemain.c
             uart_android.c
-            bitwise.c
 
             ${PM3_ROOT}/client/guidummy.cpp
             ${PM3_ROOT}/client/ui.c
@@ -195,7 +194,15 @@ add_library(natives SHARED
             ${PM3_ROOT}/common/crapto1/crypto1.c
             ${PM3_ROOT}/common/polarssl/des.c
             ${PM3_ROOT}/common/polarssl/aes.c
+            ${PM3_ROOT}/common/polarssl/bignum.c
+            ${PM3_ROOT}/common/polarssl/rsa.c
+            ${PM3_ROOT}/common/polarssl/sha1.c
             ${PM3_ROOT}/client/mfkey.c
+            ${PM3_ROOT}/client/loclass/cipher.c
+            ${PM3_ROOT}/client/loclass/cipherutils.c
+            ${PM3_ROOT}/client/loclass/ikeys.c
+            ${PM3_ROOT}/client/loclass/elite_crack.c
+            ${PM3_ROOT}/client/loclass/fileutils.c
 
             ${PM3_ROOT}/client/mifarehost.c
             ${PM3_ROOT}/common/parity.c
@@ -206,15 +213,34 @@ add_library(natives SHARED
             ${PM3_ROOT}/common/iso15693tools.c
             ${PM3_ROOT}/client/graph.c
             ${PM3_ROOT}/client/cmddata.c
-
             ${PM3_ROOT}/common/lfdemod.c
 
+            ${PM3_ROOT}/client/emv/crypto_polarssl.c
+            ${PM3_ROOT}/client/emv/crypto.c
+            ${PM3_ROOT}/client/emv/emv_pk.c
+            ${PM3_ROOT}/client/emv/emv_pki.c
+            ${PM3_ROOT}/client/emv/emv_pki_priv.c
+            ${PM3_ROOT}/client/emv/test/cryptotest.c
+            ${PM3_ROOT}/client/emv/apduinfo.c
+            ${PM3_ROOT}/client/emv/dump.c
+            ${PM3_ROOT}/client/emv/tlv.c
+            ${PM3_ROOT}/client/emv/emv_tags.c
+            ${PM3_ROOT}/client/emv/dol.c
+            ${PM3_ROOT}/client/emv/emvcore.c
+            ${PM3_ROOT}/client/emv/test/crypto_test.c
+            ${PM3_ROOT}/client/emv/test/sda_test.c
+            ${PM3_ROOT}/client/emv/test/dda_test.c
+            ${PM3_ROOT}/client/emv/test/cda_test.c
+            ${PM3_ROOT}/client/emv/cmdemv.c
+
             ${PM3_ROOT}/client/cmdhf.c
+            ${PM3_ROOT}/client/cmdhflist.c
             ${PM3_ROOT}/client/cmdhf14a.c
             ${PM3_ROOT}/client/cmdhf14b.c
             ${PM3_ROOT}/client/cmdhf15.c
             ${PM3_ROOT}/client/cmdhfepa.c
             ${PM3_ROOT}/client/cmdhflegic.c
+            ${PM3_ROOT}/client/cmdhficlass.c
             ${PM3_ROOT}/client/cmdhfmf.c
             ${PM3_ROOT}/client/cmdhfmfu.c
             ${PM3_ROOT}/client/cmdhfmfhard.c
@@ -249,18 +275,7 @@ add_library(natives SHARED
             ${PM3_ROOT}/client/cmdparser.c
             ${PM3_ROOT}/client/cmdmain.c
 
-
             ${PM3_ROOT}/common/protocols.c
-            ${PM3_ROOT}/common/sha1.c
-
-            ${PM3_ROOT}/client/cmdcrc.c
-
-            ${PM3_ROOT}/client/reveng/reveng.c
-            ${PM3_ROOT}/client/reveng/cli.c
-            ${PM3_ROOT}/client/reveng/bmpbit.c
-            ${PM3_ROOT}/client/reveng/model.c
-            ${PM3_ROOT}/client/reveng/poly.c
-            ${PM3_ROOT}/client/reveng/getopt.c
 
             ${PM3_ROOT}/zlib/deflate.c
             ${PM3_ROOT}/zlib/adler32.c
@@ -280,14 +295,6 @@ add_library(natives SHARED
             $<TARGET_OBJECTS:liblua>
 )
 
-# IClass code disabled (GPLv2 only)
-#            ${PM3_ROOT}/client/cmdhficlass.c
-#            ${PM3_ROOT}/client/loclass/cipher.c
-#            ${PM3_ROOT}/client/loclass/cipherutils.c
-#            ${PM3_ROOT}/client/loclass/ikeys.c
-#            ${PM3_ROOT}/client/loclass/elite_crack.c
-#            ${PM3_ROOT}/client/loclass/fileutils.c
-
 #             fakecmdscript.c
 
 
@@ -296,6 +303,7 @@ target_include_directories(natives PRIVATE
                            .
                            ${PM3_ROOT}/client
                            ${PM3_ROOT}/common
+                           ${PM3_ROOT}/common/polarssl
                            ${PM3_ROOT}/include
                            ${PM3_ROOT}/client/nonce2key
                            ${PM3_ROOT}/client/hardnested
