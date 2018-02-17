@@ -10,8 +10,10 @@ In this file, you'll find:
 * [Testing / Developing AndProx](#developing--testing-andprox), including how to debug on
   [virtual](#with-an-emulator) and [physical hardware](#with-physical-hardware).
 
-* [Code Layout](#code-layout), including [communication flow](#communication-flow) and [key
+* [Code Layout](#code-layout), including AndProx-specific PM3 client functionality, and [key
   differences between AndProx and upstream PM3](#key-differences).
+
+* [Communication flow](#communication-flow), including how a typical command is handled.
 
 # Getting the code
 
@@ -147,6 +149,28 @@ functionality:
 Occasionally, PM3 pulls in extra libraries.  When this happens, the changes need to be also
 implemented in AndProx's CMake file.
 
+## Key differences
+
+In general, AndProx aims to _minimise_ changes to Proxmark3, and work towards upstreaming any
+required changes that can't be kept in a separate file.  This is done to minimise the effort
+required to update to newer versions of PM3, or to switch to other distributions.
+
+Most PM3 commands should "just work" -- commands are passed in to the interpreter in the same way
+that the regular C client would.  There is a `uart_receiver` thread like the mainline client, which
+can dispatch events into the command buffer as normal.  The `uart` functions are all wrapped, but
+expose the exact same API.
+
+There are some platform-specific differences:
+
+* AndProx has no stdin/out, so `printf` and `gets` won't work.  This breaks a lot of the interactive
+  scripting in Lua.
+
+* ncurses and readline are also unavailable.
+
+* AndProx uses Android's zlib rather than PM3's. PM3's `inflate` function strips out support for
+  some zlib functionality that is never used (like fixed block coding), and has some extra
+  functionality in `deflate`. But only `inflate` is ever used in the client.
+
 # Communication flow
 
 ## Setting up the library
@@ -197,27 +221,6 @@ A typical command follows this process:
 14. `uart_receiver` stores the command in a buffer, where it can later be collected in
     `WaitForResponse`.
 
-# Key differences
-
-In general, AndProx aims to _minimise_ changes to Proxmark3, and work towards upstreaming any
-required changes that can't be kept in a separate file.  This is done to minimise the effort
-required to update to newer versions of PM3, or to switch to other distributions.
-
-Most PM3 commands should "just work" -- commands are passed in to the interpreter in the same way
-that the regular C client would.  There is a `uart_receiver` thread like the mainline client, which
-can dispatch events into the command buffer as normal.  The `uart` functions are all wrapped, but
-expose the exact same API.
-
-There are some platform-specific differences:
-
-* AndProx has no stdin/out, so `printf` and `gets` won't work.  This breaks a lot of the interactive
-  scripting in Lua.
-
-* ncurses and readline are also unavailable.
-
-* AndProx uses Android's zlib rather than PM3's. PM3's `inflate` function strips out support for
-  some zlib functionality that is never used (like fixed block coding), and has some extra
-  functionality in `deflate`. But only `inflate` is ever used in the client.
 
 
 [1]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
