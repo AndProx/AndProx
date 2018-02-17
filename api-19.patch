@@ -1,0 +1,43 @@
+diff --git a/app/build.gradle b/app/build.gradle
+index 513cd14..418dae9 100644
+--- a/app/build.gradle
++++ b/app/build.gradle
+@@ -65,12 +65,12 @@ android {
+         applicationId "au.id.micolous.andprox"
+         // Must be at least the API version declared by all dependencies
+         // Highest is natives @ API 21+
+-        minSdkVersion 21
++        minSdkVersion 19
+         targetSdkVersion 26
+         versionCode getVersionCode()
+         versionName getVersionName()
+         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+-        ndk.abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
++        ndk.abiFilters 'x86', 'armeabi', 'armeabi-v7a'
+     }
+     dataBinding {
+         enabled true
+diff --git a/natives/build.gradle b/natives/build.gradle
+index e250bf8..90bfb75 100644
+--- a/natives/build.gradle
++++ b/natives/build.gradle
+@@ -72,15 +72,15 @@ android {
+     // - to support all the arches, we need at least API 21+
+     //
+     // https://android.googlesource.com/platform/ndk/+/master/docs/user/common_problems.md#target-api-set-higher-than-device-api
+-    compileSdkVersion 21
++    compileSdkVersion 19
+     buildToolsVersion '26.0.2'
+ 
+     defaultConfig {
+-        minSdkVersion 21
+-        targetSdkVersion 21
++        minSdkVersion 19
++        targetSdkVersion 19
+         versionCode 1
+         versionName "1.0"
+-        ndk.abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
++        ndk.abiFilters 'x86', 'armeabi', 'armeabi-v7a'
+ 
+         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+         externalNativeBuild {
