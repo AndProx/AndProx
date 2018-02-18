@@ -28,7 +28,8 @@
   ~      purposes, without explicit written permission.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="au.id.micolous.andprox">
+    package="au.id.micolous.andprox"
+    android:sharedUserId="au.id.micolous.andprox.uid">
 
     <!--
       Enables Android TV support. ;)
