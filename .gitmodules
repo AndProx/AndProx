@@ -1,7 +1,7 @@
 [submodule "third_party/usb-serial-for-android"]
 	path = third_party/usb-serial-for-android
 	url = https://github.com/AndProx/usb-serial-for-android.git
-	branch = proxmark3
+	branch = andprox
 [submodule "third_party/GraphView"]
 	path = third_party/GraphView
 	url = https://github.com/AndProx/GraphView.git

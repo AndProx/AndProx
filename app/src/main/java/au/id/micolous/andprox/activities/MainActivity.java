@@ -50,6 +50,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.hoho.android.usbserial.driver.CdcAcmSerialDriver;
+import com.hoho.android.usbserial.driver.UsbId;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -101,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action) || UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
                 dumpUsbDeviceInfo(manager);
+                MainActivity.this.runOnUiThread(MainActivity.this::updateIntroText);
             }
         }
     };
@@ -108,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
     public static void dumpUsbDeviceInfo(UsbManager manager) {
         // List all the devices
         StringBuilder deviceInfo = new StringBuilder();
+        AndProxApplication app = AndProxApplication.getInstance();
+        app.setProxmarkDetected(false);
+        app.setOldProxmarkDetected(false);
 
         HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
         deviceInfo.append(String.format(Locale.ENGLISH, "Found %d USB device(s):\n", deviceList.size()));
@@ -124,28 +130,63 @@ public class MainActivity extends AppCompatActivity {
         deviceInfo.append(String.format(Locale.ENGLISH, "\nFound %d suitable driver(s):\n", availableDrivers.size()));
 
         for (UsbSerialDriver d : availableDrivers) {
+            UsbDevice dev = d.getDevice();
+
             deviceInfo.append(String.format(Locale.ENGLISH, "- %s (%04x:%04x)\n",
-                    d.getDevice().getDeviceName(), d.getDevice().getVendorId(), d.getDevice().getProductId()));
+                    dev.getDeviceName(), dev.getVendorId(), dev.getProductId()));
 
             for (UsbSerialPort p : d.getPorts()) {
-                deviceInfo.append(String.format(Locale.ENGLISH, "  Port %d: %s", p.getPortNumber(), p.getClass().getSimpleName()));
+                deviceInfo.append(String.format(Locale.ENGLISH, "  Port %d: %s\n", p.getPortNumber(), p.getClass().getSimpleName()));
+
+                if (dev.getVendorId() == UsbId.VENDOR_PROXMARK3 && dev.getProductId() == UsbId.PROXMARK3) {
+                    deviceInfo.append("  Detected PM3!\n");
+                    app.setProxmarkDetected(true);
+                } else if (dev.getVendorId() == UsbId.VENDOR_PROXMARK3_OLD && dev.getProductId() == UsbId.PROXMARK3_OLD) {
+                    deviceInfo.append("  Old PM3 firmware -- needs update!\n");
+                    app.setOldProxmarkDetected(true);
+                }
             }
         }
 
         Log.d(TAG, deviceInfo.toString());
-        AndProxApplication.getInstance().setExtraDeviceInfo(deviceInfo.toString());
+        app.setExtraDeviceInfo(deviceInfo.toString());
 
+    }
+
+    private void updateIntroText() {
+        TextView tvIntroText = findViewById(R.id.tvIntroText);
+        if (!AndProxApplication.hasUsbHostSupport()) {
+            tvIntroText.setText(R.string.no_usb_host);
+            return;
+        }
+
+        AndProxApplication app = AndProxApplication.getInstance();
+
+        if (app.isProxmarkDetected()) {
+            tvIntroText.setText(R.string.intro_text_usb_detected);
+        } else if (app.isOldProxmarkDetected()) {
+            tvIntroText.setText(R.string.intro_text_old_pm3);
+        } else {
+            tvIntroText.setText(R.string.intro_text_default);
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         UsbManager manager = null;
 
         if (AndProxApplication.hasUsbHostSupport()) {
             manager = (UsbManager) getSystemService(Context.USB_SERVICE);
         }
+
+        TextView tvIntroText = findViewById(R.id.tvIntroText);
 
         if (manager != null) {
             PendingIntent mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
@@ -157,6 +198,8 @@ public class MainActivity extends AppCompatActivity {
             registerReceiver(mUsbDeviceChangeReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
             dumpUsbDeviceInfo(manager);
+            updateIntroText();
+
             List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
             if (availableDrivers.isEmpty()) {
                 Log.d(TAG, "onCreate: no devices present");
@@ -170,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e(TAG, "no USB host support!");
             findViewById(R.id.btnConnect).setEnabled(false);
-            ((TextView) findViewById(R.id.tvIntroText)).setText(R.string.no_usb_host);
+            updateIntroText();
 
             if (savedInstanceState == null) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
