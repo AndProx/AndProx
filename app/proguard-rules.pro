@@ -50,5 +50,7 @@
 
 -keep class au.id.micolous.andprox.** { *; }
 
+-keep class com.hoho.android.usbserial.** { *; }
+
 # We don't use javax.xml.
 -dontwarn javax.xml.**

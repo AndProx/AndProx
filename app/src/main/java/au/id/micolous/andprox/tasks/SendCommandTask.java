@@ -31,6 +31,8 @@ package au.id.micolous.andprox.tasks;
 
 import android.os.AsyncTask;
 
+import java.lang.ref.WeakReference;
+
 import au.id.micolous.andprox.natives.Natives;
 
 /**
@@ -38,19 +40,44 @@ import au.id.micolous.andprox.natives.Natives;
  */
 
 public class SendCommandTask extends AsyncTask<String, Void, Void> {
-    public interface DoneCallback {
+    public interface SendCommandCallback {
         void onCommandFinished();
     }
 
-    protected DoneCallback c;
+    private static WeakReference<SendCommandCallback> callback = null;
+    /**
+     * This is a simple ref-counter for how many things are in flight.
+     */
+    private static int progressingCommands = 0;
 
-    public SendCommandTask() {
-        this(null);
+    public static void register(SendCommandCallback c) {
+        callback = new WeakReference<>(c);
     }
 
-    public SendCommandTask(DoneCallback c) {
-        super();
-        this.c = c;
+    /**
+     * Returns the number of commands that are currently in progress.
+     */
+    public static int getProgressingCommands() {
+        return progressingCommands;
+    }
+
+    private static SendCommandCallback getDoneCallback() {
+        if (callback != null) {
+            SendCommandCallback c = callback.get();
+            if (c != null) {
+                return c;
+            }
+        } else {
+            // The weak reference has gone, also destroy it.
+            callback = null;
+        }
+        return null;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressingCommands++;
     }
 
     @Override
@@ -63,6 +90,17 @@ public class SendCommandTask extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        c.onCommandFinished();
+        progressingCommands--;
+        SendCommandCallback c = getDoneCallback();
+        if (c != null) c.onCommandFinished();
+    }
+
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+
+        progressingCommands--;
+        SendCommandCallback c = getDoneCallback();
+        if (c != null) c.onCommandFinished();
     }
 }

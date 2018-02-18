@@ -53,7 +53,7 @@ import au.id.micolous.andprox.tasks.SendCommandTask;
 import au.id.micolous.andprox.hw.TuneTask;
 import au.id.micolous.andprox.natives.Natives;
 
-public class CliActivity extends AppCompatActivity implements SendCommandTask.DoneCallback {
+public class CliActivity extends AppCompatActivity implements SendCommandTask.SendCommandCallback {
     private static final String TAG = "CliActivity";
 
     private EditText etCommandInput;
@@ -61,14 +61,24 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
     private BroadcastReceiver mUsbReceiver;
     private String lastCommand = null;
 
+    private static final String LAST_COMMAND = "last_command";
+    private static final String OUTPUT_BUFFER = "output_buffer";
+
     private void writePrompt(String cmd) {
         Natives.javaPrintAndLog("proxmark3> " + cmd);
+    }
+
+    private void lockEditField() {
+        // Lock the edit field to indicate we are waiting for proxmark3
+        etCommandInput.setEnabled(false);
+        etCommandInput.setHint(R.string.command_waiting);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cli);
+        SendCommandTask.register(this);
 
         tvOutputBuffer = findViewById(R.id.tvOutputBuffer);
         tvOutputBuffer.setMovementMethod(new ScrollingMovementMethod());
@@ -95,11 +105,8 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
 
                 Log.i(TAG, "Sending command: " + cmd);
                 writePrompt(cmd);
-                new SendCommandTask(this).execute(cmd);
-
-                // Lock the edit field to indicate we are waiting for proxmark3
-                etCommandInput.setEnabled(false);
-                etCommandInput.setHint(R.string.command_waiting);
+                new SendCommandTask().execute(cmd);
+                lockEditField();
                 return true;
             }
             return false;
@@ -137,6 +144,10 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
 
         IntentFilter filter = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
         registerReceiver(mUsbReceiver, filter);
+
+        if (SendCommandTask.getProgressingCommands() > 0) {
+            lockEditField();
+        }
     }
 
     @Override
@@ -146,6 +157,21 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
         unregisterReceiver(mUsbReceiver);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(OUTPUT_BUFFER, tvOutputBuffer.getText().toString());
+        outState.putString(LAST_COMMAND, lastCommand);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        tvOutputBuffer.setText(savedInstanceState.getString(OUTPUT_BUFFER));
+        lastCommand = savedInstanceState.getString(LAST_COMMAND);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -155,7 +181,7 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (Natives.isOffline()) {
+        if (Natives.isOffline() || SendCommandTask.getProgressingCommands() > 0) {
             menu.findItem(R.id.miTuneAntenna).setEnabled(false);
         }
 
@@ -203,8 +229,10 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
 
     @Override
     public void onCommandFinished() {
-        // Unlock the edit field
-        etCommandInput.setEnabled(true);
-        etCommandInput.setHint(R.string.command_hint);
+        if (SendCommandTask.getProgressingCommands() <= 0) {
+            // Unlock the edit field
+            etCommandInput.setEnabled(true);
+            etCommandInput.setHint(R.string.command_hint);
+        }
     }
 }
