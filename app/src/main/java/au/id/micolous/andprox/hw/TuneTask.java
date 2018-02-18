@@ -108,7 +108,9 @@ public class TuneTask extends AsyncTask<Void, Void, TuneResult> {
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(c);
             builder.setMessage(R.string.tuning_error)
-                    .setTitle(R.string.tuning_error_title);
+                    .setTitle(R.string.tuning_error_title)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .setCancelable(false);
             builder.show();
         }
     }

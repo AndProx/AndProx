@@ -29,7 +29,6 @@ public class HardnestedTest extends AndroidTestCase {
 
         // Now we can actually init
         Natives.initProxmark();
-        Natives.unsetSerialPort();
     }
 
     @LargeTest

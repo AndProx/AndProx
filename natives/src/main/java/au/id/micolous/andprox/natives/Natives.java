@@ -144,6 +144,14 @@ public class Natives {
     public native static String getProxmarkClientBuildTimestamp();
 
     /**
+     * Reports on whether the PM3 client is in the "offline" state.
+     *
+     * "offline" state is where there is no PM3 to communicate with.
+     * @return True if "offline", false if online.
+     */
+    public native static boolean isOffline();
+
+    /**
      * Used by native interfaces to get the storage path.
      * @return Path to storage for the app.
      */

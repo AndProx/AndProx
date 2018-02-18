@@ -45,6 +45,7 @@ serial_port uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw)
 void uart_close(const serial_port sp) {
     serial_port_android* spa = (serial_port_android*)sp;
     //PrintAndLog("uart_close()");
+    if (spa == NULL) return;
     GET_ENV(spa->javaVM)
     if (env == NULL) return;
 
@@ -55,6 +56,7 @@ void uart_close(const serial_port sp) {
 bool uart_receive(const serial_port sp, byte_t* pbtRx, size_t pszMaxRxLen, size_t* pszRxLen) {
     serial_port_android* spa = (serial_port_android*)sp;
     //PrintAndLog("uart_recieve(%d)", pszMaxRxLen);
+    if (spa == NULL) return false;
     GET_ENV(spa->javaVM)
     if (env == NULL) return false;
 
@@ -90,6 +92,7 @@ bool uart_receive(const serial_port sp, byte_t* pbtRx, size_t pszMaxRxLen, size_
 bool uart_send(const serial_port sp, const byte_t* pbtTx, const size_t szTxLen) {
     serial_port_android* spa = (serial_port_android*)sp;
     //PrintAndLog("uart_send(%d)", szTxLen);
+    if (spa == NULL) return false;
     GET_ENV(spa->javaVM)
     if (env == NULL) return false;
 

@@ -16,7 +16,6 @@ public class EmvTest extends TestCase {
         super.setUp();
 
         Natives.initProxmark();
-        Natives.unsetSerialPort();
     }
 
     @LargeTest

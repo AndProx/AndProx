@@ -58,7 +58,7 @@ JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass type) {
     LOGI("Calling initProxmark");
 
-// Initialise all the things we want.
+    // Initialise all the things we want.
     PlotGridXdefault = 64;
     PlotGridYdefault = 64;
     showDemod = true;
@@ -66,23 +66,25 @@ Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass typ
 
     memset((void*)(&versionResp), 0, sizeof(versionResp));
     SetLogFilename(NULL);
+    SetSerialPort(NULL);
+    SetOffline(true);
 
-// TODO: reset more stuff here
+    // TODO: reset more stuff here
 }
 
 JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_setSerialPort(JNIEnv *env, jclass type,
                                                           jobject nsw) {
-// TODO: Handle conn->recv_lock
+    // TODO: Handle conn->recv_lock
     serial_port* old_sp = GetSerialPort();
 
-// Setup the new serial port
+    // Setup the new serial port
     serial_port* new_sp = uart_open_android(env, g_ctx.javaVM, nsw);
     SetSerialPort(new_sp);
     SetOffline(false);
 
     if (old_sp != NULL) {
-// Free the existing serialport ref
+    // Free the existing serialport ref
         free(old_sp);
     }
 }
@@ -196,8 +198,9 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdVersion(JNIEnv *env, jclass t
         if (WaitForResponseTimeout(CMD_ACK, &versionResp, 10001)) {
             PrintAndLog("Prox/RFID mark3 RFID instrument");
             PrintAndLog((char*)versionResp.d.asBytes);
-// TODO: Implement lookupChipID
-//lookupChipID(resp.arg[0], resp.arg[1]);
+
+            // TODO: Implement lookupChipID
+            //lookupChipID(resp.arg[0], resp.arg[1]);
         } else {
             PrintAndLog("got no response");
         }
@@ -205,7 +208,7 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdVersion(JNIEnv *env, jclass t
         PrintAndLog("[[[ Cached information ]]]\n");
         PrintAndLog("Prox/RFID mark3 RFID instrument");
         PrintAndLog((char*)versionResp.d.asBytes);
-//lookupChipID(resp.arg[0], resp.arg[1]);
+        //lookupChipID(resp.arg[0], resp.arg[1]);
         PrintAndLog("");
     }
 }
@@ -256,6 +259,11 @@ JNIEXPORT jobject JNICALL
 Java_au_id_micolous_andprox_natives_Natives_sendCmdTune__ZZ(JNIEnv *env, jclass type, jboolean lf,
                                                             jboolean hf) {
 
+    if (IsOffline()) {
+        PrintAndLog("Not possible while offline.");
+        return NULL;
+    }
+
     int timeout = 0, arg = 0;
     if (lf) {
         arg |= FLAG_TUNE_LF;
@@ -297,4 +305,11 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdTune__ZZ(JNIEnv *env, jclass 
     jobject a = (*env)->NewObject(env, cls, meth, resp.arg[0], resp.arg[1], resp.arg[2], graphDataArray);
     (*env)->DeleteLocalRef(env, graphDataArray);
     return a;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_au_id_micolous_andprox_natives_Natives_isOffline(JNIEnv *env, jclass type) {
+
+    return (jboolean) IsOffline();
+
 }

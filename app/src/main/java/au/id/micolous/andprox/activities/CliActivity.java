@@ -153,6 +153,14 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Do
         return super.onCreateOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (Natives.isOffline()) {
+            menu.findItem(R.id.miTuneAntenna).setEnabled(false);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
