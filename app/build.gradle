@@ -37,7 +37,7 @@ def getVersionCode = { ->
             commandLine 'git', 'tag', '--list'
             standardOutput = code
         }
-        return code.toString().split("\n").size() + 1
+        return code.toString().split("\n").size() + 3
     }
     catch (ignored) {
         return -1
@@ -71,13 +71,23 @@ android {
         versionName getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk.abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+
+        // We only have English language support.
+        resConfigs 'en'
     }
     dataBinding {
         enabled true
     }
     buildTypes {
+        debug {
+            minifyEnabled true
+            useProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
         release {
-            minifyEnabled false
+            minifyEnabled true
+            useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -97,7 +107,6 @@ dependencies {
     // GPLv2 with linking exception
     compile project(':GraphView')
     //compile 'com.jjoe64:graphview:4.2.1'
-
 
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
