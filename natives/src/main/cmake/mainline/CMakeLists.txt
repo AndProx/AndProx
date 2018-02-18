@@ -1,10 +1,18 @@
 ## This file builds Proxmark3's client "as a library".
 ## It is necessary to build this with cmake rather than other tools for ease of use with the rest of
 ## Android's toolchain.
+##
+## mainline proxmark3 repository: https://github.com/proxmark/proxmark3
 cmake_minimum_required(VERSION 3.4.1)
 
-get_filename_component(PM3_ROOT ../../../../third_party/proxmark3 ABSOLUTE)
-message(STATUS "Proxmark3 Root = ${PM3_ROOT}")
+get_filename_component(PM3_ROOT ../../../../../third_party/proxmark3 ABSOLUTE)
+message(STATUS "Proxmark3 root = ${PM3_ROOT}")
+
+get_filename_component(APN_ROOT ../../cpp ABSOLUTE)
+message(STATUS "AndProx natives root = ${APN_ROOT}")
+
+get_filename_component(CMAKE_COMMON_ROOT ../common ABSOLUTE)
+message(STATUS "CMake common root = ${CMAKE_COMMON_ROOT}")
 
 find_package(Git)
 
@@ -134,54 +142,12 @@ else()
     set(SIMD_TARGETS)
 endif()
 
-add_library(liblua OBJECT
-            ${PM3_ROOT}/liblua/lapi.c
-            ${PM3_ROOT}/liblua/lcode.c
-            ${PM3_ROOT}/liblua/lctype.c
-            ${PM3_ROOT}/liblua/ldebug.c
-            ${PM3_ROOT}/liblua/ldo.c
-            ${PM3_ROOT}/liblua/ldump.c
-            ${PM3_ROOT}/liblua/lfunc.c
-            ${PM3_ROOT}/liblua/lgc.c
-            ${PM3_ROOT}/liblua/llex.c
-            ${PM3_ROOT}/liblua/lmem.c
-            ${PM3_ROOT}/liblua/lobject.c
-            ${PM3_ROOT}/liblua/lopcodes.c
-            ${PM3_ROOT}/liblua/lparser.c
-            ${PM3_ROOT}/liblua/lstate.c
-            ${PM3_ROOT}/liblua/lstring.c
-            ${PM3_ROOT}/liblua/ltable.c
-            ${PM3_ROOT}/liblua/ltm.c
-            ${PM3_ROOT}/liblua/lundump.c
-            ${PM3_ROOT}/liblua/lvm.c
-            ${PM3_ROOT}/liblua/lzio.c
-            ${PM3_ROOT}/liblua/lauxlib.c
-            ${PM3_ROOT}/liblua/lbaselib.c
-            ${PM3_ROOT}/liblua/lbitlib.c
-            ${PM3_ROOT}/liblua/lcorolib.c
-            ${PM3_ROOT}/liblua/ldblib.c
-            ${PM3_ROOT}/liblua/liolib.c
-            ${PM3_ROOT}/liblua/lmathlib.c
-            ${PM3_ROOT}/liblua/loslib.c
-            ${PM3_ROOT}/liblua/lstrlib.c
-            ${PM3_ROOT}/liblua/ltablib.c
-            ${PM3_ROOT}/liblua/loadlib.c
-            ${PM3_ROOT}/liblua/linit.c)
-
-target_include_directories(liblua PRIVATE
-                           ${PM3_ROOT}/lua_android
-                           ${PM3_ROOT}/liblua)
-
-## Mostly use Linux stuff, but Android has no f{tell,seek}o.
-target_compile_definitions(liblua PRIVATE
-    LUA_USE_LINUX
-    fseeko=fseek
-    ftello=ftell)
+include("${CMAKE_COMMON_ROOT}/liblua.cmake")
 
 add_library(natives SHARED
-            natives.c
-            fakemain.c
-            uart_android.c
+            ${APN_ROOT}/natives.c
+            ${APN_ROOT}/fakemain.c
+            ${APN_ROOT}/uart_android.c
 
             ${PM3_ROOT}/client/guidummy.cpp
             ${PM3_ROOT}/client/ui.c
@@ -277,9 +243,7 @@ add_library(natives SHARED
 
             ${PM3_ROOT}/common/protocols.c
 
-
-
-            scripting_android.c
+            ${APN_ROOT}/scripting_android.c
             ${PM3_ROOT}/client/cmdscript.c
             ${PM3_ROOT}/client/pm3_binlib.c
             ${PM3_ROOT}/client/pm3_bitlib.c
@@ -289,7 +253,7 @@ add_library(natives SHARED
             $<TARGET_OBJECTS:liblua>
 )
 
-#             fakecmdscript.c
+#             ${APN_ROOT}/fakecmdscript.c
 
 # Proxmark3's version of zlib: (disabled)
 #            ${PM3_ROOT}/zlib/deflate.c
@@ -302,7 +266,7 @@ add_library(natives SHARED
 
 ## General compile options.
 target_include_directories(natives PRIVATE
-                           .
+                           ${APN_ROOT}
                            ${PM3_ROOT}/client
                            ${PM3_ROOT}/common
                            ${PM3_ROOT}/common/polarssl
