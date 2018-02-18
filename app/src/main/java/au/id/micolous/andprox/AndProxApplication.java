@@ -30,7 +30,9 @@
 
 package au.id.micolous.andprox;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -62,18 +64,65 @@ public class AndProxApplication extends Application {
         return sInstance;
     }
 
+    private static String formatBytes(long bytes) {
+        if (bytes < 1024) {
+            return String.format(Locale.ENGLISH, "%d bytes", bytes);
+        }
+
+        double fbytes = bytes / 1024.0;
+        if (fbytes < 1024) {
+            return String.format(Locale.ENGLISH, "%.1f KiB", fbytes);
+        }
+
+        fbytes /= 1024.0;
+        if (fbytes < 1024) {
+            return String.format(Locale.ENGLISH, "%.1f MiB", fbytes);
+        }
+
+        fbytes /= 1024.0;
+        if (fbytes < 1024) {
+            return String.format(Locale.ENGLISH, "%.1f GiB", fbytes);
+        }
+
+        fbytes /= 1024.0;
+        return String.format(Locale.ENGLISH, "%.1f TiB", fbytes);
+    }
+
+    private static String formatMemoryInfo(ActivityManager.MemoryInfo mi) {
+        if (mi == null) {
+            return "null";
+        }
+
+        return String.format(Locale.ENGLISH, "%s (%s free)",
+                formatBytes(mi.totalMem),
+                formatBytes(mi.availMem));
+    }
+
     /**
      * Dumps all device information that is useful for debugging AndProx.
      *
-     * This always returns strings in English, and is only ever used for the SysInfoActivity.
+     * This always returns strings in English, and is only ever used for the SysInfoActivity. This
+     * is so that bug reports are readable by the developers. ;)
      */
-    public static String getDeviceInfo() {
+    public static String getDeviceInfo(Context ctx) {
+        ActivityManager.MemoryInfo mi = null;
+
+        try {
+            ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+            mi = new ActivityManager.MemoryInfo();
+            am.getMemoryInfo(mi);
+        } catch (Exception e) {
+            Log.w(TAG, "Error getting memory information", e);
+            mi = null;
+        }
+
         return String.format(Locale.ENGLISH,
-                        "AndProx Version: %s\n" +
-                        "PM3 Client Version: %s\n" +
+                        "AndProx version: %s\n" +
+                        "PM3 Client version: %s\n" +
                         "Build timestamp: %s\n" +
                         "Model: %s (%s)\n" +
                         "Manufacturer: %s (%s)\n" +
+                        "RAM: %s\n"+
                         "Android OS: %s (%s)\n\n" +
                         "USB Host: %s\n" +
                         "%s", // extra device info
@@ -87,6 +136,8 @@ public class AndProxApplication extends Application {
                 // Manufacturer / brand:
                 Build.MANUFACTURER,
                 Build.BRAND,
+                // RAM:
+                formatMemoryInfo(mi),
                 // OS:
                 Build.VERSION.RELEASE,
                 Build.ID,

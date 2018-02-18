@@ -59,7 +59,7 @@ public class SysInfoActivity extends AppCompatActivity {
         setTitle(R.string.sys_info_title);
 
         // Generate debugging information
-        debugOutput = AndProxApplication.getDeviceInfo();
+        debugOutput = AndProxApplication.getDeviceInfo(getBaseContext());
         TextView tvDebugOutput = findViewById(R.id.tvDebugOutput);
         tvDebugOutput.setText(debugOutput);
         tvDebugOutput.setMovementMethod(new ScrollingMovementMethod());
