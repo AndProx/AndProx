@@ -199,7 +199,9 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
         if (result.noDevicesPresent) {
             AlertDialog.Builder builder = new AlertDialog.Builder(c);
             builder.setMessage(R.string.no_devices_present)
-                    .setTitle(R.string.no_devices_present_title);
+                    .setTitle(R.string.no_devices_present_title)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .setCancelable(false);
             builder.show();
         } else if (result.needPermissions) {
             if (!result.alreadyAskedPermissions) {
@@ -211,14 +213,18 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
         } else if (result.communicationError) {
             AlertDialog.Builder builder = new AlertDialog.Builder(c);
             builder.setMessage(R.string.communication_error)
-                    .setTitle(R.string.communication_error_title);
+                    .setTitle(R.string.communication_error_title)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .setCancelable(false);
             builder.show();
 
         } else if (result.timeoutError) {
             Log.e(TAG, "cmdVersion failed");
             AlertDialog.Builder builder = new AlertDialog.Builder(c);
             builder.setMessage(R.string.connection_timeout)
-                    .setTitle(R.string.connection_timeout_title);
+                    .setTitle(R.string.connection_timeout_title)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .setCancelable(false);
             builder.show();
         } else if (result.success) {
             // Start main activity, yay!

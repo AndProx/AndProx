@@ -32,9 +32,11 @@ package au.id.micolous.andprox.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -42,6 +44,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -73,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String ACTION_USB_PERMISSION_AUTOCONNECT = "au.id.micolous.andprox.USB_PERMISSION_AUTOCONNECT";
     private static final int STORAGE_PERMISSION_CALLBACK = 1001;
 
+    private static final String DISMISS_USB_HOST_SUPPORT = "dismiss_usb_host_support";
+    private boolean mDismissUSBHostSupport = false;
+
     private final BroadcastReceiver mUsbPermissionReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -85,7 +91,9 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "permission denied for mDevice " + device);
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                         builder.setMessage(R.string.permission_denied)
-                                .setTitle(R.string.permission_denied_title);
+                                .setTitle(R.string.permission_denied_title)
+                                .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
+                                .setCancelable(false);
                         builder.show();
                     } else if (ACTION_USB_PERMISSION_AUTOCONNECT.equals(action)) {
                         // permission was granted, and now we need to hit up the connect button again
@@ -172,8 +180,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(DISMISS_USB_HOST_SUPPORT, mDismissUSBHostSupport);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            mDismissUSBHostSupport = savedInstanceState.getBoolean(DISMISS_USB_HOST_SUPPORT);
+        }
+
         setContentView(R.layout.activity_main);
 
         if (getSupportActionBar() != null) {
@@ -185,8 +204,6 @@ public class MainActivity extends AppCompatActivity {
         if (AndProxApplication.hasUsbHostSupport()) {
             manager = (UsbManager) getSystemService(Context.USB_SERVICE);
         }
-
-        TextView tvIntroText = findViewById(R.id.tvIntroText);
 
         if (manager != null) {
             PendingIntent mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
@@ -215,10 +232,15 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.btnConnect).setEnabled(false);
             updateIntroText();
 
-            if (savedInstanceState == null) {
+            if (!mDismissUSBHostSupport) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setMessage(R.string.no_usb_host)
-                        .setTitle(R.string.no_usb_host_title);
+                        .setTitle(R.string.no_usb_host_title)
+                        .setPositiveButton(R.string.ok, (dialog, which) -> {
+                            mDismissUSBHostSupport = true;
+                            dialog.dismiss();
+                        })
+                        .setCancelable(false);
                 builder.show();
             }
         }
@@ -246,7 +268,11 @@ public class MainActivity extends AppCompatActivity {
                     // Permission denied.
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setMessage(R.string.no_storage)
-                            .setTitle(R.string.no_storage_title);
+                            .setTitle(R.string.no_storage_title)
+                            .setPositiveButton(R.string.retry,
+                                    (dialog, which) -> ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CALLBACK))
+                            .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                            .setCancelable(false);
                     builder.show();
                 }
                 break;
