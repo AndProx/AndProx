@@ -96,4 +96,5 @@
     <string name="ok">OK</string>
     <string name="tuning_error_title">Error tuning antennas</string>
     <string name="tuning_error">Proxmark3 did not return a valid response.</string>
+    <string name="visit_website">Website</string>
 </resources>

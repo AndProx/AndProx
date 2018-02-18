@@ -4,6 +4,6 @@
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="au.id.micolous.andprox.activities.AboutActivity$PlaceholderFragment">
+    tools:context="au.id.micolous.andprox.activities.AboutActivity">
 
 </android.support.constraint.ConstraintLayout>

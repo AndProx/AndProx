@@ -29,11 +29,14 @@
  */
 package au.id.micolous.andprox.components;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import au.id.micolous.andprox.AndProxApplication;
@@ -81,7 +84,10 @@ public class AboutAndProxFragment extends Fragment {
         ((TextView)v.findViewById(R.id.tvPm3BuildTS)).setText(
                 Utils.localizeString(R.string.pm3_build_ts, Natives.getProxmarkClientBuildTimestamp()));
 
+        v.findViewById(R.id.btnWebsite).setOnClickListener(v1 -> startActivity(
+                new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/AndProx/AndProx"))));
 
         return v;
     }
+
 }
