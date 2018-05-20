@@ -1,0 +1,24 @@
+Section 7 of the GNU General Public License v3 allows for a limited scope of
+"additional terms" to be applied to a program, while not being considered a
+"further restriction" that would be disallowed under Section 10.
+
+The following additional terms apply to AndProx:
+
+ (b) You must preserve reasonable legal notices and author attributions in
+     the program.
+
+ (c) You must not misrepresent the origin of this program, and need to mark
+     modified versions in reasonable ways as different from the original
+     version (such as changing the name and logos).
+
+ (d) You may not use the names of licensors or authors for publicity
+     purposes, without explicit written permission.
+
+The letters indicate the corresponding entry in the list in Section 7 of the
+GNU GPLv3 where the term is permitted.
+
+Early releases of AndProx erroneously used the term "further restrictions"
+in a meaning that was contradictory to the GNU GPLv3.
+
+If you have any questions about these restrictions, please get in touch via
+email.

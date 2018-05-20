@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Under section 7 of the GNU General Public License v3, the following "further
- * restrictions" apply to this program:
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
  *
  *  (b) You must preserve reasonable legal notices and author attributions in
  *      the program.
@@ -91,7 +91,7 @@ public class LicenseFragment extends Fragment {
         + "You should have received a copy of the GNU General Public License "
         + "along with this program.  If not, see <http://www.gnu.org/licenses/>.\n"
         + "\n"
-        + "Under section 7 of the GNU General Public License v3, the following \"further restrictions\" apply to this program:\n"
+        + "Under section 7 of the GNU General Public License v3, the following additional terms apply to this program:\n"
         + "\n"
         + "(b) You must preserve reasonable legal notices and author attributions in the program.\n"
         + "(c) You must not misrepresent the origin of this program, and need to mark modified versions in reasonable ways as different from the original version (such as changing the name and logos).\n"

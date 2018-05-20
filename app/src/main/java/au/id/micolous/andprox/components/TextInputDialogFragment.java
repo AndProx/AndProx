@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Under section 7 of the GNU General Public License v3, the following "further
- * restrictions" apply to this program:
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
  *
  *  (b) You must preserve reasonable legal notices and author attributions in
  *      the program.
@@ -47,7 +47,7 @@ import android.widget.TextView;
 import au.id.micolous.andprox.R;
 
 /**
- * Created by michael on 29/12/16.
+ * A pop-up fragment that allows for input of text.
  */
 
 public class TextInputDialogFragment extends DialogFragment {
@@ -88,20 +88,14 @@ public class TextInputDialogFragment extends DialogFragment {
         summary.setText(mSummaryRes);
 
         builder.setView(v)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Fire the save event back
-                        EditText text = (EditText)TextInputDialogFragment.this.getDialog().findViewById(R.id.text);
-                        mListener.onDialogPositiveClick(TextInputDialogFragment.this, text.getText().toString());
-                    }
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    // Fire the save event back
+                    EditText text = (EditText)TextInputDialogFragment.this.getDialog().findViewById(R.id.text);
+                    mListener.onDialogPositiveClick(TextInputDialogFragment.this, text.getText().toString());
                 })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        TextInputDialogFragment.this.getDialog().cancel();
-                        mListener.onDialogNegativeClick(TextInputDialogFragment.this);
-                    }
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    TextInputDialogFragment.this.getDialog().cancel();
+                    mListener.onDialogNegativeClick(TextInputDialogFragment.this);
                 });
         return builder.create();
     }

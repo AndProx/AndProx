@@ -180,10 +180,24 @@ There are some platform-specific differences:
 2. AndProx connects to the PM3's USB serial device using `usb-serial-for-android`, and wraps the
    connection in `NativeSerialWrapper`.
 
-3. AndProx calls `Natives.setSerialPort(NativeSerialWrapper)`.
+3. AndProx calls `Natives.startReaderThread(NativeSerialWrapper)`.
 
-4. `setSerialPort` calls out to `uart_android_open`, and sets up a `serial_port` struct with
-   references to the Java object for use in JNI.
+4. `startReaderThread` calls out to `OpenProxmarkAndroid`, a helper function used for driving PM3's
+   `OpenProxmark` function:
+
+   1. `OpenProxmarkAndroid` calls `uart_android_open`, and sets up a `serial_port_android` struct
+      with references to the Java object for use in JNI, and the JVM.
+
+   2. `OpenProxmarkAndroid` calls `OpenProxmark` with a `serial_port_android` struct (rather than
+      `char*`) for a port path.
+
+   3. `OpenProxmark` calls our dummy `uart_open` function, which just returns the
+      `serial_port_android` exactly as it got it. We need to do this because the signature of the
+      `uart_open` doesn't allow arbitrary data to be sent as part of a setup process.
+
+   4. `OpenProxmark` starts up the worker thread and global state in the PM3 client.
+
+At this point, PM3 will be pumping the serial device for events.
 
 ## Commands
 
@@ -218,9 +232,10 @@ A typical command follows this process:
 13. AndProx `uart_android.c` polls `NativeSerialWrapper` over JNI, and converts Java types back into
     standard C types.
 
-14. `uart_receiver` stores the command in a buffer, where it can later be collected in
-    `WaitForResponse`.
+14. `uart_receiver` stores the command in a buffer.
 
+15. The command can then handle the event with `WaitForResponse`, and pull the data back into the UI
+    thread.
 
 
 [1]: https://git-scm.com/book/en/v2/Git-Tools-Submodules

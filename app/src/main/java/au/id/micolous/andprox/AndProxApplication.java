@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Under section 7 of the GNU General Public License v3, the following "further
- * restrictions" apply to this program:
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
  *
  *  (b) You must preserve reasonable legal notices and author attributions in
  *      the program.
@@ -38,7 +38,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
-import java.io.File;
 import java.util.Locale;
 
 import au.id.micolous.andprox.natives.Natives;
@@ -46,7 +45,6 @@ import au.id.micolous.andprox.natives.Natives;
 /**
  * AndProx application reference.
  */
-
 public class AndProxApplication extends Application {
     private static AndProxApplication sInstance;
     private String mExtraDeviceInfo = "";
@@ -82,38 +80,14 @@ public class AndProxApplication extends Application {
         return sInstance;
     }
 
-    private static String formatBytes(long bytes) {
-        if (bytes < 1024) {
-            return String.format(Locale.ENGLISH, "%d bytes", bytes);
-        }
-
-        double fbytes = bytes / 1024.0;
-        if (fbytes < 1024) {
-            return String.format(Locale.ENGLISH, "%.1f KiB", fbytes);
-        }
-
-        fbytes /= 1024.0;
-        if (fbytes < 1024) {
-            return String.format(Locale.ENGLISH, "%.1f MiB", fbytes);
-        }
-
-        fbytes /= 1024.0;
-        if (fbytes < 1024) {
-            return String.format(Locale.ENGLISH, "%.1f GiB", fbytes);
-        }
-
-        fbytes /= 1024.0;
-        return String.format(Locale.ENGLISH, "%.1f TiB", fbytes);
-    }
-
     private static String formatMemoryInfo(ActivityManager.MemoryInfo mi) {
         if (mi == null) {
             return "null";
         }
 
         return String.format(Locale.ENGLISH, "%s (%s free)",
-                formatBytes(mi.totalMem),
-                formatBytes(mi.availMem));
+                Utils.formatBytes(mi.totalMem),
+                Utils.formatBytes(mi.availMem));
     }
 
     /**

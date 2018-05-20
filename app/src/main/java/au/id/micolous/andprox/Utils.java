@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Under section 7 of the GNU General Public License v3, the following "further
- * restrictions" apply to this program:
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
  *
  *  (b) You must preserve reasonable legal notices and author attributions in
  *      the program.
@@ -32,6 +32,8 @@ package au.id.micolous.andprox;
 import android.content.res.Resources;
 import android.support.annotation.PluralsRes;
 import android.support.annotation.StringRes;
+
+import java.util.Locale;
 
 /**
  * Helper utilities in AndProx
@@ -63,5 +65,29 @@ public final class Utils {
     public static String localizePlural(@PluralsRes int pluralResource, int quantity, Object... formatArgs) {
         Resources res = AndProxApplication.getInstance().getResources();
         return res.getQuantityString(pluralResource, quantity, formatArgs);
+    }
+
+    public static String formatBytes(long bytes) {
+        if (bytes < 1024) {
+            return String.format(Locale.ENGLISH, "%d bytes", bytes);
+        }
+
+        double fbytes = bytes / 1024.0;
+        if (fbytes < 1024) {
+            return String.format(Locale.ENGLISH, "%.1f KiB", fbytes);
+        }
+
+        fbytes /= 1024.0;
+        if (fbytes < 1024) {
+            return String.format(Locale.ENGLISH, "%.1f MiB", fbytes);
+        }
+
+        fbytes /= 1024.0;
+        if (fbytes < 1024) {
+            return String.format(Locale.ENGLISH, "%.1f GiB", fbytes);
+        }
+
+        fbytes /= 1024.0;
+        return String.format(Locale.ENGLISH, "%.1f TiB", fbytes);
     }
 }

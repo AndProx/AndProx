@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016-2017 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Under section 7 of the GNU General Public License v3, the following "further
- * restrictions" apply to this program:
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
  *
  *  (b) You must preserve reasonable legal notices and author attributions in
  *      the program.

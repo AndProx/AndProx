@@ -1,3 +1,32 @@
+/*
+ * This file is part of AndProx, an application for using Proxmark3 on Android.
+ *
+ * Copyright 2017-2018 Michael Farrell <micolous+git@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
+ *
+ *  (b) You must preserve reasonable legal notices and author attributions in
+ *      the program.
+ *  (c) You must not misrepresent the origin of this program, and need to mark
+ *      modified versions in reasonable ways as different from the original
+ *      version (such as changing the name and logos).
+ *  (d) You may not use the names of licensors or authors for publicity
+ *      purposes, without explicit written permission.
+ */
 package au.id.micolous.andprox.natives.test;
 
 import org.junit.After;
@@ -26,8 +55,6 @@ import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-
 /**
  * This test case mocks out NativeSerialWrapper in order to make a virtual PM3 device, which can
  * respond to CMD_VERSION.  It will then spin up the PM3 client in JNI with this mocked
@@ -50,38 +77,32 @@ public class HardwareCommsTest {
         MockitoAnnotations.initMocks(this);
 
         when(mNativeSerialWrapper.send(argThat(new UsbCommandMatcher(CMD_VERSION))))
-                .thenAnswer(new Answer<Boolean>() {
-                    @Override
-                    public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                        versionPending = true;
-                        return true;
-                    }
+                .thenAnswer(invocation -> {
+                    versionPending = true;
+                    return true;
                 });
 
         when(mNativeSerialWrapper.receive(any(byte[].class)))
-                .thenAnswer(new Answer<Integer>() {
-                    @Override
-                    public Integer answer(InvocationOnMock invocation) throws Throwable {
-                        if (versionPending) {
-                            versionPending = false;
+                .thenAnswer(invocation -> {
+                    if (versionPending) {
+                        versionPending = false;
 
-                            byte[] buffer = invocation.getArgument(0);
+                        byte[] buffer = invocation.getArgument(0);
 
-                            // Copy a reply into the buffer.
-                            Arrays.fill(buffer, (byte)0);
-                            ByteBuffer bb = ByteBuffer.wrap(buffer);
-                            bb.order(ByteOrder.LITTLE_ENDIAN);
-                            bb.putLong(CMD_ACK);
-                            bb.putLong(0x270B0A40); // AT91SAM7S512 Rev A
-                            bb.putLong(0x100); // 512 bytes used
-                            bb.putLong(0); // unused value
-                            // Whatever we write next is printed to the log.
-                            bb.put("hello HardwareCommsTest".getBytes(Charset.forName("UTF-8")));
-                            return UsbCommandMatcher.USB_COMMAND_LENGTH;
-                        }
-
-                        return null;
+                        // Copy a reply into the buffer.
+                        Arrays.fill(buffer, (byte)0);
+                        ByteBuffer bb = ByteBuffer.wrap(buffer);
+                        bb.order(ByteOrder.LITTLE_ENDIAN);
+                        bb.putLong(CMD_ACK);
+                        bb.putLong(0x270B0A40); // AT91SAM7S512 Rev A
+                        bb.putLong(0x100); // 512 bytes used
+                        bb.putLong(0); // unused value
+                        // Whatever we write next is printed to the log.
+                        bb.put("hello HardwareCommsTest".getBytes(Charset.forName("UTF-8")));
+                        return UsbCommandMatcher.USB_COMMAND_LENGTH;
                     }
+
+                    return null;
                 });
 
         Natives.initProxmark();

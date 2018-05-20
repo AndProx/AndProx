@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Under section 7 of the GNU General Public License v3, the following "further
- * restrictions" apply to this program:
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
  *
  *  (b) You must preserve reasonable legal notices and author attributions in
  *      the program.
@@ -27,7 +27,6 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-
 package au.id.micolous.andprox.natives;
 
 import android.os.Environment;

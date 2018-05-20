@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * Under section 7 of the GNU General Public License v3, the following "further
- * restrictions" apply to this program:
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
  *
  *  (b) You must preserve reasonable legal notices and author attributions in
  *      the program.
@@ -31,17 +31,13 @@
 apply plugin: 'com.android.library'
 
 dependencies {
+    testCompile 'org.mockito:mockito-core:2.18.3'
 
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.0') {
-        exclude group: 'javax.inject'
-    }
-    testCompile 'org.mockito:mockito-core:2.18.3'
+    androidTestCompile 'org.jetbrains:annotations:15.0'
     androidTestCompile 'org.mockito:mockito-android:2.18.3'
-//    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
 
     compile 'commons-io:commons-io:2.5'
-
     compile project(':usb-serial-for-android')
 }
 
@@ -68,18 +64,26 @@ task copyHardnestedTables(type: Copy) {
 }
 
 android {
-    // In the context of NDK, the target API level is the MINIMUM API level.
-    // As a result, this library needs to shoot pretty low.
-    // We currently target 21:
-    // - usb-serial-android supports API 19+
-    // - to support all the arches, we need at least API 21+
-    //
-    // https://android.googlesource.com/platform/ndk/+/master/docs/user/common_problems.md#target-api-set-higher-than-device-api
+    /*
+     * In the context of NDK, the compile and target API levels are the MINIMUM API level.
+     *
+     * As a result, this library (natives) needs to shoot pretty low.
+     *
+     * We currently target API 21 as:
+     * - usb-serial-android supports API 19+
+     * - 64-bit architecture support requires API 21+
+     *
+     * For more context, see the NDK platform documentation at:
+     * https://android.googlesource.com/platform/ndk/+/master/docs/user/common_problems.md#target-api-set-higher-than-device-api
+     *
+     * The rest of AndProx can target higher API levels safely.
+     */
     compileSdkVersion 21
     buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 21
+        //noinspection OldTargetApi
         targetSdkVersion 21
         versionCode "git -C ${projectDir} rev-list --first-parent --count HEAD".execute().text.trim().toInteger()
         versionName "git -C ${projectDir} describe --always --tags --dirty".execute().text.trim().replaceAll("^v", "")
@@ -112,7 +116,11 @@ android {
             path "src/main/cmake/mainline/CMakeLists.txt"
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
-sourceCompatibility = "1.6"
-targetCompatibility = "1.6"
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

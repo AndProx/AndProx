@@ -5,7 +5,7 @@ import org.mockito.ArgumentMatcher;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Matches UsbCommand messages that we got on the wire.
