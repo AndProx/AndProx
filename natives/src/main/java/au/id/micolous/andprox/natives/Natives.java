@@ -82,22 +82,9 @@ public class Natives {
     public native static void initProxmark();
 
     /**
-     * Sets the serial port to be used by the Proxmark3 client, and sets the client to "online"
-     * mode.
-     * @param nsw A NativeSerialWrapper which wraps a serial port connection.
-     */
-    public native static void setSerialPort(NativeSerialWrapper nsw);
-
-    /**
-     * Unsets the serial port to be used by the Proxmark3 client, and sets the client to "offline"
-     * mode.
-     */
-    public native static void unsetSerialPort();
-
-    /**
      * Starts a reader thread to pump events from the PM3.
      */
-    public native static void startReaderThread();
+    public native static void startReaderThread(NativeSerialWrapper nsw);
 
     /**
      * Stops the reader thread pumping events from the PM3.

@@ -154,7 +154,6 @@ add_library(natives SHARED
             ${PM3_ROOT}/client/util.c
             ${PM3_ROOT}/client/util_posix.c
             ${PM3_ROOT}/client/comms.c
-            ${PM3_ROOT}/client/data.c
 
             ${PM3_ROOT}/common/crapto1/crapto1.c
             ${PM3_ROOT}/common/crapto1/crypto1.c

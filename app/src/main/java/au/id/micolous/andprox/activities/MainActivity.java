@@ -326,7 +326,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public void btnOfflineMode(View view) {
         Natives.initProxmark();
-        Natives.unsetSerialPort();
 
         Intent intent = new Intent(MainActivity.this, CliActivity.class);
         startActivity(intent);

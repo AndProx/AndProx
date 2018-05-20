@@ -9,4 +9,4 @@
 [submodule "third_party/proxmark3"]
 	path = third_party/proxmark3
 	url = https://github.com/micolous/proxmark3.git
-	branch = android-hacks
+	branch = prep_micolous_part4

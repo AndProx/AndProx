@@ -6,6 +6,7 @@ import android.test.suitebuilder.annotation.LargeTest;
 
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.natives.Resources;
+import au.id.micolous.andprox.natives.test.utils.LogSink;
 
 /**
  * Test hardnested attacks.

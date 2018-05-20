@@ -125,7 +125,6 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
                     if (device != null) {
                         Log.e(TAG, "USB device disconnected");
                         Natives.stopReaderThread();
-                        Natives.unsetSerialPort();
 
                         // Lock the edit field to indicate we can't run
                         etCommandInput.setEnabled(false);

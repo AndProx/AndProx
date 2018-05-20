@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -36,6 +36,9 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.0') {
         exclude group: 'javax.inject'
     }
+    testCompile 'org.mockito:mockito-core:2.18.3'
+    androidTestCompile 'org.mockito:mockito-android:2.18.3'
+//    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
 
     compile 'commons-io:commons-io:2.5'
 

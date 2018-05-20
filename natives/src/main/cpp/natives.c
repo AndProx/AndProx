@@ -48,11 +48,12 @@
 #error "Expected PM3_TS to be defined"
 #endif
 
-
 UsbCommand versionResp = {0, {0, 0, 0}};
-receiver_arg conn;
-pthread_t reader_thread;
 
+bool OpenProxmarkAndroid(JNIEnv* env, JavaVM* vm, jobject nsw) {
+    serial_port* sp = uart_open_android(env, vm, nsw);
+    return OpenProxmark((char *)sp, /* waitCOMPort */ false, /* timeout */ 0, /* flash_mode */ false);
+}
 
 JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass type) {
@@ -66,56 +67,23 @@ Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass typ
 
     memset((void*)(&versionResp), 0, sizeof(versionResp));
     SetLogFilename(NULL);
-    SetSerialPort(NULL);
     SetOffline(true);
-
     // TODO: reset more stuff here
 }
 
-JNIEXPORT void JNICALL
-Java_au_id_micolous_andprox_natives_Natives_setSerialPort(JNIEnv *env, jclass type,
-                                                          jobject nsw) {
-    // TODO: Handle conn->recv_lock
-    serial_port* old_sp = GetSerialPort();
-
-    // Setup the new serial port
-    serial_port* new_sp = uart_open_android(env, g_ctx.javaVM, nsw);
-    SetSerialPort(new_sp);
-    SetOffline(false);
-
-    if (old_sp != NULL) {
-    // Free the existing serialport ref
-        free(old_sp);
-    }
-}
 
 JNIEXPORT void JNICALL
-Java_au_id_micolous_andprox_natives_Natives_unsetSerialPort(JNIEnv *env, jclass type) {
-// TODO: Handle conn->recv_lock
-    serial_port* old_sp = GetSerialPort();
-
-    if (old_sp == NULL) {
-        return;
-    }
-
-    SetSerialPort(NULL);
-    SetOffline(true);
-    free(old_sp);
-}
-
-JNIEXPORT void JNICALL
-Java_au_id_micolous_andprox_natives_Natives_startReaderThread(JNIEnv *env, jclass type) {
+Java_au_id_micolous_andprox_natives_Natives_startReaderThread(JNIEnv *env, jclass type, jobject nsw) {
     LOGI("starting reader thread");
-    memset(&conn, 0, sizeof(receiver_arg));
-    pthread_mutex_init(&conn.recv_lock, NULL);
-    conn.run = true;
-    pthread_create(&reader_thread, NULL, &uart_receiver, &conn);
+    SetOffline(false);
+    OpenProxmarkAndroid(env, g_ctx.javaVM, nsw);
 }
 
 JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_stopReaderThread(JNIEnv *env, jclass type) {
     LOGI("asking reader thread to stop");
-    conn.run = false;
+    CloseProxmark();
+    SetOffline(true);
 }
 
 

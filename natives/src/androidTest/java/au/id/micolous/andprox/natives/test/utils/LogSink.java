@@ -1,4 +1,4 @@
-package au.id.micolous.andprox.natives.test;
+package au.id.micolous.andprox.natives.test.utils;
 
 import android.test.suitebuilder.annotation.Suppress;
 

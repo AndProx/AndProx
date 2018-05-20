@@ -143,8 +143,7 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
 
             NativeSerialWrapper nsw = new NativeSerialWrapper(port);
             Natives.initProxmark();
-            Natives.setSerialPort(nsw);
-            Natives.startReaderThread();
+            Natives.startReaderThread(nsw);
 
             Natives.sendCmdVersion();
             success = true;

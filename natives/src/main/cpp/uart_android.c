@@ -33,6 +33,19 @@
 #include <uart.h>
 #include <jni.h>
 
+/**
+ * Dummy function for OpenProxmark. We need to be able to throw different parameters for Android's
+ * implementation, because we don't actually have a path to a port. This simply returns the given
+ * "port name", so that OpenProxmark will set the internal serial port structure appropriately.
+ *
+ * We already are presumed to have handled a number of connection-related errors before actually
+ * calling OpenProxmark, so this does ~nothing.
+ * @param pcPortName Pointer to an opened serial_port_android
+ * @return
+ */
+serial_port uart_open(const char* pcPortName) {
+    return (serial_port)pcPortName;
+}
 
 serial_port uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw)
 {
@@ -51,9 +64,10 @@ void uart_close(const serial_port sp) {
 
     (*env)->CallVoidMethod(env, spa->nativeSerialWrapper, g_ctx.jmNSWClose);
     (*env)->DeleteGlobalRef(env, spa->nativeSerialWrapper);
+    free(spa);
 }
 
-bool uart_receive(const serial_port sp, byte_t* pbtRx, size_t pszMaxRxLen, size_t* pszRxLen) {
+bool uart_receive(const serial_port sp, uint8_t* pbtRx, size_t pszMaxRxLen, size_t* pszRxLen) {
     serial_port_android* spa = (serial_port_android*)sp;
     //PrintAndLog("uart_recieve(%d)", pszMaxRxLen);
     if (spa == NULL) return false;
@@ -89,7 +103,7 @@ bool uart_receive(const serial_port sp, byte_t* pbtRx, size_t pszMaxRxLen, size_
     return true;
 }
 
-bool uart_send(const serial_port sp, const byte_t* pbtTx, const size_t szTxLen) {
+bool uart_send(const serial_port sp, const uint8_t* pbtTx, const size_t szTxLen) {
     serial_port_android* spa = (serial_port_android*)sp;
     //PrintAndLog("uart_send(%d)", szTxLen);
     if (spa == NULL) return false;

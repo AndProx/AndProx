@@ -17,6 +17,7 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include <comms.h>
 #include "proxmark3.h"
 #include "usb_cmd.h"
 #include "cmdmain.h"

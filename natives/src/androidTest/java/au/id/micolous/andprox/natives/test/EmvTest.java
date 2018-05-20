@@ -2,7 +2,8 @@ package au.id.micolous.andprox.natives.test;
 
 import android.test.suitebuilder.annotation.LargeTest;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import au.id.micolous.andprox.natives.Natives;
 
@@ -10,14 +11,14 @@ import au.id.micolous.andprox.natives.Natives;
  * Runs EMV self-tests
  */
 
-public class EmvTest extends TestCase {
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+public class EmvTest {
+    @Before
+    public void setUp() throws Exception {
 
         Natives.initProxmark();
     }
 
+    @Test
     @LargeTest
     public void testEmv() {
         Natives.sendCmd("hf emv test");
