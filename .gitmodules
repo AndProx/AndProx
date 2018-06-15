@@ -9,4 +9,4 @@
 [submodule "third_party/proxmark3"]
 	path = third_party/proxmark3
 	url = https://github.com/micolous/proxmark3.git
-	branch = prep_micolous_part4
+	branch = pwpiwi-607-fix2
