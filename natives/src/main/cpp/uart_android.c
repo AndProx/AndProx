@@ -1,4 +1,4 @@
-#include <stdint.h>/*
+/*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
  * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
@@ -32,6 +32,7 @@
 #include "natives.h"
 #include <uart.h>
 #include <jni.h>
+#include <stdint.h>
 
 /**
  * Internal pointer used to pass the current serial port back through uart_open.
