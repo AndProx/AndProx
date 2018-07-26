@@ -279,6 +279,7 @@ target_include_directories(natives PRIVATE
 
 target_compile_definitions(natives PRIVATE
     EXTERNAL_PRINTANDLOG
+    NO_UNLINK
     PM3_GIT_VER="${PM3_GIT_VER}"
     PM3_TS="${PM3_TS}")
 
