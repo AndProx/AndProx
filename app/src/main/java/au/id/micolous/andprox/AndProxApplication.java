@@ -101,8 +101,10 @@ public class AndProxApplication extends Application {
 
         try {
             ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
-            mi = new ActivityManager.MemoryInfo();
-            am.getMemoryInfo(mi);
+            if (am != null) {
+                mi = new ActivityManager.MemoryInfo();
+                am.getMemoryInfo(mi);
+            }
         } catch (Exception e) {
             Log.w(TAG, "Error getting memory information", e);
             mi = null;
@@ -114,8 +116,9 @@ public class AndProxApplication extends Application {
                         "Build timestamp: %s\n" +
                         "Model: %s (%s)\n" +
                         "Manufacturer: %s (%s)\n" +
-                        "RAM: %s\n"+
-                        "Android OS: %s (%s)\n\n" +
+                        "RAM: %s\n" +
+                        "Android OS: %s (API %d)\n" +
+                        "Android Build: %s\n\n" +
                         "USB Host: %s\n" +
                         "%s", // extra device info
                 // Version:
@@ -132,6 +135,8 @@ public class AndProxApplication extends Application {
                 formatMemoryInfo(mi),
                 // OS:
                 Build.VERSION.RELEASE,
+                Build.VERSION.SDK_INT,
+                // Build:
                 Build.ID,
                 // USB:
                 hasUsbHostSupport() ? "yes" : "no",
