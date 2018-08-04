@@ -32,27 +32,41 @@
 #include "natives.h"
 #include <uart.h>
 #include <jni.h>
+#include <stdint.h>
 
 /**
- * Dummy function for OpenProxmark. We need to be able to throw different parameters for Android's
- * implementation, because we don't actually have a path to a port. This simply returns the given
- * "port name", so that OpenProxmark will set the internal serial port structure appropriately.
+ * Internal pointer used to pass the current serial port back through uart_open.
+ */
+static serial_port_android* android_serial_port = NULL;
+
+/**
+ * This returns a copy of the serial_port pointer set by uart_open_android.
  *
- * We already are presumed to have handled a number of connection-related errors before actually
- * calling OpenProxmark, so this does ~nothing.
+ * OpenProxmark calls this, but we need to be able to use different parameter types for the
+ * Android environment.
+ *
+ * As far as OpenProxmark is concerned, we always returned "success".
  * @param pcPortName Pointer to an opened serial_port_android
  * @return
  */
-serial_port uart_open(const char* pcPortName) {
-    return (serial_port)pcPortName;
+serial_port uart_open(const char __unused * pcPortName) {
+    // Note: `serial_port` is a pointer type
+    return (serial_port)android_serial_port;
 }
 
-serial_port uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw)
+/**
+ * Sets up an environment with variables specific to our Android serial port implementation.
+ * @param env A JNIEnv* describing the Java Native Interface environment.
+ * @param vm A JavaVM* describing the Java Virtual Machine.
+ * @param nsw A JNI reference to an object which implements NativeSerialWrapper.
+ * @return
+ */
+void uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw)
 {
     serial_port_android* sp = malloc(sizeof(serial_port_android));
     sp->javaVM = vm;
     sp->nativeSerialWrapper = (*env)->NewGlobalRef(env, nsw);
-    return sp;
+    android_serial_port = sp;
 }
 
 void uart_close(const serial_port sp) {

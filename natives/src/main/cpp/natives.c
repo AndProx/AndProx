@@ -48,11 +48,13 @@
 #error "Expected PM3_TS to be defined"
 #endif
 
+#define SERIAL_PORT_LABEL "AndProx virtual serial port"
+
 UsbCommand versionResp = {0, {0, 0, 0}};
 
 bool OpenProxmarkAndroid(JNIEnv* env, JavaVM* vm, jobject nsw) {
-    serial_port* sp = uart_open_android(env, vm, nsw);
-    return OpenProxmark((char *)sp, /* waitCOMPort */ false, /* timeout */ 0, /* flash_mode */ false);
+    uart_open_android(env, vm, nsw);
+    return OpenProxmark(SERIAL_PORT_LABEL, /* waitCOMPort */ false, /* timeout */ 0, /* flash_mode */ false);
 }
 
 JNIEXPORT void JNICALL

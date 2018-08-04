@@ -31,14 +31,14 @@
 apply plugin: 'com.android.library'
 
 dependencies {
-    testCompile 'org.mockito:mockito-core:2.18.3'
+    testImplementation 'org.mockito:mockito-core:2.18.3'
 
-    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
-    androidTestCompile 'org.jetbrains:annotations:15.0'
-    androidTestCompile 'org.mockito:mockito-android:2.18.3'
+    androidTestImplementation 'com.android.support.test:testing-support-lib:0.1'
+    androidTestImplementation 'org.jetbrains:annotations:15.0'
+    androidTestImplementation 'org.mockito:mockito-android:2.18.3'
 
-    compile 'commons-io:commons-io:2.5'
-    compile project(':usb-serial-for-android')
+    implementation 'commons-io:commons-io:2.5'
+    implementation project(':usb-serial-for-android')
 }
 
 task copyScripts(type: Copy) {
@@ -79,7 +79,7 @@ android {
      * The rest of AndProx can target higher API levels safely.
      */
     compileSdkVersion 21
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 21
@@ -87,7 +87,7 @@ android {
         targetSdkVersion 21
         versionCode "git -C ${projectDir} rev-list --first-parent --count HEAD".execute().text.trim().toInteger()
         versionName "git -C ${projectDir} describe --always --tags --dirty".execute().text.trim().replaceAll("^v", "")
-        ndk.abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        ndk.abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {

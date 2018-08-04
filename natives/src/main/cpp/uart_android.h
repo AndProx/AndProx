@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016-2017 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -39,7 +39,7 @@ typedef struct {
     jobject nativeSerialWrapper;
 } serial_port_android;
 
-serial_port uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw);
+void uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw);
 
 
 #endif //ANDPROX_ANDROID_UART_H
