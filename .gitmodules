@@ -8,6 +8,6 @@
 	branch = master
 [submodule "third_party/proxmark3"]
 	path = third_party/proxmark3
-	url = https://github.com/micolous/proxmark3.git
+	url = https://github.com/proxmark/proxmark3.git
 	branch = andprox-master
 
