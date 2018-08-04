@@ -93,7 +93,7 @@ public class Natives {
     /**
      * Sends "hw version" (get hardware version).  Currently does not return this data...
      */
-    public native static void sendCmdVersion();
+    public native static String sendCmdVersion();
 
     /**
      * Sends an arbitrary command to the PM3 library.

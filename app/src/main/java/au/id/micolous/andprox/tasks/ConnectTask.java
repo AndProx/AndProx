@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import au.id.micolous.andprox.ProxmarkVersion;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.activities.CliActivity;
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
@@ -174,7 +175,11 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
             Natives.initProxmark();
             Natives.startReaderThread(nsw);
 
-            Natives.sendCmdVersion();
+            String version = Natives.sendCmdVersion();
+
+            // Check if this version is good for us.
+            ProxmarkVersion v = ProxmarkVersion.parse(version);
+
             success = true;
 
                 /*
