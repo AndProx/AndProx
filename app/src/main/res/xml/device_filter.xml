@@ -39,8 +39,7 @@
 
     <!--
     2d2d:504d - Proxmark3 (old)
-    Don't include this, as this firmware is quite old and not compatible with 3.0.0. Users can still
-    manually connect, but it just won't auto-start.
+    Don't include this, as this firmware is quite old and not compatible with 3.0.0.
 
     This is still used on devices that haven't had a bootloader reflash.
 

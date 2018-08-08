@@ -76,6 +76,12 @@
     <string name="intro_text_default">Connect the Proxmark3 to your device’s USB port. Wait 10 seconds after the device has finished booting (all lights have turned on then off) before attempting to connect.</string>
     <string name="intro_text_usb_detected">Proxmark3 detected! Hit Connect to begin.</string>
     <string name="intro_text_old_pm3">Old Proxmark3 firmware detected. Please use a PC to reflash to current firmware.</string>
+
+    <string name="reflash_required_title">Proxmark3 firmware update required</string>
+    <!-- %s is a substitute for the current version -->
+    <string name="reflash_required_message">Please use a PC to reflash to the official proxmark.org firmware (%s).</string>
+    <string name="instructions">Instructions</string>
+
     <string name="tune_antennas">Tune antennas</string>
     <string name="tuning_antenna">Tuning antenna</string>
     <string name="tuning_antenna_desc">This will take a few seconds</string>

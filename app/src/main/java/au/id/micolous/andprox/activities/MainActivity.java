@@ -40,6 +40,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -161,9 +162,11 @@ public class MainActivity extends AppCompatActivity {
         TextView tvIntroText = findViewById(R.id.tvIntroText);
         if (!AndProxApplication.hasUsbHostSupport()) {
             tvIntroText.setText(R.string.no_usb_host);
+            findViewById(R.id.btnConnect).setEnabled(false);
             return;
         }
 
+        findViewById(R.id.btnConnect).setEnabled(true);
         AndProxApplication app = AndProxApplication.getInstance();
 
         if (app.isProxmarkDetected()) {
@@ -225,7 +228,6 @@ public class MainActivity extends AppCompatActivity {
             manager.requestPermission(device, mPermissionIntent);
         } else {
             Log.e(TAG, "no USB host support!");
-            findViewById(R.id.btnConnect).setEnabled(false);
             updateIntroText();
 
             if (!mDismissUSBHostSupport) {
@@ -311,6 +313,13 @@ public class MainActivity extends AppCompatActivity {
      * Attempt to connect to the proxmark
      */
     public void btnConnect(View view) {
+        AndProxApplication app = AndProxApplication.getInstance();
+
+        if (app.isOldProxmarkDetected()) {
+            unsupportedFirmwareError(MainActivity.this);
+            return;
+        }
+
         if (AndProxApplication.hasUsbHostSupport()) {
             // If passed with a view, then we are called from the button.
             new ConnectTask(this).execute(view != null);
@@ -326,5 +335,25 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, CliActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    /**
+     * Show an error that the firmware version is unsupported.
+     * @param context Context of where we were called from.
+     */
+    public static void unsupportedFirmwareError(@NonNull Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(R.string.reflash_required_message)
+                .setTitle(R.string.reflash_required_title)
+                .setPositiveButton(R.string.instructions, (dialog, which) -> {
+                    context.startActivity(
+                            new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Proxmark/proxmark3/wiki/flashing")));
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setCancelable(false);
+        builder.show();
     }
 }
