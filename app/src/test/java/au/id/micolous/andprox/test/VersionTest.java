@@ -15,7 +15,19 @@ import static org.junit.Assert.*;
 public class VersionTest {
     @Test
     public void testIceman() {
-        // TODO
+        String s = " [ ARM ]\n" +
+                " bootrom: master/v2.2 2015-07-31 11:28:11\n" +
+                "      os: iceman/master/ice_v3.1.0-1032-g60f1610f-dirty-unclean 2018-09-02 21:41:35\n" +
+                "\n" +
+                " [ FPGA ]\n" +
+                " LF image built for 2s30vq100 on 2017/10/25 at 19:50:50\n" +
+                " HF image built for 2s30vq100 on 2018/ 8/10 at 11:48:34";
+
+        ProxmarkVersion v = ProxmarkVersion.parse(s);
+
+        assertNotNull(v);
+        assertEquals(ProxmarkVersion.Branch.ICEMAN, v.getBranch());
+        assertFalse(v.isSupportedVersion());
     }
 
     @Test

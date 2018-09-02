@@ -79,7 +79,7 @@
 
     <string name="reflash_required_title">Proxmark3 firmware update required</string>
     <!-- %s is a substitute for the current version -->
-    <string name="reflash_required_message">Please use a PC to reflash to the official proxmark.org firmware (%s).</string>
+    <string name="reflash_required_message">Please use a PC to reflash to the official proxmark.org firmware (%s). Third-party firmware (eg: Iceman) is not supported by this software.</string>
     <string name="instructions">Instructions</string>
 
     <string name="tune_antennas">Tune antennas</string>

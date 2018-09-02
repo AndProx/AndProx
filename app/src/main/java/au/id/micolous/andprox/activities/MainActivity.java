@@ -62,6 +62,7 @@ import java.util.Locale;
 
 import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
+import au.id.micolous.andprox.Utils;
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.tasks.ConnectTask;
 import au.id.micolous.andprox.tasks.CopyTask;
@@ -349,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public static void unsupportedFirmwareError(@NonNull Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(R.string.reflash_required_message)
+        builder.setMessage(Utils.localizeString(R.string.reflash_required_message, Natives.getProxmarkClientVersion()))
                 .setTitle(R.string.reflash_required_title)
                 .setPositiveButton(R.string.instructions, (dialog, which) -> {
                     context.startActivity(
