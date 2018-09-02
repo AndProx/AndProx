@@ -237,6 +237,9 @@ add_library(natives SHARED
             ${PM3_ROOT}/client/cmdlfviking.c
             ${PM3_ROOT}/client/cmdlfvisa2000.c
             ${PM3_ROOT}/client/cmdlfpac.c
+
+            ${PM3_ROOT}/client/cmdsmartcard.c
+
             ${PM3_ROOT}/client/cmdparser.c
             ${PM3_ROOT}/client/cmdmain.c
 
@@ -276,10 +279,32 @@ target_include_directories(natives PRIVATE
                            ${PM3_ROOT}/liblua
                            ${PM3_ROOT}/uart)
 
+# EXTERNAL_PRINTANDLOG and NO_UNLINK are Android-specific.
+#
+# PM3_GIT_VER and PM3_TS are variables normally set by PM3's build system which are replicated here.
+#
+# WITH_* is which modules to include, from common/Makefile_Enabled_Options.common.  We build with
+# everything in AndProx's client, so we can work on a diverse set of firmware configurations.
+#
+# We don't include WITH_GUI because it is a meaningless flag, even if we provided our own GUI. It's
+# only used to enable Qt support.
 
 target_compile_definitions(natives PRIVATE
     EXTERNAL_PRINTANDLOG
     NO_UNLINK
+
+    WITH_ISO14443a_StandAlone
+    WITH_LF
+    WITH_ISO15963
+    WITH_ISO14443a
+    WITH_ISO14443b
+    WITH_ICLASS
+    WITH_LEGICRF
+    WITH_HITAG
+    WITH_CRC
+    WITH_HFSNOOP
+    WITH_SMARTCARD
+
     PM3_GIT_VER="${PM3_GIT_VER}"
     PM3_TS="${PM3_TS}")
 
