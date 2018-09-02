@@ -40,6 +40,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -61,6 +62,7 @@ import java.util.Locale;
 
 import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
+import au.id.micolous.andprox.Utils;
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.tasks.ConnectTask;
 import au.id.micolous.andprox.tasks.CopyTask;
@@ -128,6 +130,12 @@ public class MainActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 deviceInfo.append(String.format(Locale.ENGLISH, "  Name: %s\n", d.getProductName()));
             }
+
+            if (d.getSerialNumber() != null) {
+                deviceInfo.append(String.format(Locale.ENGLISH, "  Serial: %s\n", d.getSerialNumber()));
+            } else {
+                deviceInfo.append("  Could not retrieve serial number!\n");
+            }
         }
 
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
@@ -161,9 +169,11 @@ public class MainActivity extends AppCompatActivity {
         TextView tvIntroText = findViewById(R.id.tvIntroText);
         if (!AndProxApplication.hasUsbHostSupport()) {
             tvIntroText.setText(R.string.no_usb_host);
+            findViewById(R.id.btnConnect).setEnabled(false);
             return;
         }
 
+        findViewById(R.id.btnConnect).setEnabled(true);
         AndProxApplication app = AndProxApplication.getInstance();
 
         if (app.isProxmarkDetected()) {
@@ -225,7 +235,6 @@ public class MainActivity extends AppCompatActivity {
             manager.requestPermission(device, mPermissionIntent);
         } else {
             Log.e(TAG, "no USB host support!");
-            findViewById(R.id.btnConnect).setEnabled(false);
             updateIntroText();
 
             if (!mDismissUSBHostSupport) {
@@ -311,6 +320,13 @@ public class MainActivity extends AppCompatActivity {
      * Attempt to connect to the proxmark
      */
     public void btnConnect(View view) {
+        AndProxApplication app = AndProxApplication.getInstance();
+
+        if (app.isOldProxmarkDetected()) {
+            unsupportedFirmwareError(MainActivity.this);
+            return;
+        }
+
         if (AndProxApplication.hasUsbHostSupport()) {
             // If passed with a view, then we are called from the button.
             new ConnectTask(this).execute(view != null);
@@ -326,5 +342,25 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, CliActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    /**
+     * Show an error that the firmware version is unsupported.
+     * @param context Context of where we were called from.
+     */
+    public static void unsupportedFirmwareError(@NonNull Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(Utils.localizeString(R.string.reflash_required_message, Natives.getProxmarkClientVersion()))
+                .setTitle(R.string.reflash_required_title)
+                .setPositiveButton(R.string.instructions, (dialog, which) -> {
+                    context.startActivity(
+                            new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Proxmark/proxmark3/wiki/flashing")));
+                    dialog.dismiss();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                    dialog.dismiss();
+                })
+                .setCancelable(false);
+        builder.show();
     }
 }

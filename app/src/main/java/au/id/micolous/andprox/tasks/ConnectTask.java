@@ -48,8 +48,10 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import au.id.micolous.andprox.ProxmarkVersion;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.activities.CliActivity;
+import au.id.micolous.andprox.activities.MainActivity;
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
 import au.id.micolous.andprox.natives.Natives;
 
@@ -74,6 +76,7 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
         boolean communicationError = false;
         boolean timeoutError = false;
         boolean success = false;
+        boolean unsupported = false;
 
         ConnectTaskResult setNoDevicesPresent() {
             this.noDevicesPresent = true;
@@ -103,6 +106,11 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
 
         ConnectTaskResult setSuccess() {
             this.success = true;
+            return this;
+        }
+
+        ConnectTaskResult setUnsuppported() {
+            this.unsupported = true;
             return this;
         }
     }
@@ -174,8 +182,22 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
             Natives.initProxmark();
             Natives.startReaderThread(nsw);
 
-            Natives.sendCmdVersion();
-            success = true;
+            String version = Natives.sendCmdVersion();
+
+            if (version == null) {
+                return new ConnectTaskResult().setTimeoutError();
+            }
+
+            // Check if this version is good for us.
+            ProxmarkVersion v = ProxmarkVersion.parse(version);
+            if (v != null && v.isSupportedVersion()) {
+                success = true;
+            } else {
+                Natives.stopReaderThread();
+                Natives.initProxmark();
+                return new ConnectTaskResult().setUnsuppported();
+            }
+
 
                 /*
                 dev = new ProxmarkDevice(port);
@@ -254,6 +276,8 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
                     .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss())
                     .setCancelable(false);
             builder.show();
+        } else if (result.unsupported) {
+            MainActivity.unsupportedFirmwareError(c);
         } else if (result.success) {
             // Start main activity, yay!
             Intent intent = new Intent(c, CliActivity.class);

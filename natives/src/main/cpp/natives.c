@@ -67,7 +67,6 @@ Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass typ
     showDemod = true;
     CursorScaleFactor = 1;
 
-    memset((void*)(&versionResp), 0, sizeof(versionResp));
     SetLogFilename(NULL);
     SetOffline(true);
     // TODO: reset more stuff here
@@ -78,6 +77,7 @@ JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_startReaderThread(JNIEnv *env, jclass type, jobject nsw) {
     LOGI("starting reader thread");
     SetOffline(false);
+    memset((void*)(&versionResp), 0, sizeof(versionResp));
     OpenProxmarkAndroid(env, g_ctx.javaVM, nsw);
 }
 
@@ -156,9 +156,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
     return JNI_VERSION_1_6;
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jstring JNICALL
 Java_au_id_micolous_andprox_natives_Natives_sendCmdVersion(JNIEnv *env, jclass type) {
 // CmdVersion keeps its own cache, so we should reimplement here a little...
+    jstring s = NULL;
 
     clearCommandBuffer();
     UsbCommand c = {CMD_VERSION};
@@ -169,6 +170,7 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdVersion(JNIEnv *env, jclass t
             PrintAndLog("Prox/RFID mark3 RFID instrument");
             PrintAndLog((char*)versionResp.d.asBytes);
 
+            s = (*env)->NewStringUTF(env, (char*)versionResp.d.asBytes);
             // TODO: Implement lookupChipID
             //lookupChipID(resp.arg[0], resp.arg[1]);
         } else {
@@ -179,8 +181,10 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdVersion(JNIEnv *env, jclass t
         PrintAndLog("Prox/RFID mark3 RFID instrument");
         PrintAndLog((char*)versionResp.d.asBytes);
         //lookupChipID(resp.arg[0], resp.arg[1]);
-        PrintAndLog("");
+        s = (*env)->NewStringUTF(env, (char*)versionResp.d.asBytes);
     }
+
+    return s;
 }
 
 JNIEXPORT void JNICALL
@@ -279,7 +283,5 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdTune__ZZ(JNIEnv *env, jclass 
 
 JNIEXPORT jboolean JNICALL
 Java_au_id_micolous_andprox_natives_Natives_isOffline(JNIEnv *env, jclass type) {
-
     return (jboolean) IsOffline();
-
 }
