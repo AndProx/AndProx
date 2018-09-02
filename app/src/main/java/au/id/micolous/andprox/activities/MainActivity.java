@@ -129,6 +129,12 @@ public class MainActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 deviceInfo.append(String.format(Locale.ENGLISH, "  Name: %s\n", d.getProductName()));
             }
+
+            if (d.getSerialNumber() != null) {
+                deviceInfo.append(String.format(Locale.ENGLISH, "  Serial: %s\n", d.getSerialNumber()));
+            } else {
+                deviceInfo.append("  Could not retrieve serial number!\n");
+            }
         }
 
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
