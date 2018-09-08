@@ -155,6 +155,9 @@ add_library(natives SHARED
             ${PM3_ROOT}/client/util_posix.c
             ${PM3_ROOT}/client/comms.c
 
+            ${PM3_ROOT}/client/cliparser/argtable3.c
+            ${PM3_ROOT}/client/cliparser/cliparser.c
+
             ${PM3_ROOT}/common/crapto1/crapto1.c
             ${PM3_ROOT}/common/crapto1/crypto1.c
             ${PM3_ROOT}/common/polarssl/des.c
