@@ -7,8 +7,9 @@ In this file, you'll find:
 
 * [Getting the code](#getting-the-code) from the git repository.
 
-* [Testing / Developing AndProx](#developing--testing-andprox), including how to debug on
-  [virtual](#with-an-emulator) and [physical hardware](#with-physical-hardware).
+* [Testing / Developing AndProx](#developing--testing-andprox), including [solutions for common
+  build issues][#common-build-issues], and how to debug with [virtual](#with-an-emulator) and
+  [physical hardware](#with-physical-hardware).
 
 * [Code Layout](#code-layout), including AndProx-specific PM3 client functionality, and [key
   differences between AndProx and upstream PM3](#key-differences).
@@ -26,12 +27,107 @@ $ git clone --recurse-submodules https://github.com/AndProx/AndProx.git
 Shallow clones won't work.  If you see missing compile dependencies (eg: `:GraphView`,
 `:usb-serial-for-android`) from Gradle, you probably haven't pulled the submodules.
 
+**Do not download ZIP files from GitHub.** `git` is used to tag parts of the build process, and its
+metadata is _required._
+
+> **Note:** GitHub's "Download ZIP" and using `git clone` without `--recurse-submodules` do not
+> download submodules.
+
 # Testing / developing AndProx
 
 AndProx can be imported into Android Studio using the Gradle files provided in this project.  Do not
 check in Android Studio project files into the source repository.
 
-## With an emulator
+You will need to install the following modules from [Android SDK Manager][4]:
+
+* Android SDK Platform 21
+* Android SDK Platform 27
+* Android Build Tools 27.0.3
+* CMake
+* LLDB
+* NDK
+
+You will also need the `git` command-line tool, but you already have this as you checked out the
+code from `git`, right?
+
+## Building AndProx and PM3 client
+
+You should be able to build the `:app` module in Android Studio, or use `./gradlew` to build the
+`:app` project, and get an APK with nearly everything in it.
+
+The default configuration will build for both 32 and 64-bit ARM and x86 systems, which should cover
+most Android devices.
+
+Android hardware with a MIPS processor is not supported, because MIPS support was dropped from the
+Android NDK when arm64 support was added.
+
+## Building firmware
+
+AndProx's build process does not currently produce firmware (patches welcome!), and cannot flash
+firmware on the device.  You'll need to build and flash it with your PC.
+
+You'll need to install [Proxmark3's dependencies][5], which includes an ARM toolchain.  The ARM
+toolchain in the Android NDK won't let you build firmware.
+
+You can then build the firmware and the flasher using Proxmark3's build system:
+
+```
+cd third_party/proxmark3
+make armsrc/obj/fullimage.elf client/flasher
+```
+
+See [the instructions on the Proxmark3 wiki for more details about flashing][6].
+
+> **Note:** You only need to ensure the _firmware_ matches the version used by AndProx.
+>
+> _There is no need to reflash the bootloader for AndProx._ AndProx can't reflash your device.
+>
+> _Do not reflash the bootloader, except using PM3's official version._ Improperly reflashing the
+> bootloader can brick your PM3, and requires a JTAG interface device to fix it.
+
+## Common build issues
+
+### Cannot find :GraphView or :usb-serial-for-android
+
+```
+Could not determine the dependencies of task ':app:lintVitalRelease'.
+> Could not resolve all task dependencies for configuration ':app:releaseRuntimeClasspath'.
+   > Could not resolve project :usb-serial-for-android.
+     Required by:
+         project :app
+         project :app > project :natives
+      > Unable to find a matching configuration of project :usb-serial-for-android: None of the consumable configurations have attributes.
+   > Could not resolve project :GraphView.
+     Required by:
+         project :app
+      > Unable to find a matching configuration of project :GraphView: None of the consumable configurations have attributes.
+```
+
+These errors are caused by not having the appropriate `git submodules`. `git`'s default clone
+behaviour, and GitHub's "download ZIP" function do not include submodules.
+
+See [getting the code](#getting-the-code).
+
+### Problem configuring project :natives
+
+```
+org.gradle.initialization.ReportedException: org.gradle.internal.exceptions.LocationAwareException:
+A problem occurred configuring project ':natives'.
+[...]
+Caused by: java.lang.NullPointerException
+at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:782)
+at com.android.build.gradle.internal.ndk.NdkHandler.getPlatformVersion(NdkHandler.java:158)
+at com.android.build.gradle.internal.ndk.NdkHandler.supports64Bits(NdkHandler.java:331)
+at com.android.build.gradle.internal.ndk.NdkHandler.getSupportedAbis(NdkHandler.java:403)
+[...]
+```
+
+You don't have the Android NDK installed. [Please install all required Android SDK
+components](#developing--testing-andprox).
+
+## Running AndProx
+
+### With an emulator
 
 > **Note:** There are some issues with current Proxmark3 firmware through an emulator, so this may
 > not work.
@@ -76,7 +172,7 @@ If prompted by Google Play Services to check for harmful / malicious software, a
 an active Internet connection in this VM (eg: using host-only adapter), press `Disagree`.  Otherwise
 the system may hang for a while attempting to connect to Google.
 
-## With physical hardware
+### With physical hardware
 
 First you should test that your cables work by connecting a USB Mouse to your device.  It should
 light up and display a cursor on-screen when you move it.
@@ -241,3 +337,6 @@ A typical command follows this process:
 [1]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 [2]: http://www.android-x86.org/download
 [3]: https://en.wikipedia.org/wiki/USB_On-The-Go
+[4]: https://developer.android.com/studio/intro/update#sdk-manager
+[5]: https://github.com/Proxmark/proxmark3/wiki/Getting-Started
+[6]: https://github.com/Proxmark/proxmark3/wiki/flashing

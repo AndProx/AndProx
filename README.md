@@ -83,6 +83,8 @@ Use the _System Info_ to show what USB devices AndProx can see.  You should see:
 
 See `HACKING.md`.
 
+**Do not download the ZIP file from GitHub -- it will not work!**
+
 ## Licensing
 
 Copyright 2016-2018 Michael Farrell.
