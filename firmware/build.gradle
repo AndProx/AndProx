@@ -1,0 +1,79 @@
+/*
+ * Gradle build configuration for Proxmark3 firmware.
+ *
+ * This calls out to Proxmark3's Makefiles in order to build a matching firmware with the version of
+ * the Proxmark3 client included with AndProx.
+ *
+ * This allows the firmware to be treated as an artifact of the Gradle build process.
+ *
+ * This requires that the arm-none-eabi-gcc toolchain is in your PATH. See the Proxmark3
+ * documentation for further information.
+ *
+ *
+ * This file is part of AndProx, an application for using Proxmark3 on Android.
+ *
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Under section 7 of the GNU General Public License v3, the following additional
+ * terms apply to this program:
+ *
+ *  (b) You must preserve reasonable legal notices and author attributions in
+ *      the program.
+ *  (c) You must not misrepresent the origin of this program, and need to mark
+ *      modified versions in reasonable ways as different from the original
+ *      version (such as changing the name and logos).
+ *  (d) You may not use the names of licensors or authors for publicity
+ *      purposes, without explicit written permission.
+ */
+
+apply plugin: 'base'
+
+def pm3dir = '../third_party/proxmark3/'
+
+// Calls out to PM3 build system to produce a firmware image.
+task assembleFirmware(type: Exec) {
+    workingDir pm3dir
+    commandLine 'make'
+    args 'armsrc/obj/fullimage.elf'
+
+    inputs.dir pm3dir
+    inputs.file "${pm3dir}/Makefile"
+
+    outputs.dir pm3dir
+    outputs.file "${pm3dir}/armsrc/obj/fullimage.elf"
+}
+
+assemble.dependsOn(assembleFirmware)
+
+// Copies firmware from PM3 build system into build directory
+task copyFirmware(type: Copy) {
+    dependsOn assembleFirmware
+    from "${pm3dir}/armsrc/obj/"
+    into "${buildDir}/toArchive/"
+    include 'fullimage.elf'
+}
+
+// Creates a ZIP file containing the firmware.
+task zipFirmware(type: Zip) {
+    dependsOn copyFirmware
+    archiveName 'fullimage.elf.zip'
+    destinationDir = file("${buildDir}/zip")
+    from "${buildDir}/toArchive"
+}
+
+artifacts {
+    archives zipFirmware
+}
