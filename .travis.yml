@@ -1,0 +1,100 @@
+language: android
+jdk: oraclejdk8
+
+env:
+  matrix:
+    - EMULATOR_API=21 EMULATOR_ABI=x86 SUITE=host
+    - EMULATOR_API=21 EMULATOR_ABI=armeabi-v7a SUITE=device
+    - EMULATOR_API=24 EMULATOR_ABI=armeabi-v7a SUITE=device
+    - EMULATOR_API=21 EMULATOR_ABI=x86 SUITE=device
+    - EMULATOR_API=24 EMULATOR_ABI=x86 SUITE=device
+# Not available in vanilla flavour
+#    - EMULATOR_API=27
+  
+  global:
+    - ANDROID_API=27
+    - ANDROID_API_NATIVE=21
+    - ANDROID_BUILD_TOOLS=27.0.3
+    - CC=gcc-7
+    - CXX=g++-7
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-7
+      - gcc-arm-none-eabi
+      - libnewlib-arm-none-eabi
+
+android:
+  components:
+# Tools specified twice to support newest SDK tools
+# https://docs.travis-ci.com/user/languages/android/#installing-a-newer-sdk-platform-tools-revision
+    - tools
+    - platform-tools
+    - tools
+
+# Other dependencies:
+    - android-$EMULATOR_API
+    - build-tools-$ANDROID_BUILD_TOOLS
+    - android-$ANDROID_API
+    - android-$ANDROID_API_NATIVE
+    - extra-android-support
+    - extra-android-m2repository
+    - extra-google-m2repository
+# TODO: skip installing emulator when SUITE=host
+    - sys-img-$EMULATOR_ABI-android-$EMULATOR_API
+
+# Android caching
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
+
+install:
+# NDK can't be installed with android->components.
+# See: https://github.com/googlesamples/android-ndk/blob/master/.travis.yml
+  - echo y | sdkmanager "ndk-bundle"
+  - echo y | sdkmanager "cmake;3.6.4111459"
+  - echo y | sdkmanager "lldb;3.1"
+
+before_script:
+  - |
+    if [ "$SUITE" == "device" ]; then
+      android list targets
+      echo y | android update sdk -a --no-ui --filter android-$EMULATOR_API
+      echo y | android update sdk -a --no-ui --filter sys-img-$EMULATOR_ABI-android-$EMULATOR_API
+      android list targets
+      echo no | android create avd --force -n test -t android-$EMULATOR_API --abi $EMULATOR_ABI
+      emulator -avd test -no-skin -no-window -no-accel &
+      android-wait-for-emulator
+      adb shell input keyevent 82 &
+    fi
+
+script:
+  - ./third_party/disable_graphview_signing.sh
+  - ./gradlew :app:build :natives:build :firmware:build
+
+# Run local (non-Android) tests (normally quick)
+  - |
+    if [ "$SUITE" == "host" ]; then
+      ./gradlew :app:test :natives:test --info
+    fi
+
+# Run instrumented tests
+  - |
+    if [ "$SUITE" == "device" ]; then
+      ./gradlew :app:connectedAndroidTest
+    fi
+
+# This is a very slow test on ARM -- it doesn't take this long on x86, but the emulator
+#  - |
+#    if [ "$SUITE" == "device" ]; then
+#      travis_wait 45 ./gradlew :natives:connectedAndroidTest
+#    fi

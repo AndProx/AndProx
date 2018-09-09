@@ -1,5 +1,7 @@
 # ![logo](https://github.com/AndProx/AndProx/raw/master/app/src/main/res/mipmap-hdpi/ic_launcher.png) AndProx
 
+[![Build Status](https://travis-ci.org/AndProx/AndProx.svg?branch=master)](https://travis-ci.org/AndProx/AndProx)
+
 Prototype / work-in-progress native Android client for [Proxmark 3][1], which doesn't require root,
 permission changes or other messing about with kernel modules.
 
