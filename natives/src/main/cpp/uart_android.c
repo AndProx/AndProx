@@ -49,7 +49,7 @@ static serial_port_android* android_serial_port = NULL;
  * @param pcPortName Pointer to an opened serial_port_android
  * @return
  */
-serial_port uart_open(const char __unused * pcPortName) {
+serial_port uart_open(const char* pcPortName) {
     // Note: `serial_port` is a pointer type
     return (serial_port)android_serial_port;
 }

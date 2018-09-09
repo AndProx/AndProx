@@ -26,7 +26,7 @@ public class UsbCommandMatcher implements ArgumentMatcher<byte[]> {
     public static final int USB_COMMAND_LENGTH = (8 * 4) + 512;
 
     @Nullable
-    private Long mMatchingCommand = null;
+    private Long mMatchingCommand;
 
     @Nullable
     private Long mMatchingArg0 = null;

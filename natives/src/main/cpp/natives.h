@@ -33,9 +33,12 @@
 
 #include <string.h>
 #include <jni.h>
+#ifdef ANDROID
 #include <android/log.h>
+#endif
 #include "util.h"
 
+#ifdef ANDROID
 // Android log function wrappers
 static const char* kTAG = "Natives";
 #define LOGI(...) \
@@ -45,10 +48,18 @@ static const char* kTAG = "Natives";
 #define LOGE(...) \
   ((void)__android_log_print(ANDROID_LOG_ERROR, kTAG, __VA_ARGS__))
 
+#else
+// Non-Android JNI
+#define LOGI printf
+#define LOGW printf
+#define LOGE printf
+
+#endif
+
 #define GET_ENV(vm) \
     JNIEnv* env; \
     if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) { \
-        jint res = (*vm)->AttachCurrentThread(vm, &env, NULL); \
+        jint res = (*vm)->AttachCurrentThread(vm, (void**)&env, NULL); \
         if (res != JNI_OK) { \
             LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res); \
             env = NULL; \
@@ -66,12 +77,15 @@ typedef struct {
     jclass jcNatives;
     jmethodID jmPrintAndLog;
 
-    pthread_mutex_t  lock;
     int      done;
 
     char* executable_directory;
 } JavaContext;
 JavaContext g_ctx;
+
+
+JNIEXPORT void JNICALL
+Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass type);
 
 
 #endif //ANDPROX_NATIVES_H

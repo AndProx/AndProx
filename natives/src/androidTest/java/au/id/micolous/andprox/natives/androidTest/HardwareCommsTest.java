@@ -27,15 +27,15 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-package au.id.micolous.andprox.natives.test;
+package au.id.micolous.andprox.natives.androidTest;
+
+import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -44,8 +44,8 @@ import java.util.Arrays;
 
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
 import au.id.micolous.andprox.natives.Natives;
-import au.id.micolous.andprox.natives.test.utils.LogSink;
-import au.id.micolous.andprox.natives.test.utils.UsbCommandMatcher;
+import au.id.micolous.andprox.natives.androidTest.utils.LogSink;
+import au.id.micolous.andprox.natives.androidTest.utils.UsbCommandMatcher;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
@@ -56,24 +56,30 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * This test case mocks out NativeSerialWrapper in order to make a virtual PM3 device, which can
- * respond to CMD_VERSION.  It will then spin up the PM3 client in JNI with this mocked
- * NativeSerialWrapper, and verifies that the client correctly communicated with the device, and
- * that it was able to log a custom version string.
+ * Basic PM3 library test.
+ *
+ * This test case mocks out {@link NativeSerialWrapper} in order to make a virtual PM3 device, which
+ * can respond to {@link #CMD_VERSION}. It will then spin up the PM3 client in JNI with this mocked
+ * {@link NativeSerialWrapper}, and verifies that the client correctly communicated with the device,
+ * and that it was able to log a custom version string.
+ *
+ * This version of the test uses Android Instrumented Tests, which run on a (virtual or physical)
+ * Android device. It has complete access to all the Android APIs.
  */
+@SmallTest
 public class HardwareCommsTest {
     private static final long CMD_VERSION = 0x107;
     private static final long CMD_ACK = 0xff;
 
     @Mock
-    NativeSerialWrapper mNativeSerialWrapper;
+    private NativeSerialWrapper mNativeSerialWrapper;
 
     private LogSink mLogSink = new LogSink();
 
     private boolean versionPending = false;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(mNativeSerialWrapper.send(argThat(new UsbCommandMatcher(CMD_VERSION))))
@@ -120,12 +126,10 @@ public class HardwareCommsTest {
 
         assertNull("We shouldn't find an error in the log", mLogSink.findInLogLines("got no response"));
         assertNotNull("We should find our custom message in the log", mLogSink.findInLogLines("hello HardwareCommsTest"));
-
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         Natives.stopReaderThread();
     }
-
 }

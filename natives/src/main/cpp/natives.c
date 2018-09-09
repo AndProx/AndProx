@@ -28,7 +28,6 @@
  *      purposes, without explicit written permission.
  */
 
-#include <mifare.h>
 #include <uart.h>
 #include <comms.h>
 #include <ui.h>
@@ -71,7 +70,6 @@ Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass typ
     SetOffline(true);
     // TODO: reset more stuff here
 }
-
 
 JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_startReaderThread(JNIEnv *env, jclass type, jobject nsw) {
@@ -238,7 +236,8 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdTune__ZZ(JNIEnv *env, jclass 
         return NULL;
     }
 
-    int timeout = 0, arg = 0;
+    int timeout = 0;
+    uint64_t arg = 0;
     if (lf) {
         arg |= FLAG_TUNE_LF;
     }

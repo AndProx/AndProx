@@ -30,12 +30,42 @@
 
 apply plugin: 'com.android.library'
 
+// This section defines a build for non-Android JNI, which is used by the unit tests. To build this,
+// we're effectively building a standard, non-Android JNI version of our native libraries.
+//
+// This makes the build process more dependent on the host.
+//
+// It requires make and cmake in your path.
+def nonAndroidJniDir = projectDir.absolutePath + '/.externalNativeBuild/cmake/debug/nonAndroidJni'
+
+task createNonAndroidBuildDir() {
+    def dir = new File(nonAndroidJniDir)
+    if (!dir.exists()) {
+        dir.mkdirs()
+    }
+}
+
+task runNonAndroidCMake(type: Exec) {
+    dependsOn createNonAndroidBuildDir
+    workingDir nonAndroidJniDir
+    commandLine android.sdkDirectory.absolutePath + '/cmake/3.6.4111459/bin/cmake'
+    args (projectDir.absolutePath + '/src/main/cmake/mainline/')
+}
+
+task runNonAndroidMake(type: Exec) {
+    dependsOn runNonAndroidCMake
+    workingDir nonAndroidJniDir
+    commandLine 'make'
+}
+
 dependencies {
     testImplementation 'org.mockito:mockito-core:2.18.3'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.jetbrains:annotations:15.0'
 
     androidTestImplementation 'com.android.support.test:testing-support-lib:0.1'
-    androidTestImplementation 'org.jetbrains:annotations:15.0'
     androidTestImplementation 'org.mockito:mockito-android:2.18.3'
+    androidTestImplementation 'org.jetbrains:annotations:15.0'
 
     implementation 'commons-io:commons-io:2.5'
     implementation project(':usb-serial-for-android')
@@ -116,9 +146,25 @@ android {
             path "src/main/cmake/mainline/CMakeLists.txt"
         }
     }
+
+    testOptions {
+        unitTests {
+            all {
+                systemProperty 'java.library.path', nonAndroidJniDir
+            }
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+project.afterEvaluate {
+    javaPreCompileDebug.dependsOn externalNativeBuildDebug
+    if (org.gradle.internal.os.OperatingSystem.current().isUnix()) {
+        javaPreCompileDebugUnitTest.dependsOn runNonAndroidMake
     }
 }
 

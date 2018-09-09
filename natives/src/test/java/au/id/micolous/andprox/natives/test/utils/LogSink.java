@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2017-2018 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -27,45 +27,47 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-package au.id.micolous.andprox.natives.test;
+package au.id.micolous.andprox.natives.test.utils;
 
-import android.support.test.filters.FlakyTest;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.LargeTest;
+import android.test.suitebuilder.annotation.Suppress;
+
+import java.util.LinkedList;
 
 import au.id.micolous.andprox.natives.Natives;
-import au.id.micolous.andprox.natives.Resources;
-import au.id.micolous.andprox.natives.test.utils.LogSink;
 
 /**
- * Test hardnested attacks.
- *
- * This test is flaky due to high RAM requirements (~2GB). It crashes in the Android Emulator.
+ * Allows unit tests to capture PrintAndLog outputs.
  */
-@FlakyTest
-public class HardnestedTest extends AndroidTestCase {
-    private LogSink mLogSink;
+@Suppress
+public class LogSink implements Natives.PrinterArgs {
+    private LinkedList<String> mLogLines;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        mLogSink = new LogSink();
-
-        // Hardnested attacks need some resources.
-        if (!Resources.extractPM3Resources(getContext())) {
-            throw new Exception("couldn't create resource directory");
-        }
-
-        // Now we can actually init
-        Natives.initProxmark();
+    public void reset() {
+        mLogLines = new LinkedList<>();
     }
 
-    @LargeTest
-    public void testHardnested() {
-        mLogSink.reset();
-        Natives.sendCmd("hf mf hardnested t 1 000000000000");
-        String logLine = mLogSink.findInLogLines("Brute force phase completed. Key found: 000000000000");
-        assertNotNull(logLine);
+    public LogSink() {
+        reset();
+        Natives.registerPrintAndLogHandler(this);
+    }
+
+    @Override
+    public void onPrint(String log) {
+        mLogLines.add(log);
+    }
+
+    /**
+     * Finds a "needle" in the log lines. Returns null if not found. Case sensitive.
+     * @param needle Case sensitive string to match on.
+     * @return Complete log line that matched.
+     */
+    public String findInLogLines(CharSequence needle) {
+        for (String l : mLogLines) {
+            if (l.contains(needle)) {
+                return l;
+            }
+        }
+
+        return null;
     }
 }

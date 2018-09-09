@@ -27,7 +27,7 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-package au.id.micolous.andprox.natives.test.utils;
+package au.id.micolous.andprox.natives.androidTest.utils;
 
 import android.test.suitebuilder.annotation.Suppress;
 
@@ -40,7 +40,7 @@ import au.id.micolous.andprox.natives.Natives;
  */
 @Suppress
 public class LogSink implements Natives.PrinterArgs {
-    protected LinkedList<String> mLogLines;
+    private LinkedList<String> mLogLines;
 
     public void reset() {
         mLogLines = new LinkedList<>();

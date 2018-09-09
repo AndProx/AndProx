@@ -50,6 +50,19 @@ message(STATUS "PM3_GIT_VER := ${PM3_GIT_VER}")
 string(TIMESTAMP PM3_TS UTC)
 message(STATUS "PM3_TS := ${PM3_TS}")
 
+if (ANDROID_PLATFORM)
+    message(STATUS "Building Android version with ${ANDROID_PLATFORM} ${ANDROID_TOOLCHAIN}")
+    set(extra_include_dirs "")
+else()
+    ## Used for JUnit (host) tests
+    message(STATUS "Building non-Android (standard Java) version with compiler ${CMAKE_C_COMPILER_ID}")
+
+    find_package(JNI REQUIRED)
+    message(STATUS "JNI_LIBRARIES := ${JNI_LIBRARIES}")
+    message(STATUS "JNI_INCLUDE_DIRS := ${JNI_INCLUDE_DIRS}")
+    set(extra_include_dirs ${JNI_INCLUDE_DIRS})
+endif()
+
 ## CPU-specific code
 ## These are mostly for x86-based architectures, which is not useful for many Android devices.
 add_library(hardnested_nosimd OBJECT
@@ -67,6 +80,8 @@ if("${CMAKE_SYSTEM_PROCESSOR}" IN_LIST X86_CPUS)
     target_compile_options(hardnested_nosimd BEFORE PRIVATE
                            -mno-mmx -mno-sse2 -mno-avx -mno-avx2 -mno-avx512f)
 
+    set_property(TARGET hardnested_nosimd PROPERTY POSITION_INDEPENDENT_CODE ON)
+
     ## x86 / MMX
     add_library(hardnested_mmx OBJECT
                 ${PM3_ROOT}/client/hardnested/hardnested_bf_core.c
@@ -79,6 +94,8 @@ if("${CMAKE_SYSTEM_PROCESSOR}" IN_LIST X86_CPUS)
                                ${PM3_ROOT}/common
                                ${PM3_ROOT}/client
                                ${PM3_ROOT}/client/hardnested)
+
+    set_property(TARGET hardnested_mmx PROPERTY POSITION_INDEPENDENT_CODE ON)
 
     ## x86 / SSE2
     add_library(hardnested_sse2 OBJECT
@@ -93,6 +110,8 @@ if("${CMAKE_SYSTEM_PROCESSOR}" IN_LIST X86_CPUS)
                                ${PM3_ROOT}/client
                                ${PM3_ROOT}/client/hardnested)
 
+    set_property(TARGET hardnested_sse2 PROPERTY POSITION_INDEPENDENT_CODE ON)
+
     ## x86 / AVX
     add_library(hardnested_avx OBJECT
                 ${PM3_ROOT}/client/hardnested/hardnested_bf_core.c
@@ -105,6 +124,8 @@ if("${CMAKE_SYSTEM_PROCESSOR}" IN_LIST X86_CPUS)
                                ${PM3_ROOT}/common
                                ${PM3_ROOT}/client
                                ${PM3_ROOT}/client/hardnested)
+
+    set_property(TARGET hardnested_avx PROPERTY POSITION_INDEPENDENT_CODE ON)
 
     ## x86 / AVX2
     add_library(hardnested_avx2 OBJECT
@@ -119,6 +140,8 @@ if("${CMAKE_SYSTEM_PROCESSOR}" IN_LIST X86_CPUS)
                                ${PM3_ROOT}/client
                                ${PM3_ROOT}/client/hardnested)
 
+    set_property(TARGET hardnested_avx2 PROPERTY POSITION_INDEPENDENT_CODE ON)
+
     ## x86 / AVX512
     add_library(hardnested_avx512 OBJECT
                 ${PM3_ROOT}/client/hardnested/hardnested_bf_core.c
@@ -131,6 +154,9 @@ if("${CMAKE_SYSTEM_PROCESSOR}" IN_LIST X86_CPUS)
                                ${PM3_ROOT}/common
                                ${PM3_ROOT}/client
                                ${PM3_ROOT}/client/hardnested)
+
+    set_property(TARGET hardnested_avx512 PROPERTY POSITION_INDEPENDENT_CODE ON)
+
     set(SIMD_TARGETS
         $<TARGET_OBJECTS:hardnested_mmx>
         $<TARGET_OBJECTS:hardnested_sse2>
@@ -144,8 +170,8 @@ endif()
 
 include("${CMAKE_COMMON_ROOT}/liblua.cmake")
 
-add_library(natives SHARED
-            ${APN_ROOT}/natives.c
+# This is the majority of the PM3 client code
+add_library(pm3 OBJECT
             ${APN_ROOT}/fakemain.c
             ${APN_ROOT}/uart_android.c
 
@@ -252,13 +278,7 @@ add_library(natives SHARED
             ${PM3_ROOT}/client/cmdscript.c
             ${PM3_ROOT}/client/pm3_binlib.c
             ${PM3_ROOT}/client/pm3_bitlib.c
-
-            $<TARGET_OBJECTS:hardnested_nosimd>
-            ${SIMD_TARGETS}
-            $<TARGET_OBJECTS:liblua>
 )
-
-#             ${APN_ROOT}/fakecmdscript.c
 
 # Proxmark3's version of zlib: (disabled)
 #            ${PM3_ROOT}/zlib/deflate.c
@@ -269,8 +289,23 @@ add_library(natives SHARED
 #            ${PM3_ROOT}/zlib/inffast.c
 #            ${PM3_ROOT}/zlib/inftrees.c
 
+# 'natives' includes a small number of C files. This is because the build process tags
+add_library(natives SHARED
+
+            ${APN_ROOT}/natives.c
+
+            $<TARGET_OBJECTS:pm3>
+            $<TARGET_OBJECTS:hardnested_nosimd>
+            ${SIMD_TARGETS}
+            $<TARGET_OBJECTS:liblua>
+)
+
+
+#             ${APN_ROOT}/fakecmdscript.c
+
+
 ## General compile options.
-target_include_directories(natives PRIVATE
+target_include_directories(pm3 PRIVATE
                            ${APN_ROOT}
                            ${PM3_ROOT}/client
                            ${PM3_ROOT}/common
@@ -278,13 +313,19 @@ target_include_directories(natives PRIVATE
                            ${PM3_ROOT}/include
                            ${PM3_ROOT}/client/nonce2key
                            ${PM3_ROOT}/client/hardnested
-                           ${PM3_ROOT}/lua_android
+                           ${APN_ROOT}/lua_android
                            ${PM3_ROOT}/liblua
-                           ${PM3_ROOT}/uart)
+                           ${PM3_ROOT}/uart
+                           ${extra_include_dirs})
+
+target_include_directories(natives PRIVATE
+                           ${APN_ROOT}
+                           ${PM3_ROOT}/client
+                           ${PM3_ROOT}/include
+                           ${PM3_ROOT}/uart
+                           ${extra_include_dirs})
 
 # EXTERNAL_PRINTANDLOG and NO_UNLINK are Android-specific.
-#
-# PM3_GIT_VER and PM3_TS are variables normally set by PM3's build system which are replicated here.
 #
 # WITH_* is which modules to include, from common/Makefile_Enabled_Options.common.  We build with
 # everything in AndProx's client, so we can work on a diverse set of firmware configurations.
@@ -292,7 +333,7 @@ target_include_directories(natives PRIVATE
 # We don't include WITH_GUI because it is a meaningless flag, even if we provided our own GUI. It's
 # only used to enable Qt support.
 
-target_compile_definitions(natives PRIVATE
+target_compile_definitions(pm3 PRIVATE
     EXTERNAL_PRINTANDLOG
     NO_UNLINK
 
@@ -307,9 +348,13 @@ target_compile_definitions(natives PRIVATE
     WITH_CRC
     WITH_HFSNOOP
     WITH_SMARTCARD
+)
 
+# PM3_GIT_VER and PM3_TS are variables normally set by PM3's build system which are replicated here.
+target_compile_definitions(natives PRIVATE
     PM3_GIT_VER="${PM3_GIT_VER}"
-    PM3_TS="${PM3_TS}")
+    PM3_TS="${PM3_TS}"
+)
 
 # Defines needed for Proxmark3's version of zlib: (disabled)
 #    Z_SOLO
@@ -317,5 +362,19 @@ target_compile_definitions(natives PRIVATE
 #    NO_GZIP
 #    ZLIB_PM3_TUNED
 
-target_link_libraries(natives
-                      android log z)
+if (ANDROID_PLATFORM)
+    ## Android specific linker options
+    target_link_libraries(natives
+                          android log z)
+else()
+    ## Standard JNI linker options.
+
+    if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+        ## Fix undefined symbol: __cpu_model
+        message(STATUS "gcc!")
+        set(COMPILER_LIBS gcc_s gcc)
+    endif()
+
+    target_link_libraries(natives
+                          ${JNI_LIBRARIES} ${COMPILER_LIBS} z)
+endif()

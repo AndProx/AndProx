@@ -38,12 +38,17 @@ import au.id.micolous.andprox.natives.Natives;
 
 /**
  * Runs EMV self-tests
+ *
+ * This is similar to what Proxmark's CI system does.
+ *
+ * This version of the test uses standard Java JUnit tests, and runs on your _host_ machine.
+ * Android's test framework will stub out all Android APIs and throw {@link RuntimeException} if you
+ * call something Android-specific.
  */
 
 public class EmvTest {
     @Before
-    public void setUp() throws Exception {
-
+    public void setUp() {
         Natives.initProxmark();
     }
 

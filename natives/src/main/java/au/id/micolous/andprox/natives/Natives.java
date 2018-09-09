@@ -35,7 +35,8 @@ import android.util.Log;
 public class Natives {
     private static final String TAG = "Natives";
     private static PrinterArgs printAndLogHandler;
-    public static final String PM3_STORAGE_ROOT = Environment.getExternalStorageDirectory() + "/proxmark3/";
+
+    static String PM3_STORAGE_ROOT = null;
 
     public interface PrinterArgs {
         /**
@@ -63,7 +64,9 @@ public class Natives {
      * @param log A log line
      */
     public static void javaPrintAndLog(String log) {
-        Log.d(TAG, log);
+        try {
+            Log.d(TAG, log);
+        } catch (RuntimeException ignored) {}
 
         if (printAndLogHandler != null) {
             printAndLogHandler.onPrint(log);
@@ -142,6 +145,15 @@ public class Natives {
      * @return Path to storage for the app.
      */
     static String getPM3StorageRoot() {
+        if (PM3_STORAGE_ROOT == null) {
+            try {
+                PM3_STORAGE_ROOT = Environment.getExternalStorageDirectory() + "/proxmark3/";
+            } catch (RuntimeException ignored) {
+                // Stub version for non-Android
+                PM3_STORAGE_ROOT = "/tmp/proxmark3/";
+            }
+        }
+
         return PM3_STORAGE_ROOT;
     }
 

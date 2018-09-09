@@ -1,4 +1,5 @@
 ## Proxmark3 liblua build script.
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(liblua OBJECT
             ${PM3_ROOT}/liblua/lapi.c

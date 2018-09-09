@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016-2017 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2017-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -27,53 +27,32 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
+package au.id.micolous.andprox.natives.androidTest;
 
-#include "fakemain.h"
-#include "natives.h"
-#include <jni.h>
-#include <stdio.h>
-#include <malloc.h>
+import android.test.suitebuilder.annotation.LargeTest;
 
-const char* get_my_executable_path(void)
-{
-    // Never used...
-    return "";
-}
+import org.junit.Before;
+import org.junit.Test;
 
-const char* get_my_executable_directory(void)
-{
-    // This gets called by cmdhfmfhard.c and cmdscript.c to find where scripts and tables are
-    return g_ctx.executable_directory;
-}
+import au.id.micolous.andprox.natives.Natives;
 
-void PrintAndLog(char *fmt, ...)
-{
-    char buf[1024];
-    GET_ENV(g_ctx.javaVM)
-    if (env == NULL) return;
+/**
+ * Runs EMV self-tests.
+ *
+ * This is similar to what Proxmark's CI system does.
+ *
+ * This version of the test uses Android Instrumented Tests, which run on a (virtual or physical)
+ * Android device. It has complete access to all the Android APIs.
+ */
+@LargeTest
+public class EmvTest {
+    @Before
+    public void setUp() {
+        Natives.initProxmark();
+    }
 
-    // Write out the message, formatted, into buf
-    va_list argptr;
-    va_start(argptr, fmt);
-    vsnprintf(buf, sizeof(buf), fmt, argptr);
-    va_end(argptr);
-
-    // Send the string to Java
-    jstring s = (*env)->NewStringUTF(env, buf);
-    (*env)->CallStaticVoidMethod(env, g_ctx.jcNatives, g_ctx.jmPrintAndLog, s);
-    (*env)->DeleteLocalRef(env, s);
-}
-
-void PrintAndLogL(char* s, size_t len) {
-    GET_ENV(g_ctx.javaVM)
-
-    char* buf = malloc(sizeof(len) + 1);
-    memset((void*)buf, 0, sizeof(len) + 1);
-    memcpy(buf, s, len);
-
-    // Send the string to Java
-    jstring js = (*env)->NewStringUTF(env, buf);
-    (*env)->CallStaticVoidMethod(env, g_ctx.jcNatives, g_ctx.jmPrintAndLog, js);
-    (*env)->DeleteLocalRef(env, js);
-    free(buf);
+    @Test
+    public void testEmv() {
+        Natives.sendCmd("hf emv test");
+    }
 }
