@@ -25,6 +25,7 @@ addons:
     packages:
       - g++-7
       - gcc-arm-none-eabi
+      - libnewlib-arm-none-eabi
 
 android:
   components:
