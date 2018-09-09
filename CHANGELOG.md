@@ -1,6 +1,17 @@
 # AndProx changelog
 
-## v2.0.3, not released yet
+## v2.0.4, not released yet
+
+- Proxmark version:
+- Source code: (git master)
+- APK: (none yet)
+- Firmawre (none yet)
+
+Changes:
+
+- None yet.
+
+## v2.0.3, released 2018-09-09
 
 - Proxmark version: 3.0.1 [(+400 bed3db8f)](https://github.com/proxmark/proxmark3/tree/bed3db8f1dea15b9e998c3c4c432c58c5eb565eb)
 - Source code: https://github.com/AndProx/AndProx/tree/v2.0.3
