@@ -2,18 +2,22 @@
 
 ## v2.0.3, not released yet
 
-- Proxmark version: 3.0.1 (+345 8cd64fc3)
-- Source code: (git master)
-- APK: (none yet)
-- Firmware: (none yet)
+- Proxmark version: 3.0.1 [(+400 bed3db8f)](https://github.com/proxmark/proxmark3/tree/bed3db8f1dea15b9e998c3c4c432c58c5eb565eb)
+- Source code: https://github.com/AndProx/AndProx/tree/v2.0.3
+- APK: https://github.com/AndProx/AndProx/releases/download/v2.0.3/andprox-2.0.3.apk
+- Firmware: https://github.com/AndProx/AndProx/releases/download/v2.0.3/fullimage.elf.zip
 
 Changes:
 
 - New: Antenna tuning GUI, with graphs!
-- New: HID IClass support, EMV support.
+- New: HID IClass support, and everything else new from PM3 since last version.
 - New: AndProx now reports when it is waiting for PM3.
+- New: Automated unit tests.
+- New: AndProx will now refuse to work with devices with incorrect firmware.
 - Fixed: Several resource leaks.
 - Fixed: Pressing `ENTER` with a hardware keyboard on some devices would crash AndProx.
+- Fixed: Firmware issue with PM3 not enumerating on some devices. Requires firmware update.
+- Fixed: All the patches for AndProx are now in Proxmark3!
 - Cleanup: PM3 now uses Android's zlib.
 - Cleanup: Removed some unused USB serial drivers.
 
