@@ -24,6 +24,7 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-7
+      - gcc-arm-none-eabi
 
 android:
   components:
@@ -77,7 +78,7 @@ before_script:
 
 script:
   - ./third_party/disable_graphview_signing.sh
-  - ./gradlew build
+  - ./gradlew :app:build :natives:build :firmware:build
 
 # Run local (non-Android) tests (normally quick)
   - |
