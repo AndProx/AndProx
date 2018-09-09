@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/AndProx/AndProx.svg?branch=master)](https://travis-ci.org/AndProx/AndProx)
 
+Version: 2.0.3
+
 Prototype / work-in-progress native Android client for [Proxmark 3][1], which doesn't require root,
 permission changes or other messing about with kernel modules.
 
