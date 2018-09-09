@@ -58,8 +58,7 @@ You should be able to build the `:app` module in Android Studio, or use `./gradl
 The default configuration will build for both 32 and 64-bit ARM and x86 systems, which should cover
 most Android devices.
 
-Android hardware with a MIPS processor is not supported, because MIPS support was dropped from the
-Android NDK when arm64 support was added.
+Android hardware with a MIPS processor is not supported.
 
 ## Building firmware
 
@@ -120,10 +119,35 @@ at com.android.build.gradle.internal.ndk.NdkHandler.getPlatformVersion(NdkHandle
 at com.android.build.gradle.internal.ndk.NdkHandler.supports64Bits(NdkHandler.java:331)
 at com.android.build.gradle.internal.ndk.NdkHandler.getSupportedAbis(NdkHandler.java:403)
 [...]
+
+-- OR --
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+A problem occurred configuring project ':natives'.
+> NDK not configured.
+  Download it with SDK manager.
 ```
 
 You don't have the Android NDK installed. [Please install all required Android SDK
 components](#developing--testing-andprox).
+
+### GraphView: secret key missing
+
+```
+Could not evaluate onlyIf predicate for task ':GraphView:signArchives'.
+> Unable to retrieve secret key from key ring file '/Users/jonas/.gnupg/secring.gpg' as it does not exist
+```
+
+In some environments, GraphView's signing target is triggered, and only the developer has the
+private key.
+
+_Linux:_ Run `./third_party/disable_graphview_signing.sh`, which will patch GraphView to disable
+signing.
+
+_Alternatively,_ delete `./third_party/GraphView/maven_push.gradle`, and the reference to
+`maven_push.gradle` in `./third_party/GraphView/build.gradle`.
 
 ## Running AndProx
 
