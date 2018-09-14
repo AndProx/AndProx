@@ -17,8 +17,8 @@
   ~ You should have received a copy of the GNU General Public License along with
   ~ this program.  If not, see <http://www.gnu.org/licenses/>.
   ~
-  ~ Under section 7 of the GNU General Public License v3, the following "further
-  ~ restrictions" apply to this program:
+  ~ Under section 7 of the GNU General Public License v3, the following additional
+  ~ terms apply to this program:
   ~
   ~  (b) You must preserve reasonable legal notices and author attributions in
   ~      the program.
@@ -50,7 +50,7 @@
     * Used in Play Store as "Full Description".
     * Use "smart" quotation marks (eg: ’).
     -->
-    <string name="market_long_desc">NOTE: This application is still a work in progress and in the prototype phase.\n\nAndProx is an Android port of the client for Proxmark 3, an advanced RFID tool. AndProx does not require root or special kernel modules! Instead, it uses the Android USB Host API.\n\nYou need a Proxmark 3 attached to your Android device in order to use this. This software **does not** use any in-built NFC hardware from your Android device.\n\nAndProx works with the mainline Proxmark 3.0.1 firmware. You will need to flash this firmware on your PM3 before use. Pre-built firmware images are available from the AndProx website.\n\nIf your device only has a USB Micro-B connector, you need a USB On-The-Go cable to connect your Proxmark 3.\n\nIf your device only has a USB Type-C connector, you need a USB-C to USB-A dongle to connect your Proxmark 3.\n\nSome devices need to use a "Y cable" to supply extra power. Without it, Proxmark 3 may malfunction, especially with HF cards.\n\nThis doesn’t support all the device’s functionality yet, and is still under active development.\n\nThis is open source software licensed under GNU GPLv3+, with some further restrictions. Source code, documentation, firmware images, APKs and more are available at https://github.com/AndProx/AndProx
+    <string name="market_long_desc">NOTE: This application is still a work in progress and in the prototype phase.\n\nAndProx is an Android port of the client for Proxmark 3, an advanced RFID tool. AndProx does not require root or special kernel modules! Instead, it uses the Android USB Host API.\n\nYou need a Proxmark 3 attached to your Android device in order to use this. This software **does not** use any in-built NFC hardware from your Android device.\n\nAndProx works with the mainline Proxmark 3.0.1 firmware. You will need to flash this firmware on your PM3 before use. Pre-built firmware images are available from the AndProx website.\n\nIf your device only has a USB Micro-B connector, you need a USB On-The-Go cable to connect your Proxmark 3.\n\nIf your device only has a USB Type-C connector, you need a USB-C to USB-A dongle to connect your Proxmark 3.\n\nSome devices need to use a "Y cable" to supply extra power. Without it, Proxmark 3 may malfunction, especially with HF cards.\n\nThis doesn’t support all the device’s functionality yet, and is still under active development.\n\nThis is open source software licensed under GNU GPLv3+, with some additional terms. Source code, documentation, firmware images, APKs and more are available at https://github.com/AndProx/AndProx
     </string>
 
     <!--
