@@ -27,13 +27,14 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-package au.id.micolous.andprox.natives.androidTest;
+package au.id.micolous.andprox.natives27.androidTest;
 
 import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -44,11 +45,11 @@ import java.util.Arrays;
 
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
 import au.id.micolous.andprox.natives.Natives;
-import au.id.micolous.andprox.natives.androidTest.utils.LogSink;
-import au.id.micolous.andprox.natives.androidTest.utils.UsbCommandMatcher;
+import au.id.micolous.andprox.natives27.androidTest.utils.LogSink;
+import au.id.micolous.andprox.natives27.androidTest.utils.UsbCommandMatcher;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.argThat;
@@ -82,13 +83,13 @@ public class HardwareCommsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mNativeSerialWrapper.send(argThat(new UsbCommandMatcher(CMD_VERSION))))
+        when(mNativeSerialWrapper.send(ArgumentMatchers.argThat(new UsbCommandMatcher(CMD_VERSION))))
                 .thenAnswer(invocation -> {
                     versionPending = true;
                     return true;
                 });
 
-        when(mNativeSerialWrapper.receive(any(byte[].class)))
+        when(mNativeSerialWrapper.receive(ArgumentMatchers.any(byte[].class)))
                 .thenAnswer(invocation -> {
                     if (versionPending) {
                         versionPending = false;
@@ -122,7 +123,7 @@ public class HardwareCommsTest {
         Natives.startReaderThread(mNativeSerialWrapper);
         Natives.sendCmdVersion();
 
-        verify(mNativeSerialWrapper).send(argThat(new UsbCommandMatcher(CMD_VERSION)));
+        verify(mNativeSerialWrapper).send(ArgumentMatchers.argThat(new UsbCommandMatcher(CMD_VERSION)));
 
         assertNull("We shouldn't find an error in the log", mLogSink.findInLogLines("got no response"));
         assertNotNull("We should find our custom message in the log", mLogSink.findInLogLines("hello HardwareCommsTest"));

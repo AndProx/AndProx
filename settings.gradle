@@ -1,4 +1,4 @@
-include ':app', ':natives', ':firmware'
+include ':app', ':natives', ':natives27', ':firmware'
 include ':usb-serial-for-android'
 project(':usb-serial-for-android').projectDir = new File('third_party/usb-serial-for-android/usbSerialForAndroid')
 include ':GraphView'

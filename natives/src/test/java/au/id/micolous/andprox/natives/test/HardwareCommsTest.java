@@ -127,6 +127,8 @@ public class HardwareCommsTest {
 
         assertNull("We shouldn't find an error in the log", mLogSink.findInLogLines("got no response"));
         assertNotNull("We should find our custom message in the log", mLogSink.findInLogLines("hello HardwareCommsTest"));
+
+        Natives.stopReaderThread();
     }
 
     @After
