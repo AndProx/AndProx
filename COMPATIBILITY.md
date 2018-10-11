@@ -24,6 +24,7 @@ Manufacturer | Device            | Y-cable           | Notes
 -------------|-------------------|-------------------|--------
 Google       | Pixel 1 / XL      | Needed for HF     | Device includes USB-C to A dongle
 LG           | Nexus 5X          |
+Samsung      | S8                | 
 Sony         | Bravia TV (2013+) | Not required      | Has "Product Name" bug.
 
 
