@@ -35,7 +35,6 @@
         android:fillViewport="false"
         android:fontFamily="monospace"
         android:gravity="bottom"
-        android:scrollbars="vertical"
         android:textAppearance="@android:style/TextAppearance.Material.Medium"
         android:typeface="monospace"
         app:layout_constraintBottom_toTopOf="@+id/etCommandInput"
