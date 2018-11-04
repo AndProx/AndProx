@@ -81,7 +81,8 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
         SendCommandTask.register(this);
 
         tvOutputBuffer = findViewById(R.id.tvOutputBuffer);
-        tvOutputBuffer.setMovementMethod(new ScrollingMovementMethod());
+        tvOutputBuffer.setTextIsSelectable(true);
+        registerForContextMenu(tvOutputBuffer);
 
         etCommandInput = findViewById(R.id.etCommandInput);
         etCommandInput.setOnEditorActionListener((v, actionId, event) -> {
