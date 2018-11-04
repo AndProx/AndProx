@@ -36,13 +36,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -61,7 +68,10 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
     private TextView tvOutputBuffer;
     private ScrollView svOutputBuffer;
     private BroadcastReceiver mUsbReceiver;
+    private FloatingActionButton fabCli;
     private String lastCommand = null;
+    private Animation slideUpAnimation;
+    private Animation slideDownAnimation;
 
     private static final String LAST_COMMAND = "last_command";
     private static final String OUTPUT_BUFFER = "output_buffer";
@@ -76,18 +86,49 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
         etCommandInput.setHint(R.string.command_waiting);
     }
 
+    private void redrawFab() {
+        boolean showFab = svOutputBuffer.getScrollY() < (tvOutputBuffer.getBottom() - svOutputBuffer.getHeight());
+        boolean isVisible = fabCli.getVisibility() == View.VISIBLE;
+
+        if (showFab == isVisible) {
+            return;
+        }
+
+        fabCli.clearAnimation();
+        if (showFab) {
+            fabCli.setVisibility(View.VISIBLE);
+            fabCli.startAnimation(slideUpAnimation);
+        } else {
+            fabCli.startAnimation(slideDownAnimation);
+            fabCli.postOnAnimation(() -> fabCli.setVisibility(View.GONE));
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cli);
         SendCommandTask.register(this);
 
-        svOutputBuffer = findViewById(R.id.svOutputBuffer);
+        slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+        slideUpAnimation.setInterpolator(new DecelerateInterpolator());
+        slideDownAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down);
+        slideDownAnimation.setInterpolator(new AccelerateInterpolator());
+
+        fabCli = findViewById(R.id.fabCli);
+        fabCli.setOnClickListener(v -> scrollToBottom());
 
         tvOutputBuffer = findViewById(R.id.tvOutputBuffer);
         tvOutputBuffer.setMovementMethod(new ScrollingMovementMethod());
         tvOutputBuffer.setTextIsSelectable(true);
         registerForContextMenu(tvOutputBuffer);
+
+        svOutputBuffer = findViewById(R.id.svOutputBuffer);
+
+        fabCli.setVisibility(View.GONE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            svOutputBuffer.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> redrawFab());
+        }
 
         etCommandInput = findViewById(R.id.etCommandInput);
         etCommandInput.setOnEditorActionListener((v, actionId, event) -> {

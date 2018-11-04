@@ -105,4 +105,5 @@
     <string name="visit_website">Website</string>
     <string name="retry">Retry</string>
     <string name="cancel">Cancel</string>
+    <string name="scroll_to_bottom">Scroll to bottom</string>
 </resources>
