@@ -168,7 +168,8 @@ else()
     set(SIMD_TARGETS)
 endif()
 
-include("${CMAKE_COMMON_ROOT}/liblua.cmake")
+include("${CMAKE_COMMON_ROOT}/lua.cmake")
+include("${CMAKE_COMMON_ROOT}/jansson.cmake")
 
 # This is the majority of the PM3 client code
 add_library(pm3 OBJECT
@@ -266,6 +267,8 @@ add_library(pm3 OBJECT
             ${PM3_ROOT}/client/cmdlfviking.c
             ${PM3_ROOT}/client/cmdlfvisa2000.c
             ${PM3_ROOT}/client/cmdlfpac.c
+            ${PM3_ROOT}/client/hidcardformats.c
+            ${PM3_ROOT}/client/hidcardformatutils.c
 
             ${PM3_ROOT}/client/cmdsmartcard.c
 
@@ -297,7 +300,6 @@ add_library(natives SHARED
             $<TARGET_OBJECTS:pm3>
             $<TARGET_OBJECTS:hardnested_nosimd>
             ${SIMD_TARGETS}
-            $<TARGET_OBJECTS:liblua>
 )
 
 
@@ -313,6 +315,7 @@ target_include_directories(pm3 PRIVATE
                            ${PM3_ROOT}/include
                            ${PM3_ROOT}/client/nonce2key
                            ${PM3_ROOT}/client/hardnested
+                           ${PM3_ROOT}/client/jansson
                            ${APN_ROOT}/lua_android
                            ${PM3_ROOT}/liblua
                            ${PM3_ROOT}/uart
@@ -365,7 +368,7 @@ target_compile_definitions(natives PRIVATE
 if (ANDROID_PLATFORM)
     ## Android specific linker options
     target_link_libraries(natives
-                          android log z)
+                          android log z jansson lua)
 else()
     ## Standard JNI linker options.
 
@@ -376,5 +379,5 @@ else()
     endif()
 
     target_link_libraries(natives
-                          ${JNI_LIBRARIES} ${COMPILER_LIBS} z)
+                          ${JNI_LIBRARIES} ${COMPILER_LIBS} z jansson lua)
 endif()

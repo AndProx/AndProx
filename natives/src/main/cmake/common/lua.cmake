@@ -1,7 +1,7 @@
 ## Proxmark3 liblua build script.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_library(liblua OBJECT
+add_library(lua SHARED
             ${PM3_ROOT}/liblua/lapi.c
             ${PM3_ROOT}/liblua/lcode.c
             ${PM3_ROOT}/liblua/lctype.c
@@ -35,12 +35,12 @@ add_library(liblua OBJECT
             ${PM3_ROOT}/liblua/loadlib.c
             ${PM3_ROOT}/liblua/linit.c)
 
-target_include_directories(liblua PRIVATE
+target_include_directories(lua PRIVATE
                            ${PM3_ROOT}/lua_android
                            ${PM3_ROOT}/liblua)
 
 ## Mostly use Linux stuff, but Android has no f{tell,seek}o.
-target_compile_definitions(liblua PRIVATE
+target_compile_definitions(lua PRIVATE
     LUA_USE_LINUX
     fseeko=fseek
     ftello=ftell)
