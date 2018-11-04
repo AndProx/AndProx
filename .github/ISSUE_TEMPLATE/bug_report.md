@@ -14,24 +14,24 @@ Steps to reproduce the behaviour:
 3. Scroll down to '....'
 4. See error
 
-**Expected behaviour**
+## Expected behaviour
 A clear and concise description of what you expected to happen.
 
 Does this work on your PC?
 
-**Actual behaviour**
+## Actual behaviour
 What happened instead?
 
-**Screenshots / logs**
+## Screenshots / logs
 If applicable, add screenshots to help explain your problem.
 
-**Proxmark details (required):**
+## Proxmark details (required!)
 Tip: If AndProx won't work with your Proxmark3, run PM3 on your computer instead and get the details from there.
 
  - output of `hw version`
  - output of `hw status`
 
-**Device details (required):**
+## Device details (required!)
 Tip: copy this from the _System Information_ screen in AndProx, while your Proxmark3 is connected.
 
  - AndProx version:
@@ -42,5 +42,5 @@ Tip: copy this from the _System Information_ screen in AndProx, while your Proxm
  - Android Build: [eg: PPP1.123.456]
  - AndProx's USB device list: [while PM3 is connected]
 
-**Additional context**
+## Additional context
 Add any other context about the problem here.
