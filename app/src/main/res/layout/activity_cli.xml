@@ -23,23 +23,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/tvOutputBuffer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:bufferType="normal"
-        android:fillViewport="false"
-        android:fontFamily="monospace"
-        android:gravity="bottom"
-        android:textAppearance="@android:style/TextAppearance.Material.Medium"
-        android:typeface="monospace"
+    <ScrollView
+        android:id="@+id/svOutputBuffer"
         app:layout_constraintBottom_toTopOf="@+id/etCommandInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+        <TextView
+            android:id="@+id/tvOutputBuffer"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="0dp"
+            android:paddingBottom="8dp"
+            android:bufferType="normal"
+            android:fontFamily="monospace"
+            android:gravity="bottom"
+            android:textAppearance="@android:style/TextAppearance.Material.Medium"
+            android:typeface="monospace"
+            />
+
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

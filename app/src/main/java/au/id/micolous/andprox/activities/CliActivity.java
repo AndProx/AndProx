@@ -45,6 +45,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +59,7 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
 
     private EditText etCommandInput;
     private TextView tvOutputBuffer;
+    private ScrollView svOutputBuffer;
     private BroadcastReceiver mUsbReceiver;
     private String lastCommand = null;
 
@@ -80,7 +82,10 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
         setContentView(R.layout.activity_cli);
         SendCommandTask.register(this);
 
+        svOutputBuffer = findViewById(R.id.svOutputBuffer);
+
         tvOutputBuffer = findViewById(R.id.tvOutputBuffer);
+        tvOutputBuffer.setMovementMethod(new ScrollingMovementMethod());
         tvOutputBuffer.setTextIsSelectable(true);
         registerForContextMenu(tvOutputBuffer);
 
@@ -106,6 +111,10 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
 
                 Log.i(TAG, "Sending command: " + cmd);
                 writePrompt(cmd);
+
+                // Scroll to bottom
+                scrollToBottom();
+
                 new SendCommandTask().execute(cmd);
                 lockEditField();
                 return true;
@@ -233,6 +242,13 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
             // Unlock the edit field
             etCommandInput.setEnabled(true);
             etCommandInput.setHint(R.string.command_hint);
+
+            // Scroll to bottom
+            scrollToBottom();
         }
+    }
+
+    private void scrollToBottom() {
+        svOutputBuffer.post(() -> svOutputBuffer.smoothScrollTo(0, tvOutputBuffer.getBottom()));
     }
 }
