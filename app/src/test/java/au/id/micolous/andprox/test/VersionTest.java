@@ -111,6 +111,31 @@ public class VersionTest {
     }
 
     @Test
+    public void testIcemanBootloader() {
+        String s = "bootrom: iceman/master/v1.1.0-1626-g4ce2037-suspect 2016-10-17 21:10:17\n" +
+                "os: master/v3.0.1-382-gab20cc3-suspect 2018-08-01 09:37:43\n" +
+                "LF FPGA image built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
+                "HF FPGA image built for 2s30vq100 on 2017/10/27 at 08:30:59\n";
+
+        ProxmarkVersion v = ProxmarkVersion.parse(s);
+
+        assertNotNull(v);
+        assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
+        assertTrue(v.isDirty());
+
+        // $ TZ=UTC date --date='@1533116263.000'
+        // Wed Aug  1 09:37:43 UTC 2018
+        assertEquals(v.getOSBuildTime().getTimeInMillis(), 1533116263000L);
+        assertEquals(3, v.getOSMajorVersion());
+        assertEquals(0, v.getOSMinorVersion());
+        assertEquals(1, v.getOSPatchVersion());
+        assertEquals(382, v.getOSCommitCount());
+        assertEquals("ab20cc3", v.getOSCommitHash());
+
+        assertTrue(v.isSupportedVersion());
+    }
+
+    @Test
     public void testChina() {
         // http://www.proxmark.org/forum/viewtopic.php?id=4919
         String s = "bootrom: /-suspect 2016-11-09 00:59:56\n" +

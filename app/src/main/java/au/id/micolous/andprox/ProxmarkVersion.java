@@ -99,7 +99,7 @@ public class ProxmarkVersion {
             return v;
         }
 
-        if ((lowerS.contains("[ arm ]") && lowerS.contains("[ fpga ]")) || lowerS.contains("iceman/")) {
+        if ((lowerS.contains("[ arm ]") && lowerS.contains("[ fpga ]"))) {
             // Looks like Iceman firmware.
             // TODO: parse this string better when we can support iceman version
             v.mBranch = Branch.ICEMAN;
