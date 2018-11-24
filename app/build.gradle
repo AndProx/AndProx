@@ -31,14 +31,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "au.id.micolous.andprox"
         // Must be at least the API version declared by all dependencies
         // Highest is natives @ API 21+
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode "git -C ${projectDir} rev-list --first-parent --count HEAD".execute().text.trim().toInteger()
         versionName "git -C ${projectDir} describe --always --tags --dirty".execute().text.trim().replaceAll("^v", "")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -80,11 +80,11 @@ dependencies {
     implementation project(':GraphView')
     // implementation 'com.jjoe64:graphview:4.2.1'
 
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:cardview-v7:27.1.1'
-    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
+    implementation "com.android.support:support-v4:$support_version"
+    implementation "com.android.support:cardview-v7:$support_version"
+    implementation "com.android.support:support-annotations:$support_version"
 
     testImplementation 'junit:junit:4.12'
     implementation project(':natives')

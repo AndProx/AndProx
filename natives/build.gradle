@@ -99,9 +99,9 @@ android {
      *
      * As a result, this library (natives) needs to shoot pretty low.
      *
-     * We currently target API 21 as:
-     * - usb-serial-android supports API 19+
-     * - 64-bit architecture support requires API 21+
+     * We currently target API 21 as 64-bit architecture support. This is needed for performance of
+     * maths-heavy parts of Proxmark3 (crypto), and also required by Google Play:
+     * https://android-developers.googleblog.com/2017/12/improving-app-security-and-performance.html
      *
      * For more context, see the NDK platform documentation at:
      * https://android.googlesource.com/platform/ndk/+/master/docs/user/common_problems.md#target-api-set-higher-than-device-api
@@ -109,11 +109,12 @@ android {
      * The rest of AndProx can target higher API levels safely.
      */
     compileSdkVersion 21
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion 21
-        //noinspection OldTargetApi
+        // These warnings are not relevant, per above comment.
+        //noinspection ExpiredTargetSdkVersion,OldTargetApi
         targetSdkVersion 21
         versionCode "git -C ${projectDir} rev-list --first-parent --count HEAD".execute().text.trim().toInteger()
         versionName "git -C ${projectDir} describe --always --tags --dirty".execute().text.trim().replaceAll("^v", "")

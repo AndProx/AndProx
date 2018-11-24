@@ -31,13 +31,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
     defaultConfig {
         // Must be at least the API version declared by all dependencies
         // Highest is natives @ API 21+
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode "git -C ${projectDir} rev-list --first-parent --count HEAD".execute().text.trim().toInteger()
         versionName "git -C ${projectDir} describe --always --tags --dirty".execute().text.trim().replaceAll("^v", "")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
