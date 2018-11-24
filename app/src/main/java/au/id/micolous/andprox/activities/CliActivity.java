@@ -51,20 +51,23 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import au.id.micolous.andprox.R;
-import au.id.micolous.andprox.tasks.SendCommandTask;
+import au.id.micolous.andprox.components.CommandCompletionAdapter;
 import au.id.micolous.andprox.hw.TuneTask;
 import au.id.micolous.andprox.natives.Natives;
+import au.id.micolous.andprox.tasks.SendCommandTask;
 
 public class CliActivity extends AppCompatActivity implements SendCommandTask.SendCommandCallback {
     private static final String TAG = "CliActivity";
 
-    private EditText etCommandInput;
+    private AutoCompleteTextView etCommandInput;
     private TextView tvOutputBuffer;
     private ScrollView svOutputBuffer;
     private BroadcastReceiver mUsbReceiver;
@@ -162,6 +165,9 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
             }
             return false;
         });
+
+        etCommandInput.setThreshold(1);
+        etCommandInput.setAdapter(new CommandCompletionAdapter(this));
 
         Natives.registerPrintAndLogHandler(log -> {
             runOnUiThread(() -> tvOutputBuffer.append("\n" + log));

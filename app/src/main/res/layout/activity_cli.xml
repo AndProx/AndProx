@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="au.id.micolous.andprox.activities.CliActivity">
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/etCommandInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
