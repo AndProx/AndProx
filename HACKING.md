@@ -41,8 +41,8 @@ check in Android Studio project files into the source repository.
 You will need to install the following modules from [Android SDK Manager][4]:
 
 * Android SDK Platform 21
-* Android SDK Platform 27
-* Android Build Tools 27.0.3
+* Android SDK Platform 28
+* Android Build Tools 28.0.3
 * CMake
 * LLDB
 * NDK
@@ -62,18 +62,24 @@ Android hardware with a MIPS processor is not supported.
 
 ## Building firmware
 
-AndProx's build process does not currently produce firmware (patches welcome!), and cannot flash
-firmware on the device.  You'll need to build and flash it with your PC.
+AndProx's build process produces firmware, but cannot flash it to the device.
 
 You'll need to install [Proxmark3's dependencies][5], which includes an ARM toolchain.  The ARM
 toolchain in the Android NDK won't let you build firmware.
 
-You can then build the firmware and the flasher using Proxmark3's build system:
+You can then build the firmware with:
 
 ```
-cd third_party/proxmark3
-make armsrc/obj/fullimage.elf client/flasher
+./gradlew firmware:zipFirmware
 ```
+
+This will produce:
+
+- `firmware/build/toArchive/fullimage.elf`: firmware image matching the PM3 client, which you can
+  flash to your device.
+
+- `firmware/build/zip/fullimage.elf.zip`: ZIP archive containing firmware. This is used when cutting
+  a release of PM3.
 
 See [the instructions on the Proxmark3 wiki for more details about flashing][6].
 
@@ -146,7 +152,7 @@ private key.
 _Linux:_ Run `./third_party/disable_graphview_signing.sh`, which will patch GraphView to disable
 signing.
 
-_Alternatively,_ delete `./third_party/GraphView/maven_push.gradle`, and the reference to
+_Manual:_ delete `./third_party/GraphView/maven_push.gradle`, and the reference to
 `maven_push.gradle` in `./third_party/GraphView/build.gradle`.
 
 ## Running AndProx
