@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -27,61 +27,72 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-package au.id.micolous.andprox.tasks;
+package au.id.micolous.andprox.serial;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
-import au.id.micolous.andprox.serial.TcpSerialAdapter;
+import au.id.micolous.andprox.natives.SerialInterface;
 
-public class ConnectTCPTask extends ConnectTask {
-    private static final String TAG = "ConnectTCPTask";
+/**
+ * TcpSerialAdapter acts as an interface to wrap a {@link Socket} into a
+ * {@link SerialInterface}.
+ */
+public class TcpSerialAdapter implements SerialInterface {
+    @Nullable
+    private Socket mSocket;
 
-    private final InetAddress mAddress;
-    private final int mPort;
+    public TcpSerialAdapter(@NonNull Socket s) throws SocketException {
+        mSocket = s;
 
-    public ConnectTCPTask(Context context, @NonNull InetAddress addr, int port) {
-        super(context);
-
-        mAddress = addr;
-        mPort = port;
+        s.setTcpNoDelay(true);
+        s.setSoTimeout(NativeSerialWrapper.TIMEOUT * 10);
+        s.setReuseAddress(true);
     }
 
-    @Nullable
     @Override
-    protected NativeSerialWrapper connectToDevice(boolean firstTry) {
-        Socket s;
-        try {
-            s = new Socket(mAddress, mPort);
-        } catch (IOException e) {
-            setResult(new ConnectTaskResult().setCommunicationError());
-            Log.d(TAG, "Error opening socket", e);
-            return null;
+    public int send(@NonNull byte[] pbtTx) throws IOException {
+        if (mSocket == null) {
+            return 0;
+        }
+
+        mSocket.getOutputStream().write(pbtTx);
+        return pbtTx.length;
+    }
+
+    @Override
+    public int receive(@NonNull byte[] pbtRx) throws IOException {
+        if (mSocket == null) {
+            return -1;
+        }
+
+        if (mSocket.isClosed() || !mSocket.isConnected()) {
+            throw new IOException("Socket is closed");
         }
 
         try {
-            final NativeSerialWrapper nsw = new NativeSerialWrapper(
-                    new TcpSerialAdapter(s));
+            return mSocket.getInputStream().read(pbtRx);
+        } catch (SocketTimeoutException ignored) {
+            return 0;
+        }
+    }
 
-            setResult(new ConnectTaskResult().setSuccess());
-            return nsw;
+    @Override
+    public void close() {
+        if (mSocket == null) {
+            return;
+        }
+
+        try {
+            mSocket.close();
         } catch (IOException e) {
-            Log.d(TAG, "Error connecting", e);
-            try {
-                s.close();
-            } catch (IOException ignored) {
-                Log.d(TAG, "Error closing socket");
-            }
-
-            setResult(new ConnectTaskResult().setCommunicationError());
-            return null;
+            // ignored
         }
     }
 }

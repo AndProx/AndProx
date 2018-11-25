@@ -27,58 +27,62 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-package au.id.micolous.andprox.natives27.androidTest.utils;
+package au.id.micolous.andprox.serial;
 
-import android.support.test.filters.Suppress;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import java.util.LinkedList;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
 
-import au.id.micolous.andprox.natives.Natives;
+import java.io.IOException;
+
+import au.id.micolous.andprox.natives.NativeSerialWrapper;
+import au.id.micolous.andprox.natives.SerialInterface;
 
 /**
- * Allows unit tests to capture PrintAndLog outputs.
+ * UsbSerialAdapter acts as an interface to wrap a {@link UsbSerialPort} into a
+ * {@link SerialInterface}.
  */
-@Suppress
-public class LogSink implements Natives.PrinterArgs {
-    private LinkedList<String> mLogLines;
-    private StringBuilder mPrint;
+public class UsbSerialAdapter implements SerialInterface {
+    private static final int TIMEOUT = NativeSerialWrapper.TIMEOUT;
 
-    public void reset() {
-        mLogLines = new LinkedList<>();
-        mPrint = new StringBuilder();
-    }
+    @Nullable
+    private UsbSerialPort mPort;
 
-    public LogSink() {
-        reset();
-        Natives.registerPrintHandler(this);
+    public UsbSerialAdapter(@NonNull UsbSerialPort port) {
+        mPort = port;
     }
 
     @Override
-    public void onPrintAndLog(String log) {
-        mLogLines.add(log);
-    }
-
-    @Override
-    public void onPrint(String msg) {
-        mPrint.append(msg);
-    }
-
-    /**
-     * Finds a "needle" in the log lines. Returns null if not found. Case sensitive.
-     * @param needle Case sensitive string to match on.
-     * @return Complete log line that matched.
-     */
-    public String findInLogLines(CharSequence needle) {
-        for (String l : mLogLines) {
-            if (l.contains(needle)) {
-                return l;
-            }
+    public int send(@NonNull byte[] pbtTx) throws IOException {
+        if (mPort == null) {
+            return 0;
         }
 
-        return null;
+        return mPort.write(pbtTx, TIMEOUT);
     }
 
-    public String printBuffer() {
-        return mPrint.toString();
+    @Override
+    public int receive(@NonNull byte[] pbtRx) throws IOException {
+        if (mPort == null) {
+            return -1;
+        }
+
+        return mPort.read(pbtRx, TIMEOUT);
+    }
+
+    @Override
+    public void close() {
+        if (mPort == null) {
+            return;
+        }
+
+        try {
+            mPort.close();
+        } catch (IOException ignored) {
+            // ignored
+        }
+
+        mPort = null;
     }
 }

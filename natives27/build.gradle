@@ -55,6 +55,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.jetbrains:annotations:15.0'
 
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test:testing-support-lib:0.1'
     androidTestImplementation 'org.mockito:mockito-android:2.18.3'
     androidTestImplementation 'org.jetbrains:annotations:15.0'

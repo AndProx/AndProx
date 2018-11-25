@@ -60,7 +60,17 @@
         android:name="android.hardware.usb.host"
         android:required="true" />
 
+    <!--
+      We need somewhere to extract PM3 data files to.
+      TODO: Use new storage APIs instead.
+    -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!--
+      Allows connecting to a PM3 over a TCP socket.  This is useful for running AndProx in an
+      emulator, or in ChromeOS / ARC.
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".AndProxApplication"

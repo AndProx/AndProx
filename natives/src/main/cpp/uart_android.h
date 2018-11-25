@@ -40,6 +40,7 @@ typedef struct {
 } serial_port_android;
 
 void uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw);
+jobject uart_get_native_serial_wrapper(JNIEnv* env);
 
 
 #endif //ANDPROX_ANDROID_UART_H

@@ -96,7 +96,29 @@ public class Natives {
         if (printHandler != null) {
             printHandler.onPrint(msg);
         }
+    }
 
+    private static SerialInterface.Consumer disconnectHandler = null;
+
+    /**
+     * Allows registration of a disconnection handler by the UI.
+     *
+     * This is called after the {@link SerialInterface} has been closed, and the reader thread has
+     * been stopped.
+     *
+     * This is called once, and will automatically unregister the listener before it is called.
+     * @param iface The SerialInterface relevant to the transaction.
+     */
+    public static void registerDisconnectHandler(final SerialInterface.Consumer iface) {
+        disconnectHandler = iface;
+    }
+
+    static void handleDisconnect(SerialInterface iface) {
+        if (disconnectHandler != null) {
+            final SerialInterface.Consumer h = disconnectHandler;
+            disconnectHandler = null;
+            h.accept(iface);
+        }
     }
 
     /**
@@ -118,6 +140,12 @@ public class Natives {
      * Sends "hw version" (get hardware version).
      */
     public native static String sendCmdVersion();
+
+    /**
+     * Sends "hw ping"
+     * @return true if a response was received.
+     */
+    public native static boolean sendCmdPing();
 
     /**
      * Sends an arbitrary command to the PM3 library.

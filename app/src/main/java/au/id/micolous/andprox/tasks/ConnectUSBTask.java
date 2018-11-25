@@ -46,7 +46,10 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 import java.io.IOException;
 import java.util.List;
 
+import au.id.micolous.andprox.handlers.HandlerInterface;
+import au.id.micolous.andprox.handlers.UsbBroadcastHandler;
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
+import au.id.micolous.andprox.serial.UsbSerialAdapter;
 
 import static au.id.micolous.andprox.activities.MainActivity.ACTION_USB_PERMISSION_AUTOCONNECT;
 import static au.id.micolous.andprox.activities.MainActivity.dumpUsbDeviceInfo;
@@ -129,7 +132,7 @@ public class ConnectUSBTask extends ConnectTask {
 
         // We have an open port, pass it back.
         setResult(new ConnectTaskResult().setSuccess());
-        return new NativeSerialWrapper(port);
+        return new NativeSerialWrapper(new UsbSerialAdapter(port));
     }
 
     @Override
@@ -137,5 +140,11 @@ public class ConnectUSBTask extends ConnectTask {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0,
                 new Intent(ACTION_USB_PERMISSION_AUTOCONNECT), 0);
         mUsbManager.requestPermission(mDevice, pendingIntent);
+    }
+
+    @Nullable
+    @Override
+    protected HandlerInterface getHandlerInterface() {
+        return new UsbBroadcastHandler(mDevice);
     }
 }

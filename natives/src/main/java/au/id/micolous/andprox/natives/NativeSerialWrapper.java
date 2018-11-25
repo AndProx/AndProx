@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016-2017 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -30,91 +30,108 @@
 package au.id.micolous.andprox.natives;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
-
-import com.hoho.android.usbserial.driver.UsbSerialPort;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Objects;
 
 /**
- * API wrapper between uart_android.c and usb-serial-for-android.
+ * API wrapper between uart_android.c and Java code.
  */
-public class NativeSerialWrapper {
+public final class NativeSerialWrapper implements Closeable {
     private static final String TAG = "NativeSerialWrapper";
+    private static final boolean DEBUG_COMMS = false;
 
-    @Nullable
-    private final UsbSerialPort mPort;
+    private boolean mClosed = false;
+    private boolean m20PingSent = false;
 
-    @Nullable
-    private final InputStream mInputStream;
-    @Nullable
-    private final OutputStream mOutputStream;
+    private final SerialInterface mSerialInterface;
 
-    @NonNull
-    private final Closeable mCloseable;
+    private long mLastMessageRecieved;
 
     // uart.h defines the timeout as 30ms.
     public static final int TIMEOUT = 30;
 
-    public NativeSerialWrapper(@NonNull UsbSerialPort port) {
-        mPort = port;
-        mInputStream = null;
-        mOutputStream = null;
-        mCloseable = port;
+    public NativeSerialWrapper(@NonNull SerialInterface iface) {
+        mSerialInterface = iface;
+        mLastMessageRecieved = System.currentTimeMillis();
     }
 
-    public NativeSerialWrapper(@NonNull InputStream inputStream,
-                               @NonNull OutputStream outputStream,
-                               @NonNull Closeable closeable) {
-        mPort = null;
-        mInputStream = inputStream;
-        mOutputStream = outputStream;
-        mCloseable = closeable;
-    }
 
     public boolean send(byte[] pbtTx) {
-        //Log.d(TAG, String.format("sending %d bytes", pbtTx.length));
+        if (DEBUG_COMMS) {
+            Log.d(TAG, String.format("sending %d bytes", pbtTx.length));
+        }
+
         try {
-            if (mPort != null) {
-                mPort.write(pbtTx, TIMEOUT);
-                return true;
-            } else if (mOutputStream != null) {
-                mOutputStream.write(pbtTx);
+            int l = mSerialInterface.send(pbtTx);
+
+            if (l == pbtTx.length) {
+                // All data sent
                 return true;
             }
+
+            if (l > 0) {
+                // Partial data failure
+                Log.w(TAG, "partial write in send");
+                return false;
+            }
+
+            Log.e(TAG, "no data sent");
         } catch (IOException ex) {
             Log.e(TAG, "IOException in send", ex);
         }
 
+        close();
         return false;
     }
 
     public int receive(byte[] pbtRx) {
-        //Log.d(TAG, String.format("receiving %d bytes", pbtRx.length));
+        if (DEBUG_COMMS) {
+            Log.d(TAG, String.format("receiving %d bytes", pbtRx.length));
+        }
+
         try {
-            if (mPort != null) {
-                return mPort.read(pbtRx, TIMEOUT);
-            } else if (mInputStream != null) {
-                return mInputStream.read(pbtRx);
+            int len = mSerialInterface.receive(pbtRx);
+
+            final long now = System.currentTimeMillis();
+
+            if (len > 0 || mLastMessageRecieved > now) {
+                mLastMessageRecieved = now;
+                m20PingSent = false;
+            } else {
+                final long delta = now - mLastMessageRecieved;
+                if (delta > 30000) {
+                    // No message in 30 sec, abort
+                    Log.d(TAG, "No activity in 30sec, shutting down");
+                    close();
+                    return -1;
+                } else if (delta > 20000) {
+                    if (!m20PingSent) {
+                        m20PingSent = true;
+                        Log.d(TAG, "No activity in 20sec, sending ping");
+                        // No message in 20 sec, send a ping in the background
+                        new Thread(Natives::sendCmdPing).start();
+                    }
+                }
             }
+            return len;
         } catch (IOException ex) {
             Log.e(TAG, "IOException in receive", ex);
+            close();
         }
 
         return -1;
     }
 
     public void close() {
-        try {
-            mCloseable.close();
-        } catch (IOException ex) {
-            Log.e(TAG, "IOException in close", ex);
+        if (mClosed) {
+            return;
         }
+        mClosed = true;
+
+        mSerialInterface.close();
+        Natives.stopReaderThread();
+        Natives.handleDisconnect(mSerialInterface);
     }
 }

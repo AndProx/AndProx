@@ -50,6 +50,7 @@
 #define SERIAL_PORT_LABEL "AndProx virtual serial port"
 
 UsbCommand versionResp = {0, {0, 0, 0}};
+bool pmThreadRunning = false;
 
 bool OpenProxmarkAndroid(JNIEnv* env, JavaVM* vm, jobject nsw) {
     uart_open_android(env, vm, nsw);
@@ -73,15 +74,26 @@ Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass typ
 
 JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_startReaderThread(JNIEnv *env, jclass type, jobject nsw) {
+    if (pmThreadRunning) {
+        LOGI("Reader thread should already be running, can't start again...");
+        return;
+    }
+
     LOGI("starting reader thread");
     SetOffline(false);
     memset((void*)(&versionResp), 0, sizeof(versionResp));
-    OpenProxmarkAndroid(env, g_ctx.javaVM, nsw);
+    pmThreadRunning = OpenProxmarkAndroid(env, g_ctx.javaVM, nsw);
 }
 
 JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_stopReaderThread(JNIEnv *env, jclass type) {
+    if (!pmThreadRunning) {
+        LOGI("reader thread should not be running, can't start again...");
+        return;
+    }
+
     LOGI("asking reader thread to stop");
+    pmThreadRunning = false;
     CloseProxmark();
     SetOffline(true);
 }
@@ -289,4 +301,18 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdTune__ZZ(JNIEnv *env, jclass 
 JNIEXPORT jboolean JNICALL
 Java_au_id_micolous_andprox_natives_Natives_isOffline(JNIEnv *env, jclass type) {
     return (jboolean) IsOffline();
+}
+
+JNIEXPORT jboolean JNICALL
+Java_au_id_micolous_andprox_natives_Natives_sendCmdPing(JNIEnv *env, jclass type) {
+    UsbCommand c = {CMD_PING};
+    SendCommand(&c);
+
+    // Make sure we collect the CMD_ACK back
+    UsbCommand resp;
+    if (!WaitForResponseTimeoutW(CMD_ACK, &resp, 10000, false)) {
+        return JNI_FALSE;
+    }
+
+    return JNI_TRUE;
 }

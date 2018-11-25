@@ -38,10 +38,12 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +54,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.function.Predicate;
+
 import au.id.micolous.andprox.R;
+import au.id.micolous.andprox.handlers.HandlerInterface;
+import au.id.micolous.andprox.natives.SerialInterface;
 import au.id.micolous.andprox.tasks.SendCommandTask;
 import au.id.micolous.andprox.hw.TuneTask;
 import au.id.micolous.andprox.natives.Natives;
@@ -63,12 +69,19 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
     private EditText etCommandInput;
     private TextView tvOutputBuffer;
     private ScrollView svOutputBuffer;
-    private BroadcastReceiver mUsbReceiver;
+    private boolean mDisconnected = false;
+
     private FloatingActionButton fabCli;
+    @Nullable
     private String lastCommand = null;
+    @Nullable
+    private HandlerInterface mHandlerInterface = null;
+    @Nullable
+    private BroadcastReceiver mDisconnectBroadcastReciever = null;
 
     private static final String LAST_COMMAND = "last_command";
     private static final String OUTPUT_BUFFER = "output_buffer";
+    public static final String HANDLER_INTERFACE = "handler_interface";
 
     private void writePrompt(String cmd) {
         Natives.javaPrintAndLog("proxmark3> " + cmd);
@@ -100,6 +113,15 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cli);
         SendCommandTask.register(this);
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                mHandlerInterface = extras.getParcelable(HANDLER_INTERFACE);
+            }
+        } else {
+            mHandlerInterface = savedInstanceState.getParcelable(HANDLER_INTERFACE);
+        }
 
         fabCli = findViewById(R.id.fabCli);
         fabCli.setOnClickListener(v -> scrollToBottom());
@@ -161,50 +183,78 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
             }
         });
 
-        mUsbReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
-                    UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (device != null) {
-                        Log.e(TAG, "USB device disconnected");
-                        Natives.stopReaderThread();
+        if (mHandlerInterface != null) {
+            final IntentFilter disconnectFilter = mHandlerInterface.getDisconnectBroadcastFilter();
+            final HandlerInterface.IntentPredicate disconnectPredicate = mHandlerInterface.getDisconnectBroadcastPredicate();
 
-                        // Lock the edit field to indicate we can't run
-                        etCommandInput.setEnabled(false);
-                        etCommandInput.setHint(R.string.usb_disconnected_title);
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(CliActivity.this);
-                        builder.setMessage(R.string.usb_disconnected)
-                                .setTitle(R.string.usb_disconnected_title)
-                                .setCancelable(false)
-                                .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
-                        builder.show();
+            if (disconnectFilter != null) {
+                mDisconnectBroadcastReciever = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        if (disconnectPredicate == null || disconnectPredicate.test(intent)) {
+                            CliActivity.this.handleDisconnect(true);
+                        }
                     }
-                }
-            }
-        };
+                };
 
-        IntentFilter filter = new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        registerReceiver(mUsbReceiver, filter);
+                registerReceiver(mDisconnectBroadcastReciever, disconnectFilter);
+            }
+        }
+
+        Natives.registerDisconnectHandler(iface -> handleDisconnect(false));
 
         if (SendCommandTask.getProgressingCommands() > 0) {
             lockEditField();
         }
     }
 
+    private void handleDisconnect(final boolean shouldStopReaderThread) {
+        if (mDisconnected) {
+            // Only handle it once.
+            return;
+        }
+
+        mDisconnected = true;
+        Log.e(TAG, "USB device disconnected");
+
+        runOnUiThread(() -> {
+            if (shouldStopReaderThread) {
+                Natives.stopReaderThread();
+            }
+
+            // Lock the edit field to indicate we can't run
+            etCommandInput.setEnabled(false);
+            etCommandInput.setHint(R.string.usb_disconnected_title);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(CliActivity.this);
+            builder.setMessage(R.string.usb_disconnected)
+                    .setTitle(R.string.usb_disconnected_title)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
+            builder.show();
+        });
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         Natives.registerPrintHandler(null);
-        unregisterReceiver(mUsbReceiver);
+        if (mDisconnectBroadcastReciever != null) {
+            unregisterReceiver(mDisconnectBroadcastReciever);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(OUTPUT_BUFFER, tvOutputBuffer.getText().toString());
         outState.putString(LAST_COMMAND, lastCommand);
+        outState.putParcelable(HANDLER_INTERFACE, mHandlerInterface);
 
         super.onSaveInstanceState(outState);
     }

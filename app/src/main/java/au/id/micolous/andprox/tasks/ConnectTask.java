@@ -32,6 +32,7 @@ package au.id.micolous.andprox.tasks;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
@@ -54,6 +55,7 @@ import au.id.micolous.andprox.ProxmarkVersion;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.activities.CliActivity;
 import au.id.micolous.andprox.activities.MainActivity;
+import au.id.micolous.andprox.handlers.HandlerInterface;
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
 import au.id.micolous.andprox.natives.Natives;
 
@@ -190,8 +192,6 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
             // Port is left open at this point.
             return new ConnectTaskResult().setSuccess();
         } else {
-            Natives.stopReaderThread();
-            Natives.initProxmark();
             nsw.close();
             return new ConnectTaskResult().setUnsuppported();
         }
@@ -245,11 +245,17 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
         } else if (result.success) {
             // Start main activity, yay!
             Intent intent = new Intent(c, CliActivity.class);
+            intent.putExtra(CliActivity.HANDLER_INTERFACE, getHandlerInterface());
             //intent.putExtra(HomeActivity.HWINFO_PARCEL_KEY, result.hwinfo);
             c.startActivity(intent);
             //finish();
         } else {
             Log.d(TAG, "Unhandled ConnectTaskResult state!");
         }
+    }
+
+    @Nullable
+    protected HandlerInterface getHandlerInterface() {
+        return null;
     }
 }
