@@ -4,12 +4,12 @@
 
     <item
         android:id="@+id/miCopySysInfo"
-        android:icon="?android:attr/actionModeCopyDrawable"
-        android:title="Copy"
+        android:icon="@drawable/material_ic_content_copy_24dp"
+        android:title="@android:string/copy"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/miShareSysInfo"
-        android:icon="?attr/actionModeShareDrawable"
-        android:title="Share"
+        android:icon="@drawable/material_ic_share_24dp"
+        android:title="@string/share"
         app:showAsAction="ifRoom" />
 </menu>

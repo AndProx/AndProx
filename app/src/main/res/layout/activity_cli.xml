@@ -61,7 +61,7 @@
         android:layout_margin="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:src="@android:drawable/arrow_down_float"
+        android:src="@drawable/material_ic_arrow_downward_24dp"
         android:contentDescription="@string/scroll_to_bottom"
         app:layout_constraintBottom_toBottomOf="@+id/svOutputBuffer"
         app:layout_constraintEnd_toEndOf="parent" />

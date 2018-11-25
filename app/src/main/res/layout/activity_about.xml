@@ -30,7 +30,7 @@
                 android:id="@+id/tabItem2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Open Source Licenses" />
+                android:text="@string/open_source_licenses" />
 
         </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>

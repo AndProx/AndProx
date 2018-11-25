@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/miRecall"
-        android:icon="@android:drawable/ic_media_previous"
+        android:icon="@drawable/material_ic_replay_24dp"
         android:title="@string/recall"
         app:showAsAction="ifRoom" />
 

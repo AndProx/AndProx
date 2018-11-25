@@ -11,3 +11,7 @@
 	url = https://github.com/proxmark/proxmark3.git
 	branch = master
 
+[submodule "third_party/material-design-icons/icons"]
+	path = third_party/material-design-icons/icons
+	url = https://github.com/google/material-design-icons.git
+	branch = master

@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:text="LF Antenna"
+                        android:text="@string/lf_antenna"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="@android:style/TextAppearance.Material.Medium"
@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:text="HF Antenna"
+                        android:text="@string/hf_antenna"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="@android:style/TextAppearance.Material.Medium"

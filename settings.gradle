@@ -3,3 +3,5 @@ include ':usb-serial-for-android'
 project(':usb-serial-for-android').projectDir = new File('third_party/usb-serial-for-android/usbSerialForAndroid')
 include ':GraphView'
 project(':GraphView').projectDir = new File('third_party/GraphView')
+include ':material-design-icons'
+project(':material-design-icons').projectDir = new File('third_party/material-design-icons')

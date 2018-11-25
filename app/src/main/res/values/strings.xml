@@ -62,9 +62,6 @@
 
     <string name="title_activity_home">AndProx: Proxmark3</string>
 
-    <string name="hf_antenna">HF Antenna</string>
-    <string name="lf_antenna">LF Antenna</string>
-
     <string name="lf">Low Frequency</string>
 
     <string name="hf">High Frequency</string>
@@ -106,4 +103,8 @@
     <string name="retry">Retry</string>
     <string name="cancel">Cancel</string>
     <string name="scroll_to_bottom">Scroll to bottom</string>
+    <string name="share">Share</string>
+    <string name="open_source_licenses">Open Source Licenses</string>
+    <string name="lf_antenna">LF Antenna</string>
+    <string name="hf_antenna">HF Antenna</string>
 </resources>

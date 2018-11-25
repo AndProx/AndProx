@@ -74,6 +74,7 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    implementation project(':material-design-icons')
     implementation project(':usb-serial-for-android')
 
     // GPLv2 with linking exception
