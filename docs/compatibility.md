@@ -87,9 +87,9 @@ The following **will not work under any circumstances, even if it appears in ano
 
 Manufacturer | Device            | Connector   | Notes
 -------------|-------------------|-------------|--------
-Google / LG  : Nexus 4           : USB Micro-B : [Does not supply 5v][nex4].
+Google / LG  | Nexus 4           | USB Micro-B | [Does not supply 5v][nex4].
              :                   :             : Reverting that patch _might_ allow use with
-             |                   |             | OTG-Y cable.
+             :                   :             : OTG-Y cable.
 
 ## Known compatible devices
 
