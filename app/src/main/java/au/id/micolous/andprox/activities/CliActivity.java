@@ -46,10 +46,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -153,8 +149,16 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
             return false;
         });
 
-        Natives.registerPrintAndLogHandler(log -> {
-            runOnUiThread(() -> tvOutputBuffer.append("\n" + log));
+        Natives.registerPrintHandler(new Natives.PrinterArgs() {
+            @Override
+            public void onPrintAndLog(String log) {
+                runOnUiThread(() -> tvOutputBuffer.append("\n" + log));
+            }
+
+            @Override
+            public void onPrint(String msg) {
+                runOnUiThread(() -> tvOutputBuffer.append(msg));
+            }
         });
 
         mUsbReceiver = new BroadcastReceiver() {
@@ -193,7 +197,7 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Natives.registerPrintAndLogHandler(null);
+        Natives.registerPrintHandler(null);
         unregisterReceiver(mUsbReceiver);
     }
 

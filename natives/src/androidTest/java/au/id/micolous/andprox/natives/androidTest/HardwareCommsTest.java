@@ -112,7 +112,7 @@ public class HardwareCommsTest {
                 });
 
         Natives.initProxmark();
-        Natives.registerPrintAndLogHandler(mLogSink);
+        Natives.registerPrintHandler(mLogSink);
     }
 
     @Test

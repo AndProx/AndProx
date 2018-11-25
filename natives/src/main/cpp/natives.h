@@ -50,9 +50,9 @@ static const char* kTAG = "Natives";
 
 #else
 // Non-Android JNI
-#define LOGI printf
-#define LOGW printf
-#define LOGE printf
+#define LOGI PrintAndLog
+#define LOGW PrintAndLog
+#define LOGE PrintAndLog
 
 #endif
 
@@ -76,6 +76,7 @@ typedef struct {
 
     jclass jcNatives;
     jmethodID jmPrintAndLog;
+    jmethodID jmPrintf;
 
     int      done;
 
