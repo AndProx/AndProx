@@ -57,6 +57,8 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -65,6 +67,7 @@ import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
 import au.id.micolous.andprox.natives.Natives;
+import au.id.micolous.andprox.tasks.ConnectTCPTask;
 import au.id.micolous.andprox.tasks.ConnectUSBTask;
 import au.id.micolous.andprox.tasks.CopyTask;
 
@@ -334,13 +337,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
+
     public void btnConnectTcp(View view) {
-        // FIXME: don't hard code this.
         InetAddress addr;
 
         try {
-            addr = InetAddress.getByName("host");
+            // FIXME: don't hard code this.
+            addr = InetAddress.getByName("10.0.2.2"); /* android emulator host */
         } catch (UnknownHostException e) {
             Log.d(TAG, "couldn't resolve name");
             return;
@@ -348,7 +351,6 @@ public class MainActivity extends AppCompatActivity {
 
         new ConnectTCPTask(this, addr,1234).execute(true);
     }
-    */
 
     /**
      * Run PM3 client in offline mode.
