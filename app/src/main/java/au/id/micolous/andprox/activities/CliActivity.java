@@ -70,8 +70,6 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
     private BroadcastReceiver mUsbReceiver;
     private FloatingActionButton fabCli;
     private String lastCommand = null;
-    private Animation slideUpAnimation;
-    private Animation slideDownAnimation;
 
     private static final String LAST_COMMAND = "last_command";
     private static final String OUTPUT_BUFFER = "output_buffer";
@@ -94,13 +92,10 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
             return;
         }
 
-        fabCli.clearAnimation();
         if (showFab) {
-            fabCli.setVisibility(View.VISIBLE);
-            fabCli.startAnimation(slideUpAnimation);
+            fabCli.show();
         } else {
-            fabCli.startAnimation(slideDownAnimation);
-            fabCli.postOnAnimation(() -> fabCli.setVisibility(View.GONE));
+            fabCli.hide();
         }
     }
 
@@ -109,11 +104,6 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cli);
         SendCommandTask.register(this);
-
-        slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
-        slideUpAnimation.setInterpolator(new DecelerateInterpolator());
-        slideDownAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_down);
-        slideDownAnimation.setInterpolator(new AccelerateInterpolator());
 
         fabCli = findViewById(R.id.fabCli);
         fabCli.setOnClickListener(v -> scrollToBottom());
@@ -125,7 +115,7 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
 
         svOutputBuffer = findViewById(R.id.svOutputBuffer);
 
-        fabCli.setVisibility(View.GONE);
+        fabCli.hide();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             svOutputBuffer.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> redrawFab());
         }

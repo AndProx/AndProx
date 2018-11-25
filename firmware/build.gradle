@@ -72,6 +72,7 @@ task zipFirmware(type: Zip) {
     archiveName 'fullimage.elf.zip'
     destinationDir = file("${buildDir}/zip")
     from "${buildDir}/toArchive"
+    preserveFileTimestamps false
 }
 
 artifacts {
