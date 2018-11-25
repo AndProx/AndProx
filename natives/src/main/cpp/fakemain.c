@@ -46,34 +46,55 @@ const char* get_my_executable_directory(void)
     return g_ctx.executable_directory;
 }
 
-void PrintAndLog(char *fmt, ...)
-{
-    char buf[1024];
+/*
+ * Sends a null-terminated string to Java PrintAndLog.
+ */
+void _sendLogToJava(char* buf) {
     GET_ENV(g_ctx.javaVM)
     if (env == NULL) return;
 
-    // Write out the message, formatted, into buf
-    va_list argptr;
-    va_start(argptr, fmt);
-    vsnprintf(buf, sizeof(buf), fmt, argptr);
-    va_end(argptr);
-
-    // Send the string to Java
     jstring s = (*env)->NewStringUTF(env, buf);
     (*env)->CallStaticVoidMethod(env, g_ctx.jcNatives, g_ctx.jmPrintAndLog, s);
     (*env)->DeleteLocalRef(env, s);
 }
 
+void PrintAndLog(char *fmt, ...)
+{
+    char buf[1024];
+    size_t buf_len = sizeof(buf);
+    memset((void*)buf, 0, buf_len);
+
+    // Write out the message, formatted, into buf
+    va_list argptr;
+    va_start(argptr, fmt);
+    vsnprintf(buf, buf_len, fmt, argptr);
+    va_end(argptr);
+
+    _sendLogToJava(buf);
+}
+
 void PrintAndLogL(char* s, size_t len) {
     GET_ENV(g_ctx.javaVM)
 
-    char* buf = malloc(sizeof(len) + 1);
-    memset((void*)buf, 0, sizeof(len) + 1);
+    char* buf = malloc(len + 1);
+    memset((void*)buf, 0, len + 1);
     memcpy(buf, s, len);
 
-    // Send the string to Java
-    jstring js = (*env)->NewStringUTF(env, buf);
-    (*env)->CallStaticVoidMethod(env, g_ctx.jcNatives, g_ctx.jmPrintAndLog, js);
-    (*env)->DeleteLocalRef(env, js);
+    _sendLogToJava(buf);
     free(buf);
+}
+
+int printf(const char *fmt, ...) {
+    char buf[1024];
+    size_t buf_len = sizeof(buf);
+    memset((void*)buf, 0, buf_len);
+
+    // Write out the message, formatted, into buf
+    va_list argptr;
+    va_start(argptr, fmt);
+    size_t len = (size_t)vsnprintf(buf, buf_len, fmt, argptr);
+    va_end(argptr);
+
+    _sendLogToJava(buf);
+    return (int) (len > buf_len ? buf_len : len);
 }

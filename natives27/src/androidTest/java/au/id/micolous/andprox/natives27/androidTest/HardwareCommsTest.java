@@ -52,7 +52,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -113,7 +112,7 @@ public class HardwareCommsTest {
                 });
 
         Natives.initProxmark();
-        Natives.registerPrintAndLogHandler(mLogSink);
+        Natives.registerPrintHandler(mLogSink);
     }
 
     @Test

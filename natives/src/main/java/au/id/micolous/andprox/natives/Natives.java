@@ -34,7 +34,7 @@ import android.util.Log;
 
 public class Natives {
     private static final String TAG = "Natives";
-    private static PrinterArgs printAndLogHandler;
+    private static PrinterArgs printHandler;
 
     static String PM3_STORAGE_ROOT = null;
 
@@ -46,7 +46,16 @@ public class Natives {
          * asynchronously).
          * @param log A single log line to be displayed.
          */
-        void onPrint(String log);
+        void onPrintAndLog(String log);
+
+        /**
+         * Called when PM3 calls printf.
+         *
+         * This blocks the Receiver thread in the client, so should execute quickly (or
+         * asynchronously).
+         * @param msg Text to show on screen. May not be a full line.
+         */
+        void onPrint(String msg);
     }
 
     /**
@@ -55,27 +64,39 @@ public class Natives {
      * Only one handler can be active at any time.
      * @param pa A PrinterArgs implementation to receive the messages.
      */
-    public static void registerPrintAndLogHandler(PrinterArgs pa) {
-        printAndLogHandler = pa;
+    public static void registerPrintHandler(PrinterArgs pa) {
+        printHandler = pa;
     }
 
     /**
      * Used internally by natives.c to surface PrintAndLog events into Java space.
      * @param log A log line
      */
+    @SuppressWarnings("unused")
     public static void javaPrintAndLog(String log) {
         try {
             Log.d(TAG, log);
         } catch (RuntimeException ignored) {}
 
-        if (printAndLogHandler != null) {
-            printAndLogHandler.onPrint(log);
+        if (printHandler != null) {
+            printHandler.onPrintAndLog(log);
         }
     }
 
-    static void javaPrintf(String log) {
-        // TODO
-        Log.d(TAG, log);
+    /**
+     * Used internally by natives.c to surface printf events into Java space.
+     * @param msg Text to show on screen
+     */
+    @SuppressWarnings("unused")
+    public static void javaPrintf(String msg) {
+        try {
+            Log.d(TAG, msg);
+        } catch (RuntimeException ignored) {}
+
+        if (printHandler != null) {
+            printHandler.onPrint(msg);
+        }
+
     }
 
     /**

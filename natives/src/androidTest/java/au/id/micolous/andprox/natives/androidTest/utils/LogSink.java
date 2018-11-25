@@ -31,6 +31,9 @@ package au.id.micolous.andprox.natives.androidTest.utils;
 
 import android.test.suitebuilder.annotation.Suppress;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Matcher;
+
 import java.util.LinkedList;
 
 import au.id.micolous.andprox.natives.Natives;
@@ -41,19 +44,26 @@ import au.id.micolous.andprox.natives.Natives;
 @Suppress
 public class LogSink implements Natives.PrinterArgs {
     private LinkedList<String> mLogLines;
+    private StringBuilder mPrint;
 
     public void reset() {
         mLogLines = new LinkedList<>();
+        mPrint = new StringBuilder();
     }
 
     public LogSink() {
         reset();
-        Natives.registerPrintAndLogHandler(this);
+        Natives.registerPrintHandler(this);
     }
 
     @Override
-    public void onPrint(String log) {
+    public void onPrintAndLog(String log) {
         mLogLines.add(log);
+    }
+
+    @Override
+    public void onPrint(String msg) {
+        mPrint.append(msg);
     }
 
     /**
@@ -69,5 +79,9 @@ public class LogSink implements Natives.PrinterArgs {
         }
 
         return null;
+    }
+
+    public String printBuffer() {
+        return mPrint.toString();
     }
 }
