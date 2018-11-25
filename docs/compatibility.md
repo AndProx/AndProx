@@ -1,0 +1,113 @@
+# Compatibility
+
+## Firmware compatibility
+
+This project targets the [mainline firmware][mainline], so some functionality may not be available
+or broken if you use another branch.
+
+Like Proxmark3, _the client and the firmware on the device are symbiotic_ -- and there is **no**
+guarantee of multi-version compatibility.
+
+**To get correct firmware,** you need to [flash it with your computer][flashing].  You cannot flash
+firmware with AndProx.
+
+* If you're running a "versioned release" of AndProx (or got it from the Google Play Store), then
+  you need to download [whatever firmware matches that version of AndProx][and-rel].
+
+* If you're running AndProx from `git`, then you should build your firmware from whatever commit
+  `third_party/proxmark3` points at.  [See the HACKING doc for more details][hacking].
+
+> **Note:** You only need to ensure the _firmware_ matches the version used by AndProx.
+>
+> _There is no need to reflash the bootloader for AndProx._ AndProx can't reflash your device.
+>
+> _Do not reflash the bootloader, except using PM3's official version._ Improperly reflashing the
+> bootloader can brick your PM3, and requires a JTAG interface device to fix it.
+
+### Incompatible firmware
+
+_AndProx actively refuses to run_ if you have an old or known incompatible firmware. _This is
+intentional_, as I don't want to deal with false bug reports from people who don't read the
+documentation first.
+
+The following firmware is _blocked by default_:
+
+* _Old firmware is blocked:_ this should be self-explanatory.
+
+* _Firmware without version data is blocked:_ this should also be self-explanatory. This generally
+  indicates that the firmware was built improperly. This is common with devices sold on Chinese
+  marketplace websites.
+
+* _Firmware that mentions any marketplace website is blocked:_ I have no idea what modifications
+  have been done to the firmware.
+
+* _iceman's firmware is blocked:_ iceman's fork tends to get a lot of bleeding-edge functionality
+  before mainline PM3. As a result, patches have been merged in a different order, leading to
+  incompatible RPC calls.
+
+  I'm investigating an "Iceman AndProx" build, but first priority is to get mainline stable. Getting
+  it working on iceman's fork will require many patches to be applied to it.
+
+_Developers_ are welcome to disable these checks for themselves, _at their own risk_ by modifying
+AndProx's source code. The method to change is `ProxmarkVersion.isSupportedVersion`.
+
+Bug reports with incompatible or non-supported firmware will not be accepted.
+
+Note: AndProx 2.0.3 and earlier had an issue where devices with _iceman's bootloader_ (but
+_mainline OS/firmware_) would be blocked.  This is particularly an issue with the Proxmark3 RDV4
+hardware.  _Later versions of AndProx have this issue fixed -- so upgrade if this impacts you._
+
+
+[mainline]: https://github.com/Proxmark/proxmark3
+[and-rel]: https://github.com/AndProx/AndProx/releases
+[hacking]: ../HACKING.md
+[flashing]: https://github.com/Proxmark/proxmark3/wiki/flashing
+
+
+## Known incompatible devices
+
+The following **will not work under any circumstances, even if it appears in another list:**
+
+* [**Any device with a version of Android older than 5.0.**][andold] You need to update your
+  device's software. Contact your phone manufacturer for more information, or replace your device.
+
+* **Any device with the MIPS CPU architecture.** These are fairly rare and no longer supported by
+  Android. You will need to get a device with an x86 or ARM CPU instead.
+
+### Non-working for USB connections
+
+* [**Any device with the `cdc_acm` kernel module.**][cdcacm]  You will need to unload or unbind the
+  module before running AndProx.
+
+* **App Runtime for ChromeOS (ARC)**. [ARC does not support USB Host.][arcusb]
+
+* [The Android Emulator in the Android SDK.](./debugging/android-emulator.md)
+
+### Additional known incompatible devices
+
+Manufacturer | Device            | Connector   | Notes
+-------------|-------------------|-------------|--------
+Google / LG  | Nexus 4           | USB Micro-B | [Does not supply 5v][nex4]. Reverting that patch _might_ allow use with OTG-Y cable.
+
+## Known compatible devices
+
+Note: Even if the device appears in the list below, you **always need Android 5.0 or later to run
+AndProx.** If it is not available from the manufacturer, you'll need to install a third-party
+Android distribution to get it.
+
+Manufacturer | Device            | Connector | Y-cable           | Notes
+-------------|-------------------|-----------|-------------------|--------
+Google       | Pixel 1 / 1 XL    | USB C     | Needed for HF     | Device includes USB-C to A dongle
+Google / LG  | Nexus 5X          | USB C     |
+Samsung      | Galaxy S8         | USB C     |
+Sony         | Bravia TV (2013+) | USB A     | Not required      | [Product name bug][prod-name]
+
+
+[oldand]: https://github.com/AndProx/AndProx/issues/7
+[cdcacm]: https://github.com/AndProx/AndProx/issues/8
+[arcusb]: https://developer.android.com/topic/arc/manifest.html#incompat-entries
+
+[nex4]: https://android.googlesource.com/device/lge/mako/+/fe9f2793424c61588c093df951733347d0d24df4%5E%21/
+
+[prod-name]: ./connecting.md#product-name
+
