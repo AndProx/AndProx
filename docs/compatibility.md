@@ -60,7 +60,7 @@ hardware.  _Later versions of AndProx have this issue fixed -- so upgrade if thi
 
 [mainline]: https://github.com/Proxmark/proxmark3
 [and-rel]: https://github.com/AndProx/AndProx/releases
-[hacking]: ../HACKING.md
+[hacking]: ./hacking.md
 [flashing]: https://github.com/Proxmark/proxmark3/wiki/flashing
 
 
@@ -103,7 +103,7 @@ Samsung      | Galaxy S8         | USB C     |
 Sony         | Bravia TV (2013+) | USB A     | Not required      | [Product name bug][prod-name]
 
 
-[oldand]: https://github.com/AndProx/AndProx/issues/7
+[andold]: https://github.com/AndProx/AndProx/issues/7
 [cdcacm]: https://github.com/AndProx/AndProx/issues/8
 [arcusb]: https://developer.android.com/topic/arc/manifest.html#incompat-entries
 
