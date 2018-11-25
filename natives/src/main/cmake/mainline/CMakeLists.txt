@@ -353,11 +353,17 @@ target_compile_definitions(pm3 PRIVATE
     WITH_SMARTCARD
 )
 
+target_compile_options(pm3 BEFORE PRIVATE
+        -fno-builtin-printf)
+
 # PM3_GIT_VER and PM3_TS are variables normally set by PM3's build system which are replicated here.
 target_compile_definitions(natives PRIVATE
     PM3_GIT_VER="${PM3_GIT_VER}"
     PM3_TS="${PM3_TS}"
 )
+
+target_compile_options(natives BEFORE PRIVATE
+        -fno-builtin-printf)
 
 # Defines needed for Proxmark3's version of zlib: (disabled)
 #    Z_SOLO

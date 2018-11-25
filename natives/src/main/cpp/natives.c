@@ -131,6 +131,12 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
         return JNI_ERR;
     }
 
+    g_ctx.jmPrintf = (*env)->GetStaticMethodID(env, g_ctx.jcNatives, "javaPrintf", "(Ljava/lang/String;)V");
+    if (!g_ctx.jmPrintf) {
+        LOGE("Failed to retrieve Natives.javaPrintf() methodID @ line %d", __LINE__);
+        return JNI_ERR;
+    }
+
     jmethodID jmPM3StorageRoot = (*env)->GetStaticMethodID(env, g_ctx.jcNatives, "getPM3StorageRoot", "()Ljava/lang/String;");
 
     if (!jmPM3StorageRoot) {
