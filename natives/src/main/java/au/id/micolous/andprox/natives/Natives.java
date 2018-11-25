@@ -115,7 +115,7 @@ public class Natives {
     public native static void stopReaderThread();
 
     /**
-     * Sends "hw version" (get hardware version).  Currently does not return this data...
+     * Sends "hw version" (get hardware version).
      */
     public native static String sendCmdVersion();
 
