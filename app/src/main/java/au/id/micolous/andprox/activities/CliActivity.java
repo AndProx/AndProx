@@ -115,7 +115,7 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
 
         svOutputBuffer = findViewById(R.id.svOutputBuffer);
 
-        fabCli.setVisibility(View.GONE);
+        fabCli.hide();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             svOutputBuffer.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> redrawFab());
         }
