@@ -38,6 +38,8 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -61,22 +63,21 @@ import static au.id.micolous.andprox.activities.MainActivity.dumpUsbDeviceInfo;
 /**
  * Task used to connect to a PM3
  */
-public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTaskResult> {
+public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTaskResult> {
     private static final String TAG = "ConnectTask";
 
     private ProgressDialog mProgressDialog;
-    private UsbManager mUsbManager;
-    private UsbDevice mDevice = null;
     private WeakReference<Context> mContext;
 
     class ConnectTaskResult {
-        boolean noDevicesPresent = false;
-        boolean needPermissions = false;
-        boolean alreadyAskedPermissions = false;
-        boolean communicationError = false;
-        boolean timeoutError = false;
-        boolean success = false;
-        boolean unsupported = false;
+        private boolean noDevicesPresent = false;
+        private boolean needPermissions = false;
+        private boolean alreadyAskedPermissions = false;
+        private boolean communicationError = false;
+        private boolean timeoutError = false;
+        private boolean success = false;
+        private boolean unsupported = false;
+        private boolean internalError = false;
 
         ConnectTaskResult setNoDevicesPresent() {
             this.noDevicesPresent = true;
@@ -113,128 +114,92 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
             this.unsupported = true;
             return this;
         }
+
+        private ConnectTaskResult setInternalError() {
+            this.internalError = true;
+            return this;
+        }
     }
 
-    public ConnectTask(Context context) {
+    protected ConnectTask(Context context) {
         mContext = new WeakReference<>(context);
     }
 
+    public Context getContext() {
+        return mContext.get();
+    }
 
     @Override
-    protected void onPreExecute() {
+    protected final void onPreExecute() {
         super.onPreExecute();
-        Context c = mContext.get();
+        final Context c = mContext.get();
 
         mProgressDialog = ProgressDialog.show(c,
                 c.getString(R.string.connecting_pm3),
                 c.getString(R.string.wait_short),
                 true, false);
-        mUsbManager = (UsbManager) c.getSystemService(Context.USB_SERVICE);
 
+        onPreExecute(c);
     }
+
+    protected void onPreExecute(final Context c) {
+        // Do nothing by default.
+    }
+
+    @Nullable
+    private ConnectTaskResult mResult = null;
+
+    protected final void setResult(@NonNull ConnectTaskResult result) {
+        mResult = result;
+    }
+
+    @Nullable
+    protected abstract NativeSerialWrapper connectToDevice(boolean firstTry);
 
     @Override
     protected ConnectTaskResult doInBackground(Boolean... booleans) {
-        // List all the devices
-        dumpUsbDeviceInfo(mUsbManager);
 
-        // Try to connect to proxmark
-        // Find all available drivers from attached devices.
-        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(mUsbManager);
-        Log.d(TAG, String.format("Found %d available driver(s)", availableDrivers.size()));
-        if (availableDrivers.isEmpty()) {
-            return new ConnectTaskResult().setNoDevicesPresent();
-        }
-
-        // Open a connection to the first available driver.
-        UsbSerialDriver driver = availableDrivers.get(0);
-        mDevice = driver.getDevice();
-        Log.d(TAG, String.format("Connecting to %s (%04x:%04x)...", mDevice.getDeviceName(), mDevice.getVendorId(), mDevice.getProductId()));
-        UsbDeviceConnection connection = null;
-
-        try {
-            connection = mUsbManager.openDevice(mDevice);
-        } catch (SecurityException e) {
-            Log.e(TAG, "Error opening USB mDevice, no permission!", e);
-        }
-        if (connection == null) {
-            Log.e(TAG, "error opening usb mDevice");
-            if (booleans[0]) {
-                // We were called from a button press, so we can ask again.
-                Log.d(TAG, "asking for permission again");
-                return new ConnectTaskResult().setNeedPermissions();
-            } else {
-                // Permissions still not working, but we have a null view (called from mUsbReceiver)
-                Log.e(TAG, "permissions still not working");
-
-                return new ConnectTaskResult().setAlreadyAskedPermissions();
-            }
-        }
-
-        // Read some data! Most have just one port (port 0).
-        UsbSerialPort port = driver.getPorts().get(0);
         boolean success = false;
-        try {
-            port.open(connection);
-            //port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+        final NativeSerialWrapper nsw = connectToDevice(booleans[0]);
 
-            NativeSerialWrapper nsw = new NativeSerialWrapper(port);
-            Natives.initProxmark();
-            Natives.startReaderThread(nsw);
-
-            String version = Natives.sendCmdVersion();
-
-            if (version == null) {
-                return new ConnectTaskResult().setTimeoutError();
-            }
-
-            // Check if this version is good for us.
-            ProxmarkVersion v = ProxmarkVersion.parse(version);
-            if (v != null && v.isSupportedVersion()) {
-                success = true;
-            } else {
-                Natives.stopReaderThread();
-                Natives.initProxmark();
-                return new ConnectTaskResult().setUnsuppported();
-            }
-
-
-                /*
-                dev = new ProxmarkDevice(port);
-
-                // Pump out the messages for a bit
-                try {
-                    while (dev.recvMessage() != null) {
-                    }
-                } catch (IOException _) {}
-
-                hwinfo = dev.cmdVersion();
-                */
-
-
-        } catch (IOException e) {
-            // Deal with error.
-            Log.e(TAG, "ioexception in connect", e);
-            try {
-                port.close();
-            } catch (IOException e2) {
-                Log.d(TAG, "Error closing socket", e2);
-            }
-
-            return new ConnectTaskResult().setCommunicationError();
+        if (mResult == null) {
+            return new ConnectTaskResult().setInternalError();
         }
 
-        if (!success) {
+        if (!mResult.success) {
+            return mResult;
+        }
+
+        if (nsw == null) {
+            // This is a conformance issue
+            return new ConnectTaskResult().setInternalError();
+        }
+
+        Natives.initProxmark();
+        Natives.startReaderThread(nsw);
+
+        String version = Natives.sendCmdVersion();
+
+        if (version == null) {
             return new ConnectTaskResult().setTimeoutError();
-        } else {
-            // Stash the mDevice connection somewhere we don't need to parcel it.  HomeActivity
-            // will clean up after us.
-
-            //AndProxApplication.getInstance().device = dev;
         }
 
-        // Port is left open at this point.
-        return new ConnectTaskResult().setSuccess();
+        // Check if this version is good for us.
+        ProxmarkVersion v = ProxmarkVersion.parse(version);
+        if (v != null && v.isSupportedVersion()) {
+            // Port is left open at this point.
+            return new ConnectTaskResult().setSuccess();
+        } else {
+            Natives.stopReaderThread();
+            Natives.initProxmark();
+            nsw.close();
+            return new ConnectTaskResult().setUnsuppported();
+        }
+    }
+
+    protected void requestPermission(@NonNull Context c) {
+        // Do nothing
+        Log.d(TAG, "requestPermission unhandled");
     }
 
     @Override
@@ -244,7 +209,7 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
             mProgressDialog = null;
         }
 
-        Context c = mContext.get();
+        final Context c = mContext.get();
 
         if (result.noDevicesPresent) {
             AlertDialog.Builder builder = new AlertDialog.Builder(c);
@@ -257,8 +222,7 @@ public class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.ConnectTas
             if (!result.alreadyAskedPermissions) {
                 // Ask for permission
                 Log.d(TAG, "requesting permissions");
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(c, 0, new Intent(ACTION_USB_PERMISSION_AUTOCONNECT), 0);
-                mUsbManager.requestPermission(mDevice, pendingIntent);
+                requestPermission(c);
             }
         } else if (result.communicationError) {
             AlertDialog.Builder builder = new AlertDialog.Builder(c);

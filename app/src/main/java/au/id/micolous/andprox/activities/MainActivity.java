@@ -44,6 +44,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -64,7 +65,7 @@ import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
 import au.id.micolous.andprox.natives.Natives;
-import au.id.micolous.andprox.tasks.ConnectTask;
+import au.id.micolous.andprox.tasks.ConnectUSBTask;
 import au.id.micolous.andprox.tasks.CopyTask;
 
 public class MainActivity extends AppCompatActivity {
@@ -319,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Attempt to connect to the proxmark
      */
-    public void btnConnect(View view) {
+    public void btnConnect(@Nullable View view) {
         AndProxApplication app = AndProxApplication.getInstance();
 
         if (app.isOldProxmarkDetected()) {
@@ -329,9 +330,25 @@ public class MainActivity extends AppCompatActivity {
 
         if (AndProxApplication.hasUsbHostSupport()) {
             // If passed with a view, then we are called from the button.
-            new ConnectTask(this).execute(view != null);
+            new ConnectUSBTask(this).execute(view != null);
         }
     }
+
+    /*
+    public void btnConnectTcp(View view) {
+        // FIXME: don't hard code this.
+        InetAddress addr;
+
+        try {
+            addr = InetAddress.getByName("host");
+        } catch (UnknownHostException e) {
+            Log.d(TAG, "couldn't resolve name");
+            return;
+        }
+
+        new ConnectTCPTask(this, addr,1234).execute(true);
+    }
+    */
 
     /**
      * Run PM3 client in offline mode.

@@ -29,51 +29,90 @@
  */
 package au.id.micolous.andprox.natives;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * API wrapper between uart_android.c and usb-serial-for-android.
  */
 public class NativeSerialWrapper {
     private static final String TAG = "NativeSerialWrapper";
-    private UsbSerialPort mPort;
+
+    @Nullable
+    private final UsbSerialPort mPort;
+
+    @Nullable
+    private final InputStream mInputStream;
+    @Nullable
+    private final OutputStream mOutputStream;
+
+    @NonNull
+    private final Closeable mCloseable;
 
     // uart.h defines the timeout as 30ms.
-    private static final int TIMEOUT = 30;
+    public static final int TIMEOUT = 30;
 
-    public NativeSerialWrapper(UsbSerialPort port) {
+    public NativeSerialWrapper(@NonNull UsbSerialPort port) {
         mPort = port;
+        mInputStream = null;
+        mOutputStream = null;
+        mCloseable = port;
+    }
+
+    public NativeSerialWrapper(@NonNull InputStream inputStream,
+                               @NonNull OutputStream outputStream,
+                               @NonNull Closeable closeable) {
+        mPort = null;
+        mInputStream = inputStream;
+        mOutputStream = outputStream;
+        mCloseable = closeable;
     }
 
     public boolean send(byte[] pbtTx) {
         //Log.d(TAG, String.format("sending %d bytes", pbtTx.length));
         try {
-            mPort.write(pbtTx, TIMEOUT);
+            if (mPort != null) {
+                mPort.write(pbtTx, TIMEOUT);
+                return true;
+            } else if (mOutputStream != null) {
+                mOutputStream.write(pbtTx);
+                return true;
+            }
         } catch (IOException ex) {
             Log.e(TAG, "IOException in send", ex);
-            return false;
         }
 
-        return true;
+        return false;
     }
 
     public int receive(byte[] pbtRx) {
         //Log.d(TAG, String.format("receiving %d bytes", pbtRx.length));
         try {
-            return mPort.read(pbtRx, TIMEOUT);
+            if (mPort != null) {
+                return mPort.read(pbtRx, TIMEOUT);
+            } else if (mInputStream != null) {
+                return mInputStream.read(pbtRx);
+            }
         } catch (IOException ex) {
             Log.e(TAG, "IOException in receive", ex);
-            return -1;
         }
+
+        return -1;
     }
 
     public void close() {
         try {
-            mPort.close();
+            mCloseable.close();
         } catch (IOException ex) {
             Log.e(TAG, "IOException in close", ex);
         }
