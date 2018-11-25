@@ -63,6 +63,8 @@ public class SysInfoActivity extends AppCompatActivity {
         TextView tvDebugOutput = findViewById(R.id.tvDebugOutput);
         tvDebugOutput.setText(debugOutput);
         tvDebugOutput.setMovementMethod(new ScrollingMovementMethod());
+        tvDebugOutput.setTextIsSelectable(true);
+        registerForContextMenu(tvDebugOutput);
     }
 
     @Override
