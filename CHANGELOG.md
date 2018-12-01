@@ -1,5 +1,11 @@
 # AndProx changelog
 
+## v2.0.5, not released yet
+
+Changes:
+
+- Nothing yet.
+
 ## v2.0.4, released 2018-12-01
 
 - Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
@@ -20,6 +26,8 @@ Changes:
 Release notes:
 
 - Mainline firmware 3.1.0 or later is required to use this build.
+
+- `INTERNET` permission was added to support connecting to PM3 over TCP.
 
 - While TCP support is now available, the manifest blocks installation on devices without support
   for USB Host. This is to avoid confusion on devices _without_ USB Host that have no easy way to

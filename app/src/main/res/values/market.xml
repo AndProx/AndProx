@@ -68,4 +68,11 @@
     -->
     <string name="market_changelog_2">Fixes the version number for the Proxmark Client — this includes v3.0.1. Works around Proxmark3 issue #527.\n\nMore details: https://github.com/AndProx/AndProx/blob/master/CHANGELOG.md</string>
 
+    <!--
+    Translators:
+    * 500 character limit
+    * This is for an old version of AndProx. Please don’t prioritise translating this.
+    -->
+    <string name="market_changelog_95">Based on Proxmark3 v3.1.0. You must flash v3.1.0 firmware on your PM3 to use this.\nChangelog / firmware: https://github.com/AndProx/AndProx/blob/master/CHANGELOG.md\nThe "INTERNET" permission is used to connect to a PM3 via TCP/IP.</string>
+
 </resources>
