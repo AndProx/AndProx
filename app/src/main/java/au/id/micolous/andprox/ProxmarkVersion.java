@@ -126,8 +126,12 @@ public class ProxmarkVersion {
                 v.mBranch = Branch.ICEMAN;
             }
 
-            if (v.mOsVersion.contains("-suspect") || v.mOsVersion.contains("-dirty")) {
+            if (v.mOsVersion.contains("-dirty") || v.mOsVersion.contains("-unclean")) {
                 v.mDirty = true;
+            }
+
+            if (v.mOsVersion.contains("-suspect")) {
+                v.mSuspect = true;
             }
 
             try {
@@ -210,6 +214,7 @@ public class ProxmarkVersion {
     private String mBootromVersion = null;
 
     private boolean mDirty = false;
+    private boolean mSuspect = false;
 
     private Calendar mOsBuildTime = null;
     private Calendar mBootromBuildTime = null;
@@ -228,23 +233,30 @@ public class ProxmarkVersion {
     public boolean isSupportedVersion() {
         if (mBranch != Branch.OFFICIAL) return false;
 
-        // Declare compatibility with 3.x.x for now, except 3.0.0.
+        // Declare compatibility with 3.x.x, except 3.0.x.
         if (mOsMajorVersion != 3) return false;
-        if (mOsMinorVersion == 0 && mOsPatchVersion == 0) return false;
+        if (mOsMinorVersion == 0) return false;
 
-        // 3.0.1 release = 2017-06-10
-        // $ TZ=UTC date --date='@1496275200.000'
-        // Thu Jun  1 00:00:00 UTC 2017
-        if (mOsBuildTime.getTimeInMillis() < 1496275200000L) return false;
+        // 3.1.0 release = 2018-10-10
+        // TZ=UTC date --date="@1538352000.000"
+        // Mon Oct  1 00:00:00 UTC 2018
+        if (mOsBuildTime.getTimeInMillis() < 1538352000000L) return false;
 
         return true;
     }
 
     /**
-     * Does this version contain code that was not checked in to git? (dirty / suspect)
+     * Does this version contain code that was not checked in to git? (dirty / unclean)
      */
     public boolean isDirty() {
         return mDirty;
+    }
+
+    /**
+     * Does this version contain "suspect" tag. (This appears to be ~all builds)
+     */
+    public boolean isSuspect() {
+        return mSuspect;
     }
 
     public Calendar getOSBuildTime() {

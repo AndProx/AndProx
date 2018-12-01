@@ -62,7 +62,7 @@ assemble.dependsOn(assembleFirmware)
 task copyFirmware(type: Copy) {
     dependsOn assembleFirmware
     from "${pm3dir}/armsrc/obj/"
-    into "${buildDir}/toArchive/"
+    into "${buildDir}/firmware/"
     include 'fullimage.elf'
 }
 
@@ -71,7 +71,39 @@ task zipFirmware(type: Zip) {
     dependsOn copyFirmware
     archiveName 'fullimage.elf.zip'
     destinationDir = file("${buildDir}/zip")
-    from "${buildDir}/toArchive"
+    from "${buildDir}/firmware"
+    preserveFileTimestamps false
+}
+
+// Building the bootloader
+//
+// Calls out to PM3 build system to produce a bootloader image.
+task assembleBootloader(type: Exec) {
+    workingDir pm3dir
+    commandLine 'make'
+    args 'bootrom/obj/bootrom.elf'
+
+    inputs.dir pm3dir
+    inputs.file "${pm3dir}/Makefile"
+
+    outputs.dir pm3dir
+    outputs.file "${pm3dir}/bootrom/obj/bootrom.elf"
+}
+
+// Copies bootloader from PM3 build system into build directory
+task copyBootloader(type: Copy) {
+    dependsOn assembleBootloader
+    from "${pm3dir}/bootrom/obj/"
+    into "${buildDir}/bootloader/"
+    include 'bootrom.elf'
+}
+
+// Creates a ZIP file containing the bootloader.
+task zipBootloader(type: Zip) {
+    dependsOn copyBootloader
+    archiveName 'bootrom.elf.zip'
+    destinationDir = file("${buildDir}/zip")
+    from "${buildDir}/bootloader"
     preserveFileTimestamps false
 }
 

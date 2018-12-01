@@ -61,33 +61,7 @@ Android hardware with a MIPS processor is not supported.
 
 ## Building firmware
 
-AndProx's build process produces firmware, but cannot flash it to the device.
-
-You'll need to install [Proxmark3's dependencies][5], which includes an ARM toolchain.  The ARM
-toolchain in the Android NDK won't let you build firmware.
-
-You can then build the firmware with:
-
-```
-./gradlew firmware:zipFirmware
-```
-
-This will produce:
-
-- `firmware/build/toArchive/fullimage.elf`: firmware image matching the PM3 client, which you can
-  flash to your device.
-
-- `firmware/build/zip/fullimage.elf.zip`: ZIP archive containing firmware. This is used when cutting
-  a release of PM3.
-
-See [the instructions on the Proxmark3 wiki for more details about flashing][6].
-
-> **Note:** You only need to ensure the _firmware_ matches the version used by AndProx.
->
-> _There is no need to reflash the bootloader for AndProx._ AndProx can't reflash your device.
->
-> _Do not reflash the bootloader, except using PM3's official version._ Improperly reflashing the
-> bootloader can brick your PM3, and requires a JTAG interface device to fix it.
+[See `firmware/README.md`](../firmware/README.md).
 
 ## Common build issues
 

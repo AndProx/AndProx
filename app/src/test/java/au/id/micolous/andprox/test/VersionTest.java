@@ -86,7 +86,7 @@ public class VersionTest {
     }
 
     @Test
-    public void testOfficial() {
+    public void test301() {
         String s = "bootrom: master/v2.2 2015-07-31 11:28:11\n" +
                 "os: master/v3.0.1-382-gab20cc3-suspect 2018-08-01 09:37:43\n" +
                 "LF FPGA image built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
@@ -96,41 +96,67 @@ public class VersionTest {
 
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
-        assertTrue(v.isDirty());
+        assertTrue(v.isSuspect());
+        assertFalse(v.isDirty());
 
         // $ TZ=UTC date --date='@1533116263.000'
         // Wed Aug  1 09:37:43 UTC 2018
-        assertEquals(v.getOSBuildTime().getTimeInMillis(), 1533116263000L);
+        assertEquals(1533116263000L, v.getOSBuildTime().getTimeInMillis());
         assertEquals(3, v.getOSMajorVersion());
         assertEquals(0, v.getOSMinorVersion());
         assertEquals(1, v.getOSPatchVersion());
         assertEquals(382, v.getOSCommitCount());
         assertEquals("ab20cc3", v.getOSCommitHash());
 
-        assertTrue(v.isSupportedVersion());
+        assertFalse(v.isSupportedVersion());
     }
 
     @Test
     public void testIcemanBootloader() {
         String s = "bootrom: iceman/master/v1.1.0-1626-g4ce2037-suspect 2016-10-17 21:10:17\n" +
-                "os: master/v3.0.1-382-gab20cc3-suspect 2018-08-01 09:37:43\n" +
-                "LF FPGA image built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
-                "HF FPGA image built for 2s30vq100 on 2017/10/27 at 08:30:59\n";
+                "os: HEAD/v3.1.0-suspect 2018-12-01 08:38:00\n" +
+                "fpga_lf.bit built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
+                "fpga_hf.bit built for 2s30vq100 on 2018/09/12 at 15:18:46\n";
 
         ProxmarkVersion v = ProxmarkVersion.parse(s);
-
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
-        assertTrue(v.isDirty());
+        assertTrue(v.isSuspect());
+        assertFalse(v.isDirty());
 
-        // $ TZ=UTC date --date='@1533116263.000'
-        // Wed Aug  1 09:37:43 UTC 2018
-        assertEquals(v.getOSBuildTime().getTimeInMillis(), 1533116263000L);
+        // $ TZ=UTC date --date='@1543653480.000'
+        // Sat Dec  1 08:38:00 UTC 2018
+        assertEquals(1543653480000L, v.getOSBuildTime().getTimeInMillis());
         assertEquals(3, v.getOSMajorVersion());
-        assertEquals(0, v.getOSMinorVersion());
-        assertEquals(1, v.getOSPatchVersion());
-        assertEquals(382, v.getOSCommitCount());
-        assertEquals("ab20cc3", v.getOSCommitHash());
+        assertEquals(1, v.getOSMinorVersion());
+        assertEquals(0, v.getOSPatchVersion());
+        assertEquals(0, v.getOSCommitCount());
+        assertNull(v.getOSCommitHash());
+
+        assertTrue(v.isSupportedVersion());
+    }
+
+    @Test
+    public void test310() {
+        String s = "bootrom: HEAD/v3.1.0-suspect 2018-12-01 08:57:43\n" +
+                "os: HEAD/v3.1.0-suspect 2018-12-01 08:38:00\n" +
+                "fpga_lf.bit built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
+                "fpga_hf.bit built for 2s30vq100 on 2018/09/12 at 15:18:46\n";
+
+        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        assertNotNull(v);
+        assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
+        assertTrue(v.isSuspect());
+        assertFalse(v.isDirty());
+
+        // $ TZ=UTC date --date='@1543653480.000'
+        // Sat Dec  1 08:38:00 UTC 2018
+        assertEquals(1543653480000L, v.getOSBuildTime().getTimeInMillis());
+        assertEquals(3, v.getOSMajorVersion());
+        assertEquals(1, v.getOSMinorVersion());
+        assertEquals(0, v.getOSPatchVersion());
+        assertEquals(0, v.getOSCommitCount());
+        assertNull(v.getOSCommitHash());
 
         assertTrue(v.isSupportedVersion());
     }
