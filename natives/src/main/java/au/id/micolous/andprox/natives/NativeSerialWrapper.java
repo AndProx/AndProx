@@ -36,7 +36,15 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * API wrapper between uart_android.c and Java code.
+ * API wrapper between uart_android.c and Java code. This class consumes a {@link SerialInterface},
+ * which is the transport layer on the Java side.
+ *
+ * It adds some extra convenience functionality:
+ *
+ * - Tracing of transport I/O (with {@link #DEBUG_COMMS}
+ * - Converts Java exceptions into shutdown events
+ * - Automatic keep-alive on inactivity
+ * - Automatic shutdown on device loss
  */
 public final class NativeSerialWrapper implements Closeable {
     private static final String TAG = "NativeSerialWrapper";

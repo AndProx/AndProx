@@ -211,8 +211,8 @@ expose the exact same API.
 
 There are some platform-specific differences:
 
-* AndProx has no stdin/out, so `printf` and `gets` won't work.  This breaks a lot of the interactive
-  scripting in Lua.
+* AndProx has no stdin, so `gets` won't work.  This breaks a lot of the interactive scripting in
+  Lua.
 
 * ncurses and readline are also unavailable.
 
