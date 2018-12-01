@@ -34,8 +34,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,7 +41,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
-import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,14 +51,11 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.function.Predicate;
-
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.handlers.HandlerInterface;
-import au.id.micolous.andprox.natives.SerialInterface;
-import au.id.micolous.andprox.tasks.SendCommandTask;
 import au.id.micolous.andprox.hw.TuneTask;
 import au.id.micolous.andprox.natives.Natives;
+import au.id.micolous.andprox.tasks.SendCommandTask;
 
 public class CliActivity extends AppCompatActivity implements SendCommandTask.SendCommandCallback {
     private static final String TAG = "CliActivity";
@@ -145,27 +139,9 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
             if (actionId == EditorInfo.IME_ACTION_GO ||
                     (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN)) {
                 // Send a command to the PM3.
-                String cmd = v.getText().toString();
-
-                if (!"".equals(cmd)) {
-                    lastCommand = cmd;
-                }
+                final String cmd = v.getText().toString();
                 v.setText("");
-
-                // Send "hw tune" to our nicer tuning UI graphs.
-                if ("hw tune".equals(cmd)) {
-                    tuneAntenna();
-                    return true;
-                }
-
-                Log.i(TAG, "Sending command: " + cmd);
-                writePrompt(cmd);
-
-                // Scroll to bottom
-                scrollToBottom();
-
-                new SendCommandTask().execute(cmd);
-                lockEditField();
+                rawCmd(cmd);
                 return true;
             }
             return false;
@@ -205,6 +181,11 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
 
         if (SendCommandTask.getProgressingCommands() > 0) {
             lockEditField();
+        }
+
+        if (savedInstanceState == null) {
+            // first send "version" command
+            runOnUiThread(this::version);
         }
     }
 
@@ -275,9 +256,8 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (Natives.isOffline() || SendCommandTask.getProgressingCommands() > 0) {
-            menu.findItem(R.id.miTuneAntenna).setEnabled(false);
-        }
+        menu.findItem(R.id.miTuneAntenna).setEnabled(!Natives.isOffline()
+                && SendCommandTask.getProgressingCommands() == 0);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -319,6 +299,36 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
         writePrompt("hw tune");
         TuneTask t = new TuneTask(this);
         t.execute();
+    }
+
+    // Show version info
+    public void version() {
+        rawCmd("hw version");
+    }
+
+    public void rawCmd(String cmd) {
+        // Send a command to the PM3.
+
+        if (!"".equals(cmd)) {
+            lastCommand = cmd;
+        }
+
+
+        // Send "hw tune" to our nicer tuning UI graphs.
+        if ("hw tune".equals(cmd)) {
+            tuneAntenna();
+            return;
+        }
+
+        Log.i(TAG, "Sending command: " + cmd);
+        writePrompt(cmd);
+
+        // Scroll to bottom
+        scrollToBottom();
+
+        new SendCommandTask().execute(cmd);
+        lockEditField();
+        return;
     }
 
     @Override
