@@ -29,13 +29,13 @@
  */
 package au.id.micolous.andprox.natives.androidTest;
 
+import android.support.annotation.NonNull;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -44,23 +44,20 @@ import java.util.Arrays;
 
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
 import au.id.micolous.andprox.natives.Natives;
+import au.id.micolous.andprox.natives.SerialInterface;
 import au.id.micolous.andprox.natives.androidTest.utils.LogSink;
 import au.id.micolous.andprox.natives.androidTest.utils.UsbCommandMatcher;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Basic PM3 library test.
  *
- * This test case mocks out {@link NativeSerialWrapper} in order to make a virtual PM3 device, which
- * can respond to {@link #CMD_VERSION}. It will then spin up the PM3 client in JNI with this mocked
- * {@link NativeSerialWrapper}, and verifies that the client correctly communicated with the device,
+ * This test case makes a fake {@link SerialInterface} with a virtual PM3 device, which can respond
+ * to {@link #CMD_VERSION}. It will then spin up the PM3 client in JNI with this mocked
+ * {@link SerialInterface}, and verifies that the client correctly communicated with the device,
  * and that it was able to log a custom version string.
  *
  * This version of the test uses Android Instrumented Tests, which run on a (virtual or physical)
@@ -80,36 +77,43 @@ public class HardwareCommsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        versionPending = false;
 
-        when(mNativeSerialWrapper.send(argThat(new UsbCommandMatcher(CMD_VERSION))))
-                .thenAnswer(invocation -> {
+        mNativeSerialWrapper = new NativeSerialWrapper(new SerialInterface() {
+            private UsbCommandMatcher matcher = new UsbCommandMatcher(CMD_VERSION);
+
+            @Override
+            public int send(@NonNull byte[] pbtTx) {
+                if (matcher.matches(pbtTx)) {
                     versionPending = true;
-                    return true;
-                });
+                }
 
-        when(mNativeSerialWrapper.receive(any(byte[].class)))
-                .thenAnswer(invocation -> {
-                    if (versionPending) {
-                        versionPending = false;
+                return pbtTx.length;
+            }
 
-                        byte[] buffer = invocation.getArgument(0);
+            @Override
+            public int receive(@NonNull byte[] buffer) {
+                if (versionPending) {
+                    // Copy a reply into the buffer.
+                    Arrays.fill(buffer, (byte)0);
+                    ByteBuffer bb = ByteBuffer.wrap(buffer);
+                    bb.order(ByteOrder.LITTLE_ENDIAN);
+                    bb.putLong(CMD_ACK);
+                    bb.putLong(0x270B0A40); // AT91SAM7S512 Rev A
+                    bb.putLong(0x100); // 512 bytes used
+                    bb.putLong(0); // unused value
+                    // Whatever we write next is printed to the log.
+                    bb.put("hello HardwareCommsTest".getBytes(Charset.forName("UTF-8")));
+                    return UsbCommandMatcher.USB_COMMAND_LENGTH;
+                } else {
+                    return 0;
+                }
+            }
 
-                        // Copy a reply into the buffer.
-                        Arrays.fill(buffer, (byte)0);
-                        ByteBuffer bb = ByteBuffer.wrap(buffer);
-                        bb.order(ByteOrder.LITTLE_ENDIAN);
-                        bb.putLong(CMD_ACK);
-                        bb.putLong(0x270B0A40); // AT91SAM7S512 Rev A
-                        bb.putLong(0x100); // 512 bytes used
-                        bb.putLong(0); // unused value
-                        // Whatever we write next is printed to the log.
-                        bb.put("hello HardwareCommsTest".getBytes(Charset.forName("UTF-8")));
-                        return UsbCommandMatcher.USB_COMMAND_LENGTH;
-                    }
-
-                    return null;
-                });
+            @Override
+            public void close() {
+            }
+        });
 
         Natives.initProxmark();
         Natives.registerPrintHandler(mLogSink);
@@ -121,8 +125,6 @@ public class HardwareCommsTest {
         assertTrue("The device must be offline at the start", Natives.isOffline());
         Natives.startReaderThread(mNativeSerialWrapper);
         Natives.sendCmdVersion();
-
-        verify(mNativeSerialWrapper).send(argThat(new UsbCommandMatcher(CMD_VERSION)));
 
         assertNull("We shouldn't find an error in the log", mLogSink.findInLogLines("got no response"));
         assertNotNull("We should find our custom message in the log", mLogSink.findInLogLines("hello HardwareCommsTest"));
