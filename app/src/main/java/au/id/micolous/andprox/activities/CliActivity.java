@@ -203,16 +203,20 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
                 Natives.stopReaderThread();
             }
 
-            // Lock the edit field to indicate we can't run
-            etCommandInput.setEnabled(false);
-            etCommandInput.setHint(R.string.usb_disconnected_title);
+            try {
+                // Lock the edit field to indicate we can't run
+                etCommandInput.setEnabled(false);
+                etCommandInput.setHint(R.string.usb_disconnected_title);
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(CliActivity.this);
-            builder.setMessage(R.string.usb_disconnected)
-                    .setTitle(R.string.usb_disconnected_title)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
-            builder.show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(CliActivity.this);
+                builder.setMessage(R.string.usb_disconnected)
+                        .setTitle(R.string.usb_disconnected_title)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss());
+                builder.show();
+            } catch (Exception ex) {
+                Log.w(TAG, "couldn't lock window", ex);
+            }
         });
     }
 
