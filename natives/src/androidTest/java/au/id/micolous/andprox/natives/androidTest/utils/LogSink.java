@@ -31,9 +31,6 @@ package au.id.micolous.andprox.natives.androidTest.utils;
 
 import android.test.suitebuilder.annotation.Suppress;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Matcher;
-
 import java.util.LinkedList;
 
 import au.id.micolous.andprox.natives.Natives;

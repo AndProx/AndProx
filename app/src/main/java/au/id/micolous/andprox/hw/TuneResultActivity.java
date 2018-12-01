@@ -38,11 +38,8 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.util.Locale;
-
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.databinding.ActivityTuneResultBinding;
-import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.natives.TuneResult;
 
 public class TuneResultActivity extends AppCompatActivity {

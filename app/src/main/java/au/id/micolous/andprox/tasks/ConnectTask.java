@@ -30,26 +30,15 @@
 package au.id.micolous.andprox.tasks;
 
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.hoho.android.usbserial.driver.UsbSerialDriver;
-import com.hoho.android.usbserial.driver.UsbSerialPort;
-import com.hoho.android.usbserial.driver.UsbSerialProber;
-
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 import au.id.micolous.andprox.ProxmarkVersion;
 import au.id.micolous.andprox.R;
@@ -58,9 +47,6 @@ import au.id.micolous.andprox.activities.MainActivity;
 import au.id.micolous.andprox.handlers.HandlerInterface;
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
 import au.id.micolous.andprox.natives.Natives;
-
-import static au.id.micolous.andprox.activities.MainActivity.ACTION_USB_PERMISSION_AUTOCONNECT;
-import static au.id.micolous.andprox.activities.MainActivity.dumpUsbDeviceInfo;
 
 /**
  * Task used to connect to a PM3

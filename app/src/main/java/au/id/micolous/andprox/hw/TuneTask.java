@@ -40,7 +40,6 @@ import android.util.Log;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.natives.TuneResult;
