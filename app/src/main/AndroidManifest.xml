@@ -32,9 +32,7 @@
     package="au.id.micolous.andprox"
     android:sharedUserId="au.id.micolous.andprox.uid">
 
-    <!--
-      Enables Android TV support. ;)
-    -->
+    <!--       Enables Android TV support. ;) -->
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
@@ -75,18 +73,18 @@
     <application
         android:name=".AndProxApplication"
         android:allowBackup="true"
+        android:banner="@mipmap/banner"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:banner="@mipmap/banner"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
@@ -95,16 +93,15 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
         </activity>
-
         <activity
             android:name=".activities.LeanbackActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".hw.TuneResultActivity"
             android:label="Antenna Tuning Result" />
@@ -114,6 +111,14 @@
             android:name=".activities.AboutActivity"
             android:label="@string/title_activity_about"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_settings"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="au.id.micolous.andprox.activities.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

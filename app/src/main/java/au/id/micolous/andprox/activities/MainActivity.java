@@ -43,6 +43,7 @@ import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -50,6 +51,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.hoho.android.usbserial.driver.UsbId;
@@ -64,6 +66,7 @@ import java.util.List;
 import java.util.Locale;
 
 import au.id.micolous.andprox.AndProxApplication;
+import au.id.micolous.andprox.ConnectivityMode;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
 import au.id.micolous.andprox.natives.Natives;
@@ -77,9 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String ACTION_USB_PERMISSION = "au.id.micolous.andprox.USB_PERMISSION";
     public static final String ACTION_USB_PERMISSION_AUTOCONNECT = "au.id.micolous.andprox.USB_PERMISSION_AUTOCONNECT";
     private static final int STORAGE_PERMISSION_CALLBACK = 1001;
-
-    private static final String DISMISS_USB_HOST_SUPPORT = "dismiss_usb_host_support";
-    private boolean mDismissUSBHostSupport = false;
+    private static final int SETTINGS_CALLBACK = 1002;
 
     private final BroadcastReceiver mUsbPermissionReceiver = new BroadcastReceiver() {
         @Override
@@ -171,37 +172,46 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateIntroText() {
         TextView tvIntroText = findViewById(R.id.tvIntroText);
-        if (!AndProxApplication.hasUsbHostSupport()) {
-            tvIntroText.setText(R.string.no_usb_host);
-            findViewById(R.id.btnConnect).setEnabled(false);
-            return;
+        final Button btnConnect = findViewById(R.id.btnConnect);
+        ConnectivityMode mode = AndProxApplication.getConnectivityMode();
+        btnConnect.setText(mode.getConnectButtonText());
+
+        switch (mode) {
+            case USB:
+                if (!AndProxApplication.hasUsbHostSupport()) {
+                    tvIntroText.setText(R.string.no_usb_host);
+                    btnConnect.setEnabled(false);
+                    return;
+                }
+
+                btnConnect.setEnabled(true);
+                AndProxApplication app = AndProxApplication.getInstance();
+
+                if (app.isProxmarkDetected()) {
+                    tvIntroText.setText(R.string.intro_text_usb_detected);
+                } else if (app.isOldProxmarkDetected()) {
+                    tvIntroText.setText(R.string.intro_text_old_pm3);
+                } else {
+                    tvIntroText.setText(R.string.intro_text_default);
+                }
+                break;
+
+            case TCP:
+                tvIntroText.setText(Utils.localizeString(R.string.intro_text_tcp, AndProxApplication.getTcpHostStr(), AndProxApplication.getTcpPort()));
+                btnConnect.setEnabled(true);
+                break;
+
+            case NONE:
+                tvIntroText.setText(R.string.intro_text_none);
+                btnConnect.setEnabled(true);
+                break;
         }
 
-        findViewById(R.id.btnConnect).setEnabled(true);
-        AndProxApplication app = AndProxApplication.getInstance();
-
-        if (app.isProxmarkDetected()) {
-            tvIntroText.setText(R.string.intro_text_usb_detected);
-        } else if (app.isOldProxmarkDetected()) {
-            tvIntroText.setText(R.string.intro_text_old_pm3);
-        } else {
-            tvIntroText.setText(R.string.intro_text_default);
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean(DISMISS_USB_HOST_SUPPORT, mDismissUSBHostSupport);
-        super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            mDismissUSBHostSupport = savedInstanceState.getBoolean(DISMISS_USB_HOST_SUPPORT);
-        }
 
         setContentView(R.layout.activity_main);
 
@@ -238,20 +248,8 @@ public class MainActivity extends AppCompatActivity {
             UsbDevice device = driver.getDevice();
             manager.requestPermission(device, mPermissionIntent);
         } else {
-            Log.e(TAG, "no USB host support!");
+            Log.w(TAG, "no USB host support!");
             updateIntroText();
-
-            if (!mDismissUSBHostSupport) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setMessage(R.string.no_usb_host)
-                        .setTitle(R.string.no_usb_host_title)
-                        .setPositiveButton(R.string.ok, (dialog, which) -> {
-                            mDismissUSBHostSupport = true;
-                            dialog.dismiss();
-                        })
-                        .setCancelable(false);
-                builder.show();
-            }
         }
 
         // Request permission for storage right away, as requesting this when a file is explicitly
@@ -284,6 +282,17 @@ public class MainActivity extends AppCompatActivity {
                             .setCancelable(false);
                     builder.show();
                 }
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case SETTINGS_CALLBACK:
+                updateIntroText();
                 break;
         }
     }
@@ -325,42 +334,60 @@ public class MainActivity extends AppCompatActivity {
      */
     public void btnConnect(@Nullable View view) {
         AndProxApplication app = AndProxApplication.getInstance();
+        InetAddress addr = null;
 
-        if (app.isOldProxmarkDetected()) {
-            unsupportedFirmwareError(MainActivity.this);
-            return;
+        switch (AndProxApplication.getConnectivityMode()) {
+            case USB:
+                if (app.isOldProxmarkDetected()) {
+                    unsupportedFirmwareError(MainActivity.this);
+                    return;
+                }
+
+                if (AndProxApplication.hasUsbHostSupport()) {
+                    // If passed with a view, then we are called from the button.
+                    new ConnectUSBTask(this).execute(view != null);
+                }
+                break;
+
+            case TCP:
+                try {
+                    addr = AndProxApplication.getTcpHost();
+                } catch (UnknownHostException e) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.tcp_error)
+                            .setMessage(Utils.localizeString(R.string.tcp_error_host_not_found,
+                                    AndProxApplication.getTcpHostStr(), e.getLocalizedMessage()))
+                            .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                            .show();
+                    return;
+                }
+
+                if (addr == null) {
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.tcp_error)
+                            .setMessage(Utils.localizeString(R.string.tcp_error_host_not_found,
+                                    AndProxApplication.getTcpHostStr(), "null"))
+                            .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                            .show();
+                    return;
+                }
+
+                new ConnectTCPTask(this, addr, AndProxApplication.getTcpPort()).execute(true);
+                break;
+
+            case NONE:
+                Natives.initProxmark();
+                Intent intent = new Intent(MainActivity.this, CliActivity.class);
+                startActivity(intent);
+                finish();
+                break;
         }
 
-        if (AndProxApplication.hasUsbHostSupport()) {
-            // If passed with a view, then we are called from the button.
-            new ConnectUSBTask(this).execute(view != null);
-        }
     }
 
-
-    public void btnConnectTcp(View view) {
-        InetAddress addr;
-
-        try {
-            // FIXME: don't hard code this.
-            addr = InetAddress.getByName("10.0.2.2"); /* android emulator host */
-        } catch (UnknownHostException e) {
-            Log.d(TAG, "couldn't resolve name");
-            return;
-        }
-
-        new ConnectTCPTask(this, addr,1234).execute(true);
-    }
-
-    /**
-     * Run PM3 client in offline mode.
-     */
-    public void btnOfflineMode(View view) {
-        Natives.initProxmark();
-
-        Intent intent = new Intent(MainActivity.this, CliActivity.class);
-        startActivity(intent);
-        finish();
+    public void btnSettings(View view) {
+        final Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivityForResult(intent, SETTINGS_CALLBACK);
     }
 
     /**

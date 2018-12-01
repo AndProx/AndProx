@@ -30,9 +30,18 @@
 package au.id.micolous.andprox;
 
 import android.content.res.Resources;
+import android.os.Build;
+import android.preference.Preference;
+import android.preference.PreferenceGroup;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.PluralsRes;
 import android.support.annotation.StringRes;
+import android.util.Log;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 /**
@@ -40,6 +49,38 @@ import java.util.Locale;
  */
 
 public final class Utils {
+    private static final String[] EMULATOR_MODELS = {
+            "google_sdk",
+            "sdk",
+            "sdk_gphone_x86",
+            "sdk_google_phone_x86",
+            "sdk_google_atv_x86",
+            "sdk_phone_armv7",
+            "sdk_phone_x86",
+            "sdk_x86",
+    };
+
+    private static final String TAG = Utils.class.getSimpleName();
+
+    @Nullable
+    private static final InetAddress EMULATOR_HOST_IP;
+
+    static {
+        InetAddress a = null;
+
+        if (isRunningInEmulator()) {
+            try {
+                a = InetAddress.getByAddress(new byte[]{10, 0, 2, 2});
+            } catch (UnknownHostException e) {
+                // Shouldn't happen, may indicate a lack of IPv4 support?
+                Log.w(TAG, "unknown host for emulator IP -- should not happen!", e);
+            }
+        }
+
+        EMULATOR_HOST_IP = a;
+    }
+
+
     /**
      * Given a string resource (R.string), localize the string according to the language preferences
      * on the device.
@@ -89,5 +130,32 @@ public final class Utils {
 
         fbytes /= 1024.0;
         return String.format(Locale.ENGLISH, "%.1f TiB", fbytes);
+    }
+
+    public static boolean isRunningInEmulator() {
+        for (String s : EMULATOR_MODELS) {
+            if (s.equals(Build.PRODUCT)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Nullable
+    public static InetAddress getEmulatorHostIp() {
+        return EMULATOR_HOST_IP;
+    }
+
+    public static void setPreferenceListeners(@NonNull Preference p, Preference.OnPreferenceChangeListener listener) {
+        if (p instanceof PreferenceGroup) {
+            final PreferenceGroup group = (PreferenceGroup)p;
+            for (int i=0; i<group.getPreferenceCount(); i++) {
+                setPreferenceListeners(group.getPreference(i), listener);
+            }
+        } else {
+            p.setOnPreferenceChangeListener(listener);
+        }
+
     }
 }

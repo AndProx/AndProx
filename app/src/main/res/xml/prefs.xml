@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Connectivity">
+        <ListPreference android:key="pref_conn_mode"
+            android:title="Connection type"
+            android:summary="%s"
+            android:entries="@array/conn_modes"
+            android:entryValues="@array/conn_modes_values"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="TCP connectivity">
+        <CheckBoxPreference android:key="pref_android_emu_host"
+            android:title="Android emulator host"
+            android:disableDependentsState="true"
+            android:summaryOn="Connect to 127.0.0.1 on the host running the Android Emulator"
+            android:summaryOff="Connect to the hostname listed below" />
+
+        <au.id.micolous.andprox.components.EditTextPreference2 android:key="pref_tcp_host"
+            android:title="Hostname"
+            android:inputType="textVisiblePassword"
+            android:dependency="pref_android_emu_host"
+            android:summary="%s"
+            android:defaultValue="127.0.0.1" />
+
+        <au.id.micolous.andprox.components.EditTextPreference2 android:key="pref_tcp_port"
+            android:inputType="number"
+            android:title="Port"
+            android:summary="%s"
+            android:defaultValue="1234" />
+
+    </PreferenceCategory>
+</PreferenceScreen>
