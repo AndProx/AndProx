@@ -1,11 +1,11 @@
 # AndProx changelog
 
-## v2.0.4, not released yet
+## v2.0.4, released 2018-12-01
 
 - Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
-- Source code: (git master)
-- APK: (none yet)
-- Firmware: (none yet)
+- Source code: https://github.com/AndProx/AndProx/tree/v2.0.4
+- APK: https://github.com/AndProx/AndProx/releases/download/v2.0.4/andprox-2.0.4.apk
+- Firmware: https://github.com/AndProx/AndProx/releases/download/v2.0.4/fullimage.elf.zip
 
 Changes:
 
@@ -18,6 +18,8 @@ Changes:
 - Cleanup: Documentation cleanups / improvements.
 
 Release notes:
+
+- Mainline firmware 3.1.0 or later is required to use this build.
 
 - While TCP support is now available, the manifest blocks installation on devices without support
   for USB Host. This is to avoid confusion on devices _without_ USB Host that have no easy way to

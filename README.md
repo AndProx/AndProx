@@ -37,9 +37,6 @@ See `COMPATIBILITY.md`.
 - `hf mf hardnested` commands use a lot of memory. In the event of running out of memory, it will
   close the application without warning.
 
-- Anything output from `printf` won't be displayed.  `PrintAndLog` will be displayed, but will not
-  be written to disk. (Issue #5)
-
 - Flasher has not been implemented.
 
 - Probably doesn't exit or sleep cleanly, causing high battery use. Swipe the app away from the App
