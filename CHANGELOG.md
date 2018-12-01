@@ -2,14 +2,32 @@
 
 ## v2.0.4, not released yet
 
-- Proxmark version:
+- Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
 - Source code: (git master)
 - APK: (none yet)
-- Firmawre (none yet)
+- Firmware: (none yet)
 
 Changes:
 
-- None yet.
+- New: PM3 v3.1.0! [See upstream change log](https://github.com/Proxmark/proxmark3/blob/master/CHANGELOG.md#v3102018-10-10).
+- New: Select/copy text from the output buffer.
+- New: Button which scrolls to the bottom of the output buffer.
+- New: Support for connecting to a PM3 over TCP (useful for debugging and ChromeOS devices).
+- Fixed: PM3 devices with Iceman's bootloader are no longer blocked (mainly impacts RDV4.0).
+- Fixed: Commands that use `printf` should now come through correctly.
+- Cleanup: Documentation cleanups / improvements.
+
+Release notes:
+
+- While TCP support is now available, the manifest blocks installation on devices without support
+  for USB Host. This is to avoid confusion on devices _without_ USB Host that have no easy way to
+  set up a serial-over-TCP proxy (ie: everything that _isn't_ ChromeOS or the Android Emulator).
+
+  ChromeOS support is still untested, and until I have a good way to allow use on ChromeOS but _not_
+  every other Android device, this will continue to be blocked.
+
+  With a little `socat` command, this allows you to [easily debug on the Android
+  Emulator](./docs/debugging/android-emulator.md).
 
 ## v2.0.3, released 2018-09-09
 

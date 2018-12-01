@@ -6,6 +6,14 @@ Your first stop should be the [compatibility list][compat].
 
 ## Types of connectors
 
+### TCP/IP
+
+To my knowledge, there is no PM3 device with TCP/IP support.
+
+TCP support is to allow [easy debugging with the Android Emulator](./debugging/android-emulator.md).
+That document also describes how to set up `socat` to redirect a locally connected PM3 device over
+TCP.
+
 ### USB-A
 
 These are "regular USB ports" that are on most PCs. They are also present on some Android tablets,

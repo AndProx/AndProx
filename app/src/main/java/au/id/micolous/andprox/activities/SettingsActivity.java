@@ -33,6 +33,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringRes;
@@ -72,6 +73,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Pre
                 emuHost.setSummaryOn(null);
             }
             emuHost.setChecked(AndProxApplication.useAndroidEmulatorHost());
+        }
+
+        p = manager.findPreference(PREF_CONN_MODE);
+        if (p != null && p instanceof ListPreference) {
+            ((ListPreference)p).setValue(AndProxApplication.getConnectivityModeStr());
         }
 
         Utils.setPreferenceListeners(getPreferenceScreen(), this);

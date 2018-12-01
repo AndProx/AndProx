@@ -112,7 +112,7 @@
 
     <string-array name="conn_modes">
         <item>USB</item>
-        <item>TCP</item>
+        <item>TCP/IP</item>
         <item>None (offline mode)</item>
     </string-array>
 
@@ -123,7 +123,7 @@
     </string-array>
 
     <string name="connect_button_usb">Connect via USB…</string>
-    <string name="connect_button_tcp">Connect via TCP…</string>
+    <string name="connect_button_tcp">Connect via TCP/IP…</string>
     <string name="connect_button_none">Offline mode…</string>
 
     <string name="invalid_input_title">Invalid input</string>
@@ -131,4 +131,12 @@
     <string name="emulator_host_unavailable">Connecting to the emulator host is only available on emulated devices.</string>
     <string name="tcp_error">TCP connection error</string>
     <string name="tcp_error_host_not_found">The host %1$s could not be found: %2$s</string>
+    <string name="transport_layer">Transport layer</string>
+    <string name="connectivity_settings">Connectivity</string>
+    <string name="tcp_ip">TCP/IP</string>
+    <string name="connect_android_host">Connect to Android Emulator host</string>
+    <string name="connect_android_host_on">Connect to 127.0.0.1 on the host running the Android Emulator</string>
+    <string name="connect_android_host_off">Connect to the hostname listed below</string>
+    <string name="hostname">Hostname</string>
+    <string name="tcp_port">Port</string>
 </resources>
