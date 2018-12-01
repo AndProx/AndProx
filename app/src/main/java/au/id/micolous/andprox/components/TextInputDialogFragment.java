@@ -82,13 +82,13 @@ public class TextInputDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         View v = inflater.inflate(R.layout.dialog_textinput, null);
-        TextView summary = (TextView)v.findViewById(R.id.summary);
+        TextView summary = v.findViewById(R.id.summary);
         summary.setText(mSummaryRes);
 
         builder.setView(v)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     // Fire the save event back
-                    EditText text = (EditText)TextInputDialogFragment.this.getDialog().findViewById(R.id.text);
+                    EditText text = TextInputDialogFragment.this.getDialog().findViewById(R.id.text);
                     mListener.onDialogPositiveClick(TextInputDialogFragment.this, text.getText().toString());
                 })
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> {

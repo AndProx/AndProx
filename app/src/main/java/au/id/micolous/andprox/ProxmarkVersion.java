@@ -240,9 +240,7 @@ public class ProxmarkVersion {
         // 3.1.0 release = 2018-10-10
         // TZ=UTC date --date="@1538352000.000"
         // Mon Oct  1 00:00:00 UTC 2018
-        if (mOsBuildTime.getTimeInMillis() < 1538352000000L) return false;
-
-        return true;
+        return mOsBuildTime.getTimeInMillis() >= 1538352000000L;
     }
 
     /**
