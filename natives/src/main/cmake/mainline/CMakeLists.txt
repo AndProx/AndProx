@@ -295,6 +295,7 @@ add_library(pm3 OBJECT
 # 'natives' includes a small number of C files. This is because the build process tags
 add_library(natives SHARED
 
+            ${APN_ROOT}/jnihelper.c
             ${APN_ROOT}/natives.c
 
             $<TARGET_OBJECTS:pm3>

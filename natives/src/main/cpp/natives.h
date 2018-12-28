@@ -32,7 +32,7 @@
 #define ANDPROX_NATIVES_H
 
 #include <string.h>
-#include <jni.h>
+#include "jnihelper.h"
 #ifdef ANDROID
 #include <android/log.h>
 #endif
@@ -56,37 +56,14 @@ static const char* kTAG = "Natives";
 
 #endif
 
-#define GET_ENV(vm) \
-    JNIEnv* env; \
-    if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) { \
-        jint res = (*vm)->AttachCurrentThread(vm, (void**)&env, NULL); \
-        if (res != JNI_OK) { \
-            LOGE("Failed to AttachCurrentThread, ErrorCode = %d", res); \
-            env = NULL; \
-        } \
-    } \
-
-// processing callback to handler class
-typedef struct {
-    JavaVM  *javaVM;
-    jclass   jcNativeSerialWrapper;
-    jmethodID jmNSWReceive;
-    jmethodID jmNSWSend;
-    jmethodID jmNSWClose;
-
-    jclass jcNatives;
-    jmethodID jmPrintAndLog;
-    jmethodID jmPrintf;
-
-    int      done;
-
-    char* executable_directory;
-} JavaContext;
-JavaContext g_ctx;
-
-
 JNIEXPORT void JNICALL
 Java_au_id_micolous_andprox_natives_Natives_initProxmark(JNIEnv *env, jclass type);
 
+// Wrappers for uart_android that seal g_ctx
+void nsw_close(JNIEnv* env, jobject nativeSerialWrapper);
+jint nsw_receive(JNIEnv* env, jobject nativeSerialWrapper, jbyteArray recvBuffer);
+jboolean nsw_send(JNIEnv* env, jobject nativeSerialWrapper, jbyteArray sendBuffer);
+void natives_printandlog(JNIEnv* env, jstring s);
+const char* natives_getexecutabledirectory();
 
 #endif //ANDPROX_NATIVES_H

@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016-2017 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -30,7 +30,8 @@
 
 #include "fakemain.h"
 #include "natives.h"
-#include <jni.h>
+#include "jnihelper.h"
+#include <jnihelper.h>
 #include <stdio.h>
 #include <malloc.h>
 
@@ -43,18 +44,18 @@ const char* get_my_executable_path(void)
 const char* get_my_executable_directory(void)
 {
     // This gets called by cmdhfmfhard.c and cmdscript.c to find where scripts and tables are
-    return g_ctx.executable_directory;
+    return natives_getexecutabledirectory();
 }
 
 /*
  * Sends a null-terminated string to Java PrintAndLog.
  */
 void _sendLogToJava(char* buf) {
-    GET_ENV(g_ctx.javaVM)
+    JNIEnv* env = AttachCurrentThreadIfNeeded();
     if (env == NULL) return;
 
     jstring s = (*env)->NewStringUTF(env, buf);
-    (*env)->CallStaticVoidMethod(env, g_ctx.jcNatives, g_ctx.jmPrintAndLog, s);
+    natives_printandlog(env, s);
     (*env)->DeleteLocalRef(env, s);
 }
 
@@ -74,8 +75,6 @@ void PrintAndLog(char *fmt, ...)
 }
 
 void PrintAndLogL(char* s, size_t len) {
-    GET_ENV(g_ctx.javaVM)
-
     char* buf = malloc(len + 1);
     memset((void*)buf, 0, len + 1);
     memcpy(buf, s, len);

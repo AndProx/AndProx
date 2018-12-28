@@ -31,15 +31,14 @@
 #ifndef ANDPROX_ANDROID_UART_H
 #define ANDPROX_ANDROID_UART_H
 
-#include <jni.h>
+#include "jnihelper.h"
 #include <uart.h>
 
 typedef struct {
-    JavaVM* javaVM;
     jobject nativeSerialWrapper;
 } serial_port_android;
 
-void uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw);
+void uart_open_android(JNIEnv* env, jobject nsw);
 jobject uart_get_native_serial_wrapper(JNIEnv* env);
 
 
