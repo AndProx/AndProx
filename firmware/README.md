@@ -28,7 +28,7 @@ This will produce:
 
 > **Note:** You only need to ensure the _firmware_ matches the version used by AndProx.
 >
-> _There is no need to reflash the bootloader for AndProx._ AndProx can't reflash your device.
+> _There is normally no need to reflash the bootloader for AndProx._
 >
 > _Do not reflash the bootloader, except using PM3's official version._ Improperly reflashing the
 > bootloader can brick your PM3, and requires a JTAG interface device to fix it.
