@@ -94,6 +94,17 @@ task copyHardnestedTables(type: Copy) {
     include '**/*.bin'
 }
 
+task copyThirdPartyNotices(type: Copy) {
+    from '../third_party/'
+    into 'build/assets/third_party'
+    eachFile { it.path = name }
+    include 'NOTICE.proxmark3.txt'
+    include 'NOTICE.jansson.txt' // from PM3
+    include 'NOTICE.lua.txt' // from PM3
+    include 'NOTICE.webrtc.txt'
+    include 'NOTICE.zlib.txt' // from PM3
+}
+
 android {
     /*
      * In the context of NDK, the compile and target API levels are the MINIMUM API level.
@@ -129,7 +140,7 @@ android {
         }
     }
 
-    preBuild.dependsOn copyScripts, copyLuaLibs, copyHardnestedTables
+    preBuild.dependsOn copyScripts, copyLuaLibs, copyHardnestedTables, copyThirdPartyNotices
 
     sourceSets {
         main {

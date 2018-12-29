@@ -30,6 +30,14 @@
 
 apply plugin: 'com.android.application'
 
+task copyThirdPartyNotices(type: Copy) {
+    from '../third_party/'
+    into 'build/assets/third_party'
+    eachFile { it.path = name }
+    include 'NOTICE.GraphView.txt'
+    include 'NOTICE.usb-serial-for-android.txt'
+}
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -62,6 +70,10 @@ android {
             useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    preBuild.dependsOn copyThirdPartyNotices
+    sourceSets {
+        main.assets.srcDirs += ['build/assets']
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
