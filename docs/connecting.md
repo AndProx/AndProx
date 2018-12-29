@@ -63,6 +63,30 @@ light up and display a cursor on-screen when you move it.
 
 ## Common issues
 
+Use the _System Info_ to show what USB devices AndProx can see.  You should see:
+
+* `USB Host: yes`
+
+  If it says "no", [your device doesn't support USB
+  Host](./compatibility.md#known-incompatible-devices).
+
+* Found 1 or more USB Devices: `9ac4:4b8f`
+
+  If it shows `2d2d:504d` -- you have old firmware and need to upgrade.
+
+  If it shows some other ID -- you may have a third-party firmware and should switch to mainline.
+
+  Some devices have WiFi/Bluetooth radios connected over USB, you can ignore those. They'll stay in
+  the list even when nothing is plugged in.
+
+  If it shows nothing, then your device isn't exposing USB devices properly, or may have the
+  `cdc_acm` kernel module loaded when it shouldn't.
+
+* Found 1 suitable drivers; `CdcAcmSerialPort`
+
+  If it shows no suitable drivers, but the correct IDs are showing, then this is probably a
+  firmware issue. You need to run mainline firmware.
+
 ### Power issues
 
 Some devices don't supply enough power for PM3 (150 mA). To get extra power, you need a USB OTG

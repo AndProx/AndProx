@@ -8,9 +8,8 @@ Prototype / work-in-progress native Android client for [Proxmark 3][1], which do
 permission changes or other messing about with kernel modules.
 
 This is intended to become a replacement for [Proxdroid][3] and other "root required" Android forks.
-
-This uses the [Android USB Host API][2] and [mik3y's USB Serial for Android driver][4] in order to
-access the Proxmark's USB ACM interface from user-space Java code.
+It uses the [Android USB Host API][2] and [mik3y's USB Serial for Android driver][4] to access the
+Proxmark's USB ACM interface from user-space Java code.
 
 **[Opt-in to the beta on Google Play][7]** | **[Direct APK download also available][6]**
 
@@ -18,17 +17,22 @@ access the Proxmark's USB ACM interface from user-space Java code.
 
 ![lf t55xx detect](https://github.com/AndProx/AndProx/raw/master/assets/v2_phone/t55xx-detect.png)
 
-## Compatibility
+## Documentation
 
-See `COMPATIBILITY.md`.
+* [Compatibility (hardware, firmware, Android)][compat]
+* [Connecting the PM3, troubleshooting information][connect]
+* [Building and hacking on the code][hacking]
+* [Common build issues][build-issues] -- do not download ZIP files from GitHub, it will not work!
+
+**NOTE:** AndProx presumes existing familiarity with [Proxmark3's CLI][commands].
 
 ## Functionality / Known Issues
 
 - Cross compiles to `armeabi`, `armeabi-v7a`, `arm64-v8a`, `x86` and `x86_64`.  Only really tested
   on ARM.
 
-- Many LF commands appear to work. Some devices need a Y cable and external power source for HF
-  commands.  See `COMPATIBILITY.md` for details.
+- [Many LF commands appear to work. Some devices need a Y cable and external power source for HF
+  commands.][compat]
 
 - LF graphs are not available yet. (Issue #1, Issue #2)
 
@@ -55,36 +59,6 @@ See `COMPATIBILITY.md`.
 5. Try `hw version`, `hw status` and `hw tune` to test out the device!
 
 AndProx will write files to _Internal Storage_, in the `proxmark3` directory.
-
-## Troubleshooting
-
-Use the _System Info_ to show what USB devices AndProx can see.  You should see:
-
-* USB Host: yes
-
-  (If it says "no", your device doesn't support USB Host.)
-
-* Found >1 USB Devices; (9ac4:4b8f; name = null)
-
-  (If it shows 2d2d : 504d -- you have an old firmware and should upgrade.)
-
-  (If it shows some other ID -- you may have a third-party firmware and should switch to mainline.)
-
-  (Some devices have WiFi/Bluetooth radios connected over USB, you can ignore those.)
-
-  (If it shows nothing, then your device isn't exposing USB devices properly, or may have the
-  `cdc_acm` kernel module loaded when it shouldn't.)
-
-* Found 1 suitable drivers; CdcAcmSerialPort
-
-  (If it shows no suitable drivers, but the correct IDs are showing, then this is probably a
-  firmware issue.)
-
-## Building the code
-
-See `HACKING.md`.
-
-**Do not download the ZIP file from GitHub -- it will not work!**
 
 ## Licensing
 
@@ -122,3 +96,8 @@ components is shown in `third_party/README.md`.
 [4]: https://github.com/mik3y/usb-serial-for-android
 [6]: https://github.com/AndProx/AndProx/releases
 [7]: https://play.google.com/apps/testing/au.id.micolous.andprox
+[compat]: ./docs/compatibility.md
+[connect]: ./docs/connecting.md
+[hacking]: ./docs/hacking.md
+[build-issues]: ./docs/build-issues.md
+[commands]: https://github.com/Proxmark/proxmark3/wiki/commands

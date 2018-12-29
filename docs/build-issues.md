@@ -19,7 +19,7 @@ Could not determine the dependencies of task ':app:lintVitalRelease'.
 These errors are caused by not having the appropriate `git submodules`. `git`'s default clone
 behaviour, and GitHub's "download ZIP" function do not include submodules.
 
-See [getting the code](#getting-the-code).
+See [getting the code](./hacking.md#getting-the-code).
 
 ## Problem configuring project :natives
 
@@ -45,7 +45,7 @@ A problem occurred configuring project ':natives'.
 ```
 
 You don't have the Android NDK installed. [Please install all required Android SDK
-components](#developing--testing-andprox).
+components](./hacking.md#developing--testing-andprox).
 
 ## clang++: error: no such file or directory: libgnustl_static.a
 
