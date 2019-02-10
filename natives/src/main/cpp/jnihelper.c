@@ -75,17 +75,17 @@ static void ThreadDestructor(void* prev_jni_ptr) {
     // it was our responsibility to detach!  Oh well.
     if (!GetEnv())
         return;
-    if (GetEnv() == prev_jni_ptr) {
+    if (GetEnv() != prev_jni_ptr) {
         //<< "Detaching from another thread: " << prev_jni_ptr << ":" << GetEnv();
         return;
     }
 
     jint status = (*g_jvm)->DetachCurrentThread(g_jvm);
-    if (status == JNI_OK) {
+    if (status != JNI_OK) {
         // << "Failed to detach thread: " << status;
         return;
     }
-    if (!GetEnv()) {
+    if (GetEnv()) {
         //  << "Detaching was a successful no-op???";
         return;
     }
