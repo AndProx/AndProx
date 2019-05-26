@@ -1,7 +1,7 @@
 /*
  * This file is part of AndProx, an application for using Proxmark3 on Android.
  *
- * Copyright 2016-2018 Michael Farrell <micolous+git@gmail.com>
+ * Copyright 2016-2019 Michael Farrell <micolous+git@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -51,18 +51,14 @@ public final class NativeSerialWrapper implements Closeable {
     private static final boolean DEBUG_COMMS = false;
 
     private boolean mClosed = false;
-    private boolean m20PingSent = false;
 
     private final SerialInterface mSerialInterface;
-
-    private long mLastMessageRecieved;
 
     // uart.h defines the timeout as 30ms.
     public static final int TIMEOUT = 30;
 
     public NativeSerialWrapper(@NonNull SerialInterface iface) {
         mSerialInterface = iface;
-        mLastMessageRecieved = System.currentTimeMillis();
     }
 
 
@@ -100,30 +96,7 @@ public final class NativeSerialWrapper implements Closeable {
         }
 
         try {
-            int len = mSerialInterface.receive(pbtRx);
-
-            final long now = System.currentTimeMillis();
-
-            if (len > 0 || mLastMessageRecieved > now) {
-                mLastMessageRecieved = now;
-                m20PingSent = false;
-            } else {
-                final long delta = now - mLastMessageRecieved;
-                if (delta > 30000) {
-                    // No message in 30 sec, abort
-                    Log.d(TAG, "No activity in 30sec, shutting down");
-                    close();
-                    return -1;
-                } else if (delta > 20000) {
-                    if (!m20PingSent) {
-                        m20PingSent = true;
-                        Log.d(TAG, "No activity in 20sec, sending ping");
-                        // No message in 20 sec, send a ping in the background
-                        new Thread(Natives::sendCmdPing).start();
-                    }
-                }
-            }
-            return len;
+            return mSerialInterface.receive(pbtRx);
         } catch (IOException ex) {
             Log.e(TAG, "IOException in receive", ex);
             close();
