@@ -162,6 +162,31 @@ public class VersionTest {
     }
 
     @Test
+    public void test310UnknownBootloader() {
+        String s = "bootrom: /-suspect 2015-11-04 22:15:34\n" +
+                "os: HEAD/v3.1.0-suspect 2018-12-01 08:38:00\n" +
+                "fpga_lf.bit built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
+                "fpga_hf.bit built for 2s30vq100 on 2018/09/12 at 15:18:46\n";
+
+        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        assertNotNull(v);
+        assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
+        assertTrue(v.isSuspect());
+        assertFalse(v.isDirty());
+
+        // $ TZ=UTC date --date='@1543653480.000'
+        // Sat Dec  1 08:38:00 UTC 2018
+        assertEquals(1543653480000L, v.getOSBuildTime().getTimeInMillis());
+        assertEquals(3, v.getOSMajorVersion());
+        assertEquals(1, v.getOSMinorVersion());
+        assertEquals(0, v.getOSPatchVersion());
+        assertEquals(0, v.getOSCommitCount());
+        assertNull(v.getOSCommitHash());
+
+        assertTrue(v.isSupportedVersion());
+    }
+
+    @Test
     public void testChina() {
         // Note: This is actually returned as debug strings (non-standard).
         //
@@ -182,6 +207,7 @@ public class VersionTest {
         assertEquals(ProxmarkVersion.Branch.CHINA, v.getBranch());
         assertFalse(v.isSupportedVersion());
 
+        // Also uses debug string.
         // http://www.proxmark.org/forum/viewtopic.php?id=5515
         s = "bootrom: /-suspect 2015-04-02 15:12:04          \n" +
                 "os: /-suspect 2015-04-02 15:12:11          \n" +
@@ -190,7 +216,6 @@ public class VersionTest {
         v = ProxmarkVersion.parse(s);
 
         assertNotNull(v);
-        assertEquals(ProxmarkVersion.Branch.CHINA, v.getBranch());
         assertFalse(v.isSupportedVersion());
     }
 

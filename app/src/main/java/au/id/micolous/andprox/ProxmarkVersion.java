@@ -93,8 +93,7 @@ public class ProxmarkVersion {
             return v;
         }
 
-        if (lowerS.contains("taobao") || lowerS.contains("alibaba") || lowerS.contains("163.com") ||
-                lowerS.contains(" /-suspect")) {
+        if (lowerS.contains("taobao") || lowerS.contains("alibaba") || lowerS.contains("163.com")) {
             v.mBranch = Branch.CHINA;
             return v;
         }
@@ -133,6 +132,8 @@ public class ProxmarkVersion {
             if (v.mOsVersion.contains("-suspect")) {
                 v.mSuspect = true;
             }
+
+            v.mSuperSuspect = v.mOsVersion.contains("/-suspect");
 
             try {
                 Matcher m = ISO_DATE_MATCHER.matcher(v.mOsVersion);
@@ -177,6 +178,7 @@ public class ProxmarkVersion {
         }
 
         if (v.mBootromVersion != null) {
+            v.mBootromSuperSuspect = v.mBootromVersion.contains("/-suspect");
             try {
                 Matcher m = ISO_DATE_MATCHER.matcher(v.mBootromVersion);
                 if (m.matches()) {
@@ -215,6 +217,8 @@ public class ProxmarkVersion {
 
     private boolean mDirty = false;
     private boolean mSuspect = false;
+    private boolean mSuperSuspect = false;
+    private boolean mBootromSuperSuspect = false;
 
     private Calendar mOsBuildTime = null;
     private Calendar mBootromBuildTime = null;
@@ -232,6 +236,7 @@ public class ProxmarkVersion {
 
     public boolean isSupportedVersion() {
         if (mBranch != Branch.OFFICIAL) return false;
+        if (mSuperSuspect) return false;
 
         // Declare compatibility with 3.x.x, except 3.0.x.
         if (mOsMajorVersion != 3) return false;
@@ -255,6 +260,15 @@ public class ProxmarkVersion {
      */
     public boolean isSuspect() {
         return mSuspect;
+    }
+
+    /**
+     * Does this firmware look like it's missing all git version data?
+     *
+     *
+     */
+    public boolean isSuperSuspect() {
+        return mSuperSuspect;
     }
 
     public Calendar getOSBuildTime() {
