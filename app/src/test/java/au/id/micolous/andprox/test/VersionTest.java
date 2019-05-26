@@ -163,6 +163,11 @@ public class VersionTest {
 
     @Test
     public void testChina() {
+        // Note: This is actually returned as debug strings (non-standard).
+        //
+        // If you have this bootloader and/or OS, the bootloader AND firmware needs to be reflashed.
+        // Flashing official firmware without flashing the bootloader bricks the device.
+        //
         // http://www.proxmark.org/forum/viewtopic.php?id=4919
         String s = "bootrom: /-suspect 2016-11-09 00:59:56\n" +
                 "os: /-suspect 2016-12-08 12:45:38\n" +
