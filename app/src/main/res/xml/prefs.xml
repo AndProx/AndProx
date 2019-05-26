@@ -10,7 +10,7 @@
             />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/tcp_ip">
+    <PreferenceCategory android:title="@string/tcp_ip_settings">
         <CheckBoxPreference android:key="pref_android_emu_host"
             android:title="@string/connect_android_host"
             android:disableDependentsState="true"
@@ -30,5 +30,13 @@
             android:summary="%s"
             android:defaultValue="1234" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/advanced_settings">
+        <CheckBoxPreference
+            android:key="pref_allow_sleep"
+            android:title="@string/allow_sleep"
+            android:summaryOn="@string/allow_sleep_on"
+            android:summaryOff="@string/allow_sleep_off" />
     </PreferenceCategory>
 </PreferenceScreen>

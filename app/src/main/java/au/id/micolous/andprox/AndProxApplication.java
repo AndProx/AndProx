@@ -56,6 +56,7 @@ public class AndProxApplication extends Application {
     public static final String PREF_ANDROID_EMU_HOST = "pref_android_emu_host";
     public static final String PREF_TCP_HOST = "pref_tcp_host";
     public static final String PREF_TCP_PORT = "pref_tcp_port";
+    public static final String PREF_ALLOW_SLEEP = "pref_allow_sleep";
 
     public static final String PREF_CONN_USB = "usb";
     public static final String PREF_CONN_TCP = "tcp";
@@ -194,6 +195,10 @@ public class AndProxApplication extends Application {
         return prefs.getBoolean(preference, defaultValue);
     }
 
+    private static boolean getBooleanPref(final String preference) {
+        return getBooleanPref(preference, false);
+    }
+
     @Nullable
     private static String getStringPref(final String preference) {
         return getStringPref(preference, null);
@@ -220,6 +225,10 @@ public class AndProxApplication extends Application {
 
     public static boolean useAndroidEmulatorHost() {
         return getBooleanPref(PREF_ANDROID_EMU_HOST, Utils.isRunningInEmulator());
+    }
+
+    public static boolean allowSleep() {
+        return getBooleanPref(PREF_ALLOW_SLEEP);
     }
 
     @Nullable
