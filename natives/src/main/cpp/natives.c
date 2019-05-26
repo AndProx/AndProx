@@ -38,6 +38,7 @@
 #include "natives.h"
 #include "uart_android.h"
 #include "fakemain.h"
+#include "jnihelper.h"
 
 #if !defined(PM3_GIT_VER)
 #error "Expected PM3_GIT_VER to be defined"
@@ -52,8 +53,26 @@
 UsbCommand versionResp = {0, {0, 0, 0}};
 bool pmThreadRunning = false;
 
-bool OpenProxmarkAndroid(JNIEnv* env, JavaVM* vm, jobject nsw) {
-    uart_open_android(env, vm, nsw);
+// processing callback to handler class
+typedef struct {
+    jclass   jcNativeSerialWrapper;
+    jmethodID jmNSWReceive;
+    jmethodID jmNSWSend;
+    jmethodID jmNSWClose;
+
+    jclass    jcNatives;
+    jmethodID jmPrintAndLog;
+    jmethodID jmPrintf;
+
+    int      done;
+
+    char* executable_directory;
+} JavaContext;
+
+JavaContext g_ctx;
+
+bool OpenProxmarkAndroid(JNIEnv *env, jobject nsw) {
+    uart_open_android(env, nsw);
     return OpenProxmark(SERIAL_PORT_LABEL, /* waitCOMPort */ false, /* timeout */ 0, /* flash_mode */ false);
 }
 
@@ -82,7 +101,7 @@ Java_au_id_micolous_andprox_natives_Natives_startReaderThread(JNIEnv *env, jclas
     LOGI("starting reader thread");
     SetOffline(false);
     memset((void*)(&versionResp), 0, sizeof(versionResp));
-    pmThreadRunning = OpenProxmarkAndroid(env, g_ctx.javaVM, nsw);
+    pmThreadRunning = OpenProxmarkAndroid(env, nsw);
 }
 
 JNIEXPORT void JNICALL
@@ -100,14 +119,13 @@ Java_au_id_micolous_andprox_natives_Natives_stopReaderThread(JNIEnv *env, jclass
 
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
-    JNIEnv* env;
     memset(&g_ctx, 0, sizeof(g_ctx));
 
-    if ((*vm)->GetEnv(vm, (void**)&env, JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR; // JNI version not supported.
+    JNIEnv* env = NULL;
+    jint ret = InitGlobalJniVariables(vm, &env);
+    if (ret == -1 || env == NULL) {
+        return JNI_ERR;
     }
-
-    g_ctx.javaVM = vm;
 
     // Lookup function table for NativeSerialWrapper
     jclass clz = (*env)->FindClass(env, "au/id/micolous/andprox/natives/NativeSerialWrapper");
@@ -169,7 +187,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
 
     LOGI("Completed OnLoad");
 
-    return JNI_VERSION_1_6;
+    return ret;
 }
 
 JNIEXPORT jstring JNICALL
@@ -315,4 +333,24 @@ Java_au_id_micolous_andprox_natives_Natives_sendCmdPing(JNIEnv *env, jclass type
     }
 
     return JNI_TRUE;
+}
+
+void nsw_close(JNIEnv* env, jobject nativeSerialWrapper) {
+    (*env)->CallVoidMethod(env, nativeSerialWrapper, g_ctx.jmNSWClose);
+}
+
+jint nsw_receive(JNIEnv* env, jobject nativeSerialWrapper, jbyteArray recvBuffer) {
+    return (*env)->CallIntMethod(env, nativeSerialWrapper, g_ctx.jmNSWReceive, recvBuffer);
+}
+
+jboolean nsw_send(JNIEnv* env, jobject nativeSerialWrapper, jbyteArray sendBuffer) {
+    return (*env)->CallBooleanMethod(env, nativeSerialWrapper, g_ctx.jmNSWSend, sendBuffer);
+}
+
+void natives_printandlog(JNIEnv* env, jstring s) {
+    (*env)->CallStaticVoidMethod(env, g_ctx.jcNatives, g_ctx.jmPrintAndLog, s);
+}
+
+const char* natives_getexecutabledirectory() {
+    return g_ctx.executable_directory;
 }

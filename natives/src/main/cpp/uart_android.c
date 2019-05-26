@@ -30,8 +30,8 @@
 
 #include "uart_android.h"
 #include "natives.h"
+#include "jnihelper.h"
 #include <uart.h>
-#include <jni.h>
 #include <stdint.h>
 
 /**
@@ -61,10 +61,9 @@ serial_port uart_open(const char* pcPortName) {
  * @param nsw A JNI reference to an object which implements NativeSerialWrapper.
  * @return
  */
-void uart_open_android(JNIEnv* env, JavaVM* vm, jobject nsw)
+void uart_open_android(JNIEnv* env, jobject nsw)
 {
     serial_port_android* sp = malloc(sizeof(serial_port_android));
-    sp->javaVM = vm;
     sp->nativeSerialWrapper = (*env)->NewGlobalRef(env, nsw);
     android_serial_port = sp;
 }
@@ -73,10 +72,10 @@ void uart_close(const serial_port sp) {
     serial_port_android* spa = (serial_port_android*)sp;
     //PrintAndLog("uart_close()");
     if (spa == NULL) return;
-    GET_ENV(spa->javaVM)
+    JNIEnv* env = AttachCurrentThreadIfNeeded();
     if (env == NULL) return;
 
-    (*env)->CallVoidMethod(env, spa->nativeSerialWrapper, g_ctx.jmNSWClose);
+    nsw_close(env, spa->nativeSerialWrapper);
     (*env)->DeleteGlobalRef(env, spa->nativeSerialWrapper);
     free(spa);
 }
@@ -85,13 +84,12 @@ bool uart_receive(const serial_port sp, uint8_t* pbtRx, size_t pszMaxRxLen, size
     serial_port_android* spa = (serial_port_android*)sp;
     //PrintAndLog("uart_recieve(%d)", pszMaxRxLen);
     if (spa == NULL) return false;
-    GET_ENV(spa->javaVM)
+    JNIEnv* env = AttachCurrentThreadIfNeeded();
     if (env == NULL) return false;
 
     // Make a new buffer for Java to use
     jbyteArray recvBuffer = (*env)->NewByteArray(env, (jsize)pszMaxRxLen);
-
-    jint ret = (*env)->CallIntMethod(env, spa->nativeSerialWrapper, g_ctx.jmNSWReceive, recvBuffer);
+    jint ret = nsw_receive(env, spa->nativeSerialWrapper, recvBuffer);
 
     if (ret <= 0) {
         // We got an error or no data
@@ -121,17 +119,16 @@ bool uart_send(const serial_port sp, const uint8_t* pbtTx, const size_t szTxLen)
     serial_port_android* spa = (serial_port_android*)sp;
     //PrintAndLog("uart_send(%d)", szTxLen);
     if (spa == NULL) return false;
-    GET_ENV(spa->javaVM)
+    JNIEnv* env = AttachCurrentThreadIfNeeded();
     if (env == NULL) return false;
 
     // Make a new buffer for Java to use
     jbyteArray sendBuffer = (*env)->NewByteArray(env, (jsize)szTxLen);
     (*env)->SetByteArrayRegion(env, sendBuffer, 0, (jsize)szTxLen, (const jbyte*)pbtTx);
 
-    jboolean ret = (*env)->CallBooleanMethod(env, spa->nativeSerialWrapper, g_ctx.jmNSWSend, sendBuffer);
+    jboolean ret = nsw_send(env, spa->nativeSerialWrapper, sendBuffer);
 
     (*env)->DeleteLocalRef(env, sendBuffer);
-
     return ret == JNI_TRUE;
 }
 

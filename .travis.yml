@@ -7,10 +7,13 @@ env:
     - EMULATOR_API=21 EMULATOR_ABI=armeabi-v7a SUITE=device
     - EMULATOR_API=24 EMULATOR_ABI=armeabi-v7a SUITE=device
     - EMULATOR_API=21 EMULATOR_ABI=x86 SUITE=device
+    - EMULATOR_API=23 EMULATOR_ABI=x86 SUITE=device
     - EMULATOR_API=24 EMULATOR_ABI=x86 SUITE=device
+# Only on Windows?!
+#    - EMULATOR_API=23 EMULATOR_ABI=armeabi-v7a SUITE=device
 # Not available in vanilla flavour
 #    - EMULATOR_API=27
-  
+
   global:
     - ANDROID_API=28
     - ANDROID_API_NATIVE=21
