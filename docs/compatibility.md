@@ -78,7 +78,7 @@ The following firmware is _blocked by default_:
   os: /-suspect 2015-04-02 15:12:11
   ```
 
-  Only the `os` is checked.
+  Only `os` is checked in v2.0.5 and later. Both `bootrom` and `os` are checked before v2.0.4.
 
 * _Firmware that mentions any online marketplace (eg: URLs, email addresses) is blocked:_ I have no
   idea what modifications have been done to the firmware. The vendors rarely release source code
@@ -99,7 +99,6 @@ AndProx's source code. The method to change is `ProxmarkVersion.isSupportedVersi
 Note: AndProx 2.0.3 and earlier had an issue where devices with _iceman's bootloader_ (but
 _mainline OS/firmware_) would be blocked.  This is particularly an issue with the Proxmark3 RDV4
 hardware.  _Later versions of AndProx have this issue fixed -- so upgrade if this impacts you._
-
 
 [mainline]: https://github.com/Proxmark/proxmark3
 [and-rel]: https://github.com/AndProx/AndProx/releases
@@ -128,9 +127,9 @@ The following **will not work under any circumstances, even if it appears in ano
 
 ### Additional known incompatible devices
 
-Manufacturer | Device            | Connector   | Notes
--------------|-------------------|-------------|--------
-Google / LG  | Nexus 4           | USB Micro-B | [Does not supply 5v][nex4]
+Manufacturer | Device            | Notes
+-------------|-------------------|--------
+Google / LG  | Nexus 4           | [Does not supply 5v][nex4]
 
 ## Known compatible devices
 

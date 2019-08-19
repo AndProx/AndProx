@@ -202,8 +202,8 @@ A typical command follows this process:
 15. The command can then handle the event with `WaitForResponse`, and pull the data back into the UI
     thread.
 
-16. `NativeSerialWrapper` also listens for when there hasn't been a command from the device in a
-    while, and will inject a `CMD_PING`, to make sure the device is still alive.
+16. Once `CommandReceived` returns, the command input box unlocks again (this is equivalent to
+    waiting for the `proxmark3>` prompt).
 
 [1]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 [4]: https://developer.android.com/studio/intro/update#sdk-manager
