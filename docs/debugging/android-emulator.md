@@ -20,8 +20,9 @@ These examples open a TCP server on `localhost` port `1234`.
 
 On the host machine, run:
 
-```
-socat TCP-LISTEN:1234,bind=127.0.0.1,reuseaddr /dev/ttyACM0,raw,echo=0
+```sh
+socat tcp-listen:1234,bind=127.0.0.1,reuseaddr \
+    open:/dev/tty.ttyACM0,raw,echo=0,append=0,nonblock=1,noctty=1,clocal=1,cs8,ixoff=0,ixon=0
 ```
 
 ## Connecting using AndProx
