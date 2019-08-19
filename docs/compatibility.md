@@ -141,6 +141,7 @@ Android distribution to get it.
 Manufacturer | Device            | Connector | Y-cable           | Notes
 -------------|-------------------|-----------|-------------------|--------
 Google       | Pixel 1 / 1 XL    | USB C     | Needed for HF     | Device includes USB-C to A dongle
+Google       | Pixel 3a          | USB C     | Not required      | Device includes USB-C to A dongle
 Google / LG  | Nexus 5X          | USB C     |
 Samsung      | Galaxy S8         | USB C     |
 Sony         | Bravia TV (2013+) | USB A     | Not required      | [Product name bug][prod-name]
