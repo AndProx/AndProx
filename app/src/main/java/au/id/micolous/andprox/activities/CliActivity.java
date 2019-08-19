@@ -234,6 +234,7 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
         if (mDisconnectBroadcastReciever != null) {
             unregisterReceiver(mDisconnectBroadcastReciever);
         }
+        CliActivity.this.handleDisconnect(true);
     }
 
     @Override
