@@ -30,7 +30,7 @@ Changes:
 ## v2.0.4, released 2018-12-01
 
 - Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
-- Source code: https://github.com/AndProx/AndProx/tree/v2.0.4
+- Source code: `git clone -b v2.0.4 --recurse-submodules https://github.com/AndProx/AndProx.git`
 - APK: [andprox-2.0.4.apk][apk204]
 - Firmware: [fullimage.elf.zip][fw204]
 
@@ -66,9 +66,12 @@ Release notes:
 ## v2.0.3, released 2018-09-09
 
 - Proxmark version: 3.0.1 [(+400 bed3db8f)](https://github.com/proxmark/proxmark3/tree/bed3db8f1dea15b9e998c3c4c432c58c5eb565eb)
-- Source code: https://github.com/AndProx/AndProx/tree/v2.0.3
-- APK: https://github.com/AndProx/AndProx/releases/download/v2.0.3/andprox-2.0.3.apk
-- Firmware: https://github.com/AndProx/AndProx/releases/download/v2.0.3/fullimage.elf.zip
+- Source code: `git clone -b v2.0.3 --recurse-submodules https://github.com/AndProx/AndProx.git`
+- APK: [andprox-2.0.3.apk][apk203]
+- Firmware: [fullimage.elf.zip][fw203]
+
+[apk203]: https://github.com/AndProx/AndProx/releases/download/v2.0.3/andprox-2.0.3.apk
+[fw203]: https://github.com/AndProx/AndProx/releases/download/v2.0.3/fullimage.elf.zip
 
 Changes:
 
@@ -87,9 +90,12 @@ Changes:
 ## v2.0.2, released 2017-12-26
 
 - Proxmark version: 3.0.1 (+137 9d8b41bd)
-- Source code: https://github.com/AndProx/AndProx/tree/v2.0.2
-- APK: https://github.com/AndProx/AndProx/releases/download/v2.0.2/andprox-2.0.2.apk
-- Firmware: https://github.com/AndProx/AndProx/releases/download/v2.0.2/fullimage.elf.zip
+- Source code: `git clone -b v2.0.2 --recurse-submodules https://github.com/AndProx/AndProx.git`
+- APK: [andprox-2.0.2.apk][apk202]
+- Firmware: [fullimage.elf.zip][fw202]
+
+[apk202]: https://github.com/AndProx/AndProx/releases/download/v2.0.2/andprox-2.0.2.apk
+[fw202]: https://github.com/AndProx/AndProx/releases/download/v2.0.2/fullimage.elf.zip
 
 Changes:
 
@@ -100,7 +106,7 @@ Changes:
 ## v2.0.1, released 2017-12-10
 
 - Proxmark version: 3.0.1 (mislabelled in-app)
-- Source code: https://github.com/AndProx/AndProx/tree/v2.0.1
+- Source code: `git clone -b v2.0.1 --recurse-submodules https://github.com/AndProx/AndProx.git`
 
 This is the initial version of AndProx.
 
