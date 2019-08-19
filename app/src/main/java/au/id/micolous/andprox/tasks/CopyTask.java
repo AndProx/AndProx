@@ -32,17 +32,19 @@ package au.id.micolous.andprox.tasks;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Pair;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
 import au.id.micolous.andprox.R;
+import au.id.micolous.andprox.Utils;
 import au.id.micolous.andprox.natives.Resources;
 
 /**
  * Task to copy PM3's static files to storage.
  */
-public class CopyTask extends AsyncTask<Void, Void, Boolean> {
+public class CopyTask extends AsyncTask<Void, Pair<Integer, Integer>, Boolean> {
     private ProgressDialog mProgressDialog;
 
     private WeakReference<Context> mContext;
@@ -54,14 +56,29 @@ public class CopyTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        Context c = mContext.get();
 
-        mProgressDialog = ProgressDialog.show(c, c.getString(R.string.copying_assets), c.getString(R.string.wait_long), true, false);
+        final Context c = mContext.get();
+        mProgressDialog = new ProgressDialog(c);
+        mProgressDialog.setTitle(R.string.copying_assets);
+        mProgressDialog.setMessage(Utils.localizeString(R.string.wait_long));
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setIndeterminate(false);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+    }
+
+    @SafeVarargs
+    @Override
+    protected final void onProgressUpdate(Pair<Integer, Integer>... values) {
+        if (values.length == 0 || values[0] == null) return;
+
+        mProgressDialog.setMax(values[0].second);
+        mProgressDialog.setProgress(values[0].first);
     }
 
     @Override
     protected Boolean doInBackground(Void... voids) {
-        return Resources.extractPM3Resources(mContext.get());
+        return Resources.extractPM3Resources(mContext.get(), this::publishProgress);
     }
 
     @Override

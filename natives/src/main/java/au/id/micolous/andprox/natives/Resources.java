@@ -31,6 +31,7 @@ package au.id.micolous.andprox.natives;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.Pair;
 
 import org.apache.commons.io.IOUtils;
 
@@ -92,6 +93,10 @@ public class Resources {
             "read14a.lua",
             "taglib.lua",
             "utils.lua"
+    };
+
+    private static final String[] PM3_HARDNESTED = {
+            "bf_bench_data.bin"
     };
 
     private static final String[] PM3_HARDNESTED_TABLES = {
@@ -448,51 +453,27 @@ public class Resources {
             "bitflip_1_3a0_states.bin.z"
     };
 
+    /**
+     * All resources needed to be copied.
+     *
+     * First parameter is the directory name, second is the array of files.
+     */
+    private static final Pair[] ALL_RESOURCES = new Pair[]{
+            Pair.create("scripts", PM3_STANDARD_SCRIPTS),
+            Pair.create("lualibs", PM3_LUA_LIBS),
+            Pair.create("hardnested", PM3_HARDNESTED),
+            Pair.create("hardnested/tables", PM3_HARDNESTED_TABLES)
+    };
+
     private static final String TAG = "Resources";
-
-    private static boolean copyResources(Context ctx, String dir, String[] files) {
-        File f = new File(PM3_STORAGE_ROOT + "/" + dir);
-        if (!f.isDirectory()) {
-            if (!f.mkdirs()) {
-                Log.e(TAG, "Failed to mkdir PM3_STORAGE_ROOT/" + dir);
-                return false;
-            }
-        }
-
-        // Copy files
-        InputStream in = null;
-        OutputStream out = null;
-        for (String fn : files) {
-            f = new File(String.format(Locale.ENGLISH, "%s/%s/%s", PM3_STORAGE_ROOT, dir, fn));
-
-            if (f.exists() && f.isFile()) {
-                continue;
-            }
-
-            try {
-                in = ctx.getAssets().open(dir + "/" + fn);
-                out = new FileOutputStream(f);
-                IOUtils.copy(in, out);
-                Log.d(TAG, String.format(Locale.ENGLISH, "Copied %s", fn));
-            } catch (IOException e) {
-                Log.e(TAG, String.format(Locale.ENGLISH, "Error copying %s", fn), e);
-                return false;
-            } finally {
-                IOUtils.closeQuietly(out);
-                IOUtils.closeQuietly(in);
-            }
-        }
-
-        return true;
-    }
 
     /**
      * Extracts all the PM3 resources to the sdcard directory.
      * @return true on success
      */
-    public static boolean extractPM3Resources(Context ctx) {
-        // TODO: Implement progression callbacks.
+    public static boolean extractPM3Resources(Context ctx, ProgressionCallback cb) {
         Log.d(TAG, "Copying resources...");
+        final Pair<String, String[]>[] resources = (Pair<String, String[]>[])ALL_RESOURCES;
 
         File f = new File(PM3_STORAGE_ROOT);
         if (!f.isDirectory()) {
@@ -502,25 +483,64 @@ public class Resources {
             }
         }
 
-        if (!copyResources(ctx, "scripts", PM3_STANDARD_SCRIPTS)) {
-            return false;
+        int totalFiles = 0;
+        for (Pair<String, String[]> resource : resources) {
+            // +1 for mkdir()
+            totalFiles += resource.second.length + 1;
         }
 
-        if (!copyResources(ctx, "lualibs", PM3_LUA_LIBS)) {
-            return false;
-        }
+        cb.sendProgress(Pair.create(0, totalFiles));
 
-        if (!copyResources(ctx, "hardnested", new String[] {"bf_bench_data.bin"})) {
-            return false;
-        }
+        int progress = 0;
 
-        if (!copyResources(ctx, "hardnested/tables", PM3_HARDNESTED_TABLES)) {
-            return false;
+        for (Pair<String, String[]> resource : resources) {
+            final String dir = resource.first;
+            final String[] files = resource.second;
+
+            f = new File(PM3_STORAGE_ROOT + "/" + dir);
+            if (!f.isDirectory()) {
+                if (!f.mkdirs()) {
+                    Log.e(TAG, "Failed to mkdir PM3_STORAGE_ROOT/" + dir);
+                    return false;
+                }
+            }
+            cb.sendProgress(Pair.create(++progress, totalFiles));
+
+            // Copy files
+            InputStream in = null;
+            OutputStream out = null;
+            for (String fn : files) {
+                final String fullPath = String.format(Locale.ENGLISH, "%s/%s/%s", PM3_STORAGE_ROOT, dir, fn);
+                f = new File(fullPath);
+
+                if (f.exists() && f.isFile()) {
+                    Log.d(TAG, String.format(Locale.ENGLISH, "Skipping existing file %s", fullPath));
+                    cb.sendProgress(Pair.create(++progress, totalFiles));
+                    continue;
+                }
+
+                try {
+                    in = ctx.getAssets().open(dir + "/" + fn);
+                    out = new FileOutputStream(f);
+                    IOUtils.copy(in, out);
+                    Log.d(TAG, String.format(Locale.ENGLISH, "Copied %s", fullPath));
+                } catch (IOException e) {
+                    Log.e(TAG, String.format(Locale.ENGLISH, "Error copying %s", fullPath), e);
+                    return false;
+                } finally {
+                    IOUtils.closeQuietly(out);
+                    IOUtils.closeQuietly(in);
+                }
+
+                cb.sendProgress(Pair.create(++progress, totalFiles));
+            }
         }
 
         Log.d(TAG, "Finished copying resources successfully");
         return true;
     }
 
-
+    public interface ProgressionCallback {
+        void sendProgress(Pair<Integer, Integer> report);
+    }
 }
