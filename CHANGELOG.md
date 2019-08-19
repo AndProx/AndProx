@@ -2,9 +2,18 @@
 
 ## v2.0.5, not released yet
 
+- Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
+- Source code: (not yet)
+- APK: (not yet)
+- Firmware: (same as 2.0.4) https://github.com/AndProx/AndProx/releases/download/v2.0.4/fullimage.elf.zip
+
 Changes:
 
-- Nothing yet.
+- New: Prevents sleep (turning off the screen) by default. Can be disabled in settings.
+- Fixed: Bootloader version is now ignored for all version checks. This impacts devices that have
+  incorrectly built bootloaders; but this doesn't actually impact compatibility.
+- Fixed: Removes background "ping" which broke `snoop` operations.
+- Cleanup: Moved license notices into files.
 
 ## v2.0.4, released 2018-12-01
 

@@ -2,8 +2,8 @@
 
 The Android Emulator doesn't support USB.  Instead, you'll need to:
 
-- Debug using a TCP connection to your Proxmark3 (this document).
-- [Use something like VirtualBox which supports USB](./virtualbox.md).
+- debug using a TCP connection to your Proxmark3 (this document), or,
+- [use something like VirtualBox which supports USB](./virtualbox.md).
 
 This example is written with `socat` in mind, but should work with anything which can run a TCP
 server which redirects all communications to the PM3.

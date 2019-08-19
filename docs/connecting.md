@@ -6,6 +6,12 @@ Your first stop should be the [compatibility list][compat].
 
 ## Types of connectors
 
+### Bluetooth
+
+Proxmark RDV4.0 has a Bluetooth module.  We don't support this, or its USB dongle yet.
+
+You need to use plain USB instead.
+
 ### TCP/IP
 
 To my knowledge, there is no PM3 device with TCP/IP support.

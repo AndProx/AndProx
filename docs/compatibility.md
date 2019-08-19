@@ -61,13 +61,13 @@ _In light of this, AndProx intentionally refuses to run_ on old, or known-bad fi
 
 The following firmware is _blocked by default_:
 
-* _Old firmware is blocked:_ this should be self-explanatory.
+* _Old firmware is blocked:_
 
   Each version of AndProx indicates which version of PM3 it contains, and [the AndProx releases
   page][and-rel] lists compatible firmware versions for each release.
 
-* _Firmware (**including the bootloader**) without version data is blocked:_ this should also be
-  self-explanatory. This generally indicates that the [firmware was built improperly][pm3git].
+* _Firmware without version data is blocked:_ this generally indicates that the
+  [firmware was built improperly][pm3git].
 
   This is common with devices sold via online marketplaces.
 
@@ -78,7 +78,7 @@ The following firmware is _blocked by default_:
   os: /-suspect 2015-04-02 15:12:11
   ```
 
-  _Unlike every other check,_ both the `bootloader` and `os` version is checked.
+  Only the `os` is checked.
 
 * _Firmware that mentions any online marketplace (eg: URLs, email addresses) is blocked:_ I have no
   idea what modifications have been done to the firmware. The vendors rarely release source code
