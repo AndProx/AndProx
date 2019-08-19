@@ -3,6 +3,8 @@
 ## v2.0.6, not released yet
 
 - Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
+- Source code: (not yet)
+- APK: (not yet)
 - Firmware: [fullimage.elf.zip][fw205] (v3.1.0)
 - Bootloader: [bootrom.elf.zip][boot205] (v3.1.0; not normally required)
 
