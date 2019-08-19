@@ -138,10 +138,14 @@ Note: Even if the device appears in the list below, you **always need Android 5.
 AndProx.** If it is not available from the manufacturer, you'll need to install a third-party
 Android distribution to get it.
 
+Note: Android TV requires side-loading the APK. A Bluetooth keyboard is _strongly recommended_ for
+all Android TV devices, as the UI is _not_ remote-friendly.
+
 Manufacturer | Device            | Connector | Y-cable           | Notes
 -------------|-------------------|-----------|-------------------|--------
 Google       | Pixel 1 / 1 XL    | USB C     | Needed for HF     | Device includes USB-C to A dongle
 Google       | Pixel 3a          | USB C     | Not required      | Device includes USB-C to A dongle
+Google / Asus | Nexus Player     | USB Micro-B |                 | `x86_64`
 Google / LG  | Nexus 5X          | USB C     |
 Samsung      | Galaxy S8         | USB C     |
 Sony         | Bravia TV (2013+) | USB A     | Not required      | [Product name bug][prod-name]
