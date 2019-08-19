@@ -18,11 +18,12 @@ These examples open a TCP server on `localhost` port `1234`.
 
 ### Using `socat`
 
-On the host machine, run:
+> **Note:** On non-Linux platforms, replace `/dev/ttyACM0` with the path to your PM3 device
+> (eg: for macOS, it is something like `/dev/tty.usbmodem1234`)
 
 ```sh
-socat tcp-listen:1234,bind=127.0.0.1,reuseaddr \
-    open:/dev/tty.ttyACM0,raw,echo=0,append=0,nonblock=1,noctty=1,clocal=1,cs8,ixoff=0,ixon=0
+socat -dd tcp-listen:1234,bind=127.0.0.1,reuseaddr \
+    open:/dev/ttyACM0,raw,echo=0,append=0,nonblock=1,noctty=1,clocal=1,cs8,ixoff=0,ixon=0
 ```
 
 ## Connecting using AndProx

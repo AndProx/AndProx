@@ -5,22 +5,37 @@
 - Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
 - Source code: (not yet)
 - APK: (not yet)
-- Firmware: (same as 2.0.4) https://github.com/AndProx/AndProx/releases/download/v2.0.4/fullimage.elf.zip
+- Firmware: (same as 2.0.4) (not yet)
+- Bootloader: (same as 2.0.4) (not yet)
+
+[apk205]: https://github.com/AndProx/AndProx/releases/download/v2.0.5/andprox-2.0.5.apk
+[fw205]: https://github.com/AndProx/AndProx/releases/download/v2.0.5/fullimage.elf.zip
+[boot205]: https://github.com/AndProx/AndProx/releases/download/v2.0.5/bootrom.elf.zip
 
 Changes:
 
-- New: Prevents sleep (turning off the screen) by default. Can be disabled in settings.
-- Fixed: Bootloader version is now ignored for all version checks. This impacts devices that have
-  incorrectly built bootloaders; but this doesn't actually impact compatibility.
-- Fixed: Removes background "ping" which broke `snoop` operations.
-- Cleanup: Moved license notices into files.
+- **New:** "Copying assets" now has a progress bar.
+- **New:** AndProx blocks sleep by default (the screen will stay on). This can be disabled in the
+  settings.
+- **Fixed:** [Bootloader version is now ignored for all version checks][i42]. This impacts devices
+  that have incorrectly built bootloaders; but this doesn't actually impact compatibility.
+- **Fixed:** [Removes background "ping" which broke `snoop` operations][i35].
+- **Fixed:** Several places where PM3 client would not be terminated on error or closing AndProx.
+- **Cleanup:** Moved license notices into files.
+- **Cleanup:** Refactored some duplicated code.
+
+[i35]: https://github.com/AndProx/AndProx/issues/35
+[i42]: https://github.com/AndProx/AndProx/issues/42
 
 ## v2.0.4, released 2018-12-01
 
 - Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
 - Source code: https://github.com/AndProx/AndProx/tree/v2.0.4
-- APK: https://github.com/AndProx/AndProx/releases/download/v2.0.4/andprox-2.0.4.apk
-- Firmware: https://github.com/AndProx/AndProx/releases/download/v2.0.4/fullimage.elf.zip
+- APK: [andprox-2.0.4.apk][apk204]
+- Firmware: [fullimage.elf.zip][fw204]
+
+[apk204]: https://github.com/AndProx/AndProx/releases/download/v2.0.4/andprox-2.0.4.apk
+[fw204]: https://github.com/AndProx/AndProx/releases/download/v2.0.4/fullimage.elf.zip
 
 Changes:
 

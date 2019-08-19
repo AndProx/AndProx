@@ -23,14 +23,12 @@ This project uses [git submodules][1].  You'll need to grab them with a command 
 $ git clone --recurse-submodules https://github.com/AndProx/AndProx.git
 ```
 
-Shallow clones won't work.  If you see missing compile dependencies (eg: `:GraphView`,
-`:usb-serial-for-android`) from Gradle, you probably haven't pulled the submodules.
-
 **Do not download ZIP files from GitHub.** `git` is used to tag parts of the build process, and its
 metadata is _required._
 
 > **Note:** GitHub's "Download ZIP" and using `git clone` without `--recurse-submodules` do not
-> download submodules.
+> download submodules.  If you see missing compile dependencies (eg: `:GraphView`,
+> `:usb-serial-for-android`) from Gradle, you probably haven't pulled the submodules!
 
 # Testing / developing AndProx
 
