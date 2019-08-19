@@ -1,5 +1,21 @@
 # AndProx changelog
 
+## v2.0.6, not released yet
+
+- Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
+- Firmware: [fullimage.elf.zip][fw205] (v3.1.0)
+- Bootloader: [bootrom.elf.zip][boot205] (v3.1.0; not normally required)
+
+Changes:
+
+- **Fixed**: [Logical inversion error][logic-invert] which causes crashes on some devices when
+  quitting AndProx, or when failing to connect.
+
+Note: Firmware links are from [v2.0.5][r205] as there is no firmware change.
+
+[logic-invert]: https://github.com/AndProx/AndProx/commit/6d9cdcb60440b6e2b9086d642ec5e0f434f19ffd
+[r205]: https://github.com/AndProx/AndProx/releases/tag/v2.0.5
+
 ## v2.0.5, released 2019-08-19
 
 - Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
