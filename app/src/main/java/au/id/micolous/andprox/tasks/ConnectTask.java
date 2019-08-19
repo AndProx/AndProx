@@ -109,7 +109,7 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
         }
     }
 
-    protected ConnectTask(Context context) {
+    ConnectTask(Context context) {
         mContext = new WeakReference<>(context);
     }
 
@@ -137,7 +137,7 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
     @Nullable
     private ConnectTaskResult mResult = null;
 
-    protected final void setResult(@NonNull ConnectTaskResult result) {
+    final void setResult(@NonNull ConnectTaskResult result) {
         mResult = result;
     }
 
@@ -146,29 +146,31 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
 
     @Override
     protected ConnectTaskResult doInBackground(Boolean... booleans) {
+        Natives.initProxmark();
 
-        boolean success = false;
         final NativeSerialWrapper nsw = connectToDevice(booleans[0]);
 
-        if (mResult == null) {
-            return new ConnectTaskResult().setInternalError();
-        }
+        if (nsw == null || mResult == null || !mResult.success) {
+            if (mResult == null) {
+                // Unknown error that resulted in no NativeSerialWrapper.
+                mResult = new ConnectTaskResult().setInternalError();
+            }
 
-        if (!mResult.success) {
+            if (nsw != null) {
+                // Close up the NativeSerialWrapper, so that PM3 client stops.
+                nsw.close();
+            }
+
             return mResult;
         }
 
-        if (nsw == null) {
-            // This is a conformance issue
-            return new ConnectTaskResult().setInternalError();
-        }
-
-        Natives.initProxmark();
         Natives.startReaderThread(nsw);
 
         String version = Natives.sendCmdVersion();
 
         if (version == null) {
+            // No version response (timeout).
+            nsw.close();
             return new ConnectTaskResult().setTimeoutError();
         }
 
@@ -178,6 +180,7 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
             // Port is left open at this point.
             return new ConnectTaskResult().setSuccess();
         } else {
+            // Unsupported or unknown version.
             nsw.close();
             return new ConnectTaskResult().setUnsuppported();
         }
