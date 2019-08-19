@@ -72,6 +72,40 @@ public class ProxmarkVersion {
 
     private ProxmarkVersion() {}
 
+    /**
+     * Searches for something that looks like an ISO 8601 datetime string, and attempts to parse it.
+     *
+     * @param s The string to parse.
+     * @return The value of the parsed Calendar, or null on error.
+     */
+    @Nullable
+    private static Calendar parseIsoDateTime(@NonNull String s) {
+        try {
+            Matcher m = ISO_DATE_MATCHER.matcher(s);
+            if (m.find()) {
+                int year = Integer.parseInt(m.group(1));
+                int month = Integer.parseInt(m.group(2));
+                int day = Integer.parseInt(m.group(3));
+
+                int hour = Integer.parseInt(m.group(5));
+                int minute = Integer.parseInt(m.group(6));
+                int second = Integer.parseInt(m.group(7));
+
+                Calendar o = new GregorianCalendar(TimeZone.getTimeZone("Etc/UTC"));
+                o.set(Calendar.YEAR, year);
+                o.set(Calendar.MONTH, month - 1);
+                o.set(Calendar.DAY_OF_MONTH, day);
+                o.set(Calendar.HOUR_OF_DAY, hour);
+                o.set(Calendar.MINUTE, minute);
+                o.set(Calendar.SECOND, second);
+                o.set(Calendar.MILLISECOND, 0);
+                return o;
+            }
+        } catch (NumberFormatException ignored) {}
+
+        return null;
+    }
+
     @Nullable
     public static ProxmarkVersion parse(@Nullable String s) {
         if (s == null) {
@@ -134,28 +168,7 @@ public class ProxmarkVersion {
             }
 
             v.mSuperSuspect = v.mOsVersion.contains("/-suspect");
-
-            try {
-                Matcher m = ISO_DATE_MATCHER.matcher(v.mOsVersion);
-                if (m.find()) {
-                    int year = Integer.parseInt(m.group(1));
-                    int month = Integer.parseInt(m.group(2));
-                    int day = Integer.parseInt(m.group(3));
-
-                    int hour = Integer.parseInt(m.group(5));
-                    int minute = Integer.parseInt(m.group(6));
-                    int second = Integer.parseInt(m.group(7));
-
-                    v.mOsBuildTime = new GregorianCalendar(TimeZone.getTimeZone("Etc/UTC"));
-                    v.mOsBuildTime.set(Calendar.YEAR, year);
-                    v.mOsBuildTime.set(Calendar.MONTH, month - 1);
-                    v.mOsBuildTime.set(Calendar.DAY_OF_MONTH, day);
-                    v.mOsBuildTime.set(Calendar.HOUR_OF_DAY, hour);
-                    v.mOsBuildTime.set(Calendar.MINUTE, minute);
-                    v.mOsBuildTime.set(Calendar.SECOND, second);
-                    v.mOsBuildTime.set(Calendar.MILLISECOND, 0);
-                }
-            } catch (NumberFormatException ignored) {}
+            v.mOsBuildTime = parseIsoDateTime(v.mOsVersion);
 
             try {
                 Matcher m = PM3_VERSION_MATCHER.matcher(v.mOsVersion);
@@ -179,27 +192,7 @@ public class ProxmarkVersion {
 
         if (v.mBootromVersion != null) {
             v.mBootromSuperSuspect = v.mBootromVersion.contains("/-suspect");
-            try {
-                Matcher m = ISO_DATE_MATCHER.matcher(v.mBootromVersion);
-                if (m.matches()) {
-                    int year = Integer.parseInt(m.group(1));
-                    int month = Integer.parseInt(m.group(2));
-                    int day = Integer.parseInt(m.group(3));
-
-                    int hour = Integer.parseInt(m.group(5));
-                    int minute = Integer.parseInt(m.group(6));
-                    int second = Integer.parseInt(m.group(7));
-
-                    v.mBootromBuildTime = new GregorianCalendar(TimeZone.getTimeZone("Etc/UTC"));
-                    v.mBootromBuildTime.set(Calendar.YEAR, year);
-                    v.mBootromBuildTime.set(Calendar.MONTH, month - 1);
-                    v.mBootromBuildTime.set(Calendar.DAY_OF_MONTH, day);
-                    v.mBootromBuildTime.set(Calendar.HOUR_OF_DAY, hour);
-                    v.mBootromBuildTime.set(Calendar.MINUTE, minute);
-                    v.mBootromBuildTime.set(Calendar.SECOND, second);
-                    v.mBootromBuildTime.set(Calendar.MILLISECOND, 0);
-                }
-            } catch (NumberFormatException ignored) {}
+            v.mBootromBuildTime = parseIsoDateTime(v.mBootromVersion);
         }
 
 
@@ -220,7 +213,9 @@ public class ProxmarkVersion {
     private boolean mSuperSuspect = false;
     private boolean mBootromSuperSuspect = false;
 
+    @Nullable
     private Calendar mOsBuildTime = null;
+    @Nullable
     private Calendar mBootromBuildTime = null;
 
     private int mOsMajorVersion = 0;
@@ -245,7 +240,7 @@ public class ProxmarkVersion {
         // 3.1.0 release = 2018-10-10
         // TZ=UTC date --date="@1538352000.000"
         // Mon Oct  1 00:00:00 UTC 2018
-        return mOsBuildTime.getTimeInMillis() >= 1538352000000L;
+        return mOsBuildTime != null && mOsBuildTime.getTimeInMillis() >= 1538352000000L;
     }
 
     /**
@@ -264,8 +259,6 @@ public class ProxmarkVersion {
 
     /**
      * Does this firmware look like it's missing all git version data?
-     *
-     *
      */
     public boolean isSuperSuspect() {
         return mSuperSuspect;
