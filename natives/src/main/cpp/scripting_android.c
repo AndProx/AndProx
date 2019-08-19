@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 //
 // Contains Android specific patches for AndProx.
-// Copyright 2017 Michael Farrell <micolous+git@gmail.com>
+// Copyright 2017-2019 Michael Farrell <micolous+git@gmail.com>
 
 #include "scripting.h"
 
