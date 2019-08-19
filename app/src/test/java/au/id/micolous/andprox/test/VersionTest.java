@@ -32,6 +32,8 @@ package au.id.micolous.andprox.test;
 
 import org.junit.Test;
 
+import java.text.DateFormat;
+
 import au.id.micolous.andprox.ProxmarkVersion;
 import static org.junit.Assert.*;
 
@@ -182,6 +184,32 @@ public class VersionTest {
         assertEquals(0, v.getOSPatchVersion());
         assertEquals(0, v.getOSCommitCount());
         assertNull(v.getOSCommitHash());
+
+        assertTrue(v.isSupportedVersion());
+    }
+
+    @Test
+    public void test310UnknownBootloader2() {
+        // https://github.com/AndProx/AndProx/issues/42
+        String s = "bootrom: /-suspect 2015-11-04 22:15:34\n" +
+                "os: master/v3.1.0-88-g9ebbfd8-suspect 2019-04-30 17:30:01\n" +
+                "fpga_lf.bit built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
+                "fpga_hf.bit built for 2s30vq100 on 2019/03/20 at 08:08:07";
+
+        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        assertNotNull(v);
+        assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
+        assertTrue(v.isSuspect());
+        assertFalse(v.isDirty());
+
+        // $ TZ=UTC date --date='@1556645401.000'
+        // Tue Apr 30 17:30:01 UTC 2019
+        assertEquals(1556645401000L, v.getOSBuildTime().getTimeInMillis());
+        assertEquals(3, v.getOSMajorVersion());
+        assertEquals(1, v.getOSMinorVersion());
+        assertEquals(0, v.getOSPatchVersion());
+        assertEquals(88, v.getOSCommitCount());
+        assertEquals("9ebbfd8", v.getOSCommitHash());
 
         assertTrue(v.isSupportedVersion());
     }
