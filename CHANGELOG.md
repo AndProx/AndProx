@@ -5,8 +5,8 @@
 - Proxmark version: [3.1.0](https://github.com/Proxmark/proxmark3/tree/v3.1.0) (clean)
 - Source code: `git clone -b v2.0.4 --recurse-submodules https://github.com/AndProx/AndProx.git`
 - APK: [andprox-2.0.5.apk][apk205]
-- Firmware: (same as 2.0.4) [fullimage.elf.zip][fw205]
-- Bootloader: (same as 2.0.4) [bootrom.elf.zip][boot205]
+- Firmware: [fullimage.elf.zip][fw205] (v3.1.0)
+- Bootloader: [bootrom.elf.zip][boot205] (v3.1.0; not normally required)
 
 [apk205]: https://github.com/AndProx/AndProx/releases/download/v2.0.5/andprox-2.0.5.apk
 [fw205]: https://github.com/AndProx/AndProx/releases/download/v2.0.5/fullimage.elf.zip
