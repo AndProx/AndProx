@@ -48,8 +48,6 @@ import static au.id.micolous.andprox.AndProxApplication.allowAllProxmarkDevices;
  */
 public class ProxmarkVersion {
 
-    //Proxmark RDV4 built
-    public static final String S_30_VQ_100 = "2s30vq100";
 
     public enum Branch {
         /** We don't know */
@@ -128,8 +126,7 @@ public class ProxmarkVersion {
         String lowerS = s.toLowerCase(Locale.ENGLISH);
 
         if ((lowerS.contains("version information appears invalid") ||
-                lowerS.contains("version information not available")) &&
-                    !lowerS.contains(S_30_VQ_100)) {
+                lowerS.contains("version information not available"))) {
             v.mBranch = Branch.ERROR;
             return v;
         }
