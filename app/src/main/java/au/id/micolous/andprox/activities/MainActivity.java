@@ -73,6 +73,8 @@ import au.id.micolous.andprox.tasks.ConnectTCPTask;
 import au.id.micolous.andprox.tasks.ConnectUSBTask;
 import au.id.micolous.andprox.tasks.CopyTask;
 
+import static au.id.micolous.andprox.AndProxApplication.allowAllProxmarkDevices;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -154,12 +156,17 @@ public class MainActivity extends AppCompatActivity {
             for (UsbSerialPort p : d.getPorts()) {
                 deviceInfo.append(String.format(Locale.ENGLISH, "  Port %d: %s\n", p.getPortNumber(), p.getClass().getSimpleName()));
 
-                if (dev.getVendorId() == UsbId.VENDOR_PROXMARK3 && dev.getProductId() == UsbId.PROXMARK3) {
+                if (allowAllProxmarkDevices()) {
                     deviceInfo.append("  Detected PM3!\n");
                     app.setProxmarkDetected(true);
-                } else if (dev.getVendorId() == UsbId.VENDOR_PROXMARK3_OLD && dev.getProductId() == UsbId.PROXMARK3_OLD) {
-                    deviceInfo.append("  Old PM3 firmware -- needs update!\n");
-                    app.setOldProxmarkDetected(true);
+                } else {
+                    if (dev.getVendorId() == UsbId.VENDOR_PROXMARK3 && dev.getProductId() == UsbId.PROXMARK3) {
+                        deviceInfo.append("  Detected PM3!\n");
+                        app.setProxmarkDetected(true);
+                    } else if (dev.getVendorId() == UsbId.VENDOR_PROXMARK3_OLD && dev.getProductId() == UsbId.PROXMARK3_OLD) {
+                        deviceInfo.append("  Old PM3 firmware -- needs update!\n");
+                        app.setOldProxmarkDetected(true);
+                    }
                 }
             }
         }

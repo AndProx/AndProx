@@ -39,12 +39,18 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static au.id.micolous.andprox.AndProxApplication.allowAllProxmarkDevices;
+
 /**
  * Version detection routine for Proxmark3 firmware.
  *
  * {@link au.id.micolous.andprox.test.VersionTest} covers many scenarios.
  */
 public class ProxmarkVersion {
+
+    //Proxmark RDV4 built
+    public static final String S_30_VQ_100 = "2s30vq100";
+
     public enum Branch {
         /** We don't know */
         UNKNOWN,
@@ -121,8 +127,9 @@ public class ProxmarkVersion {
 
         String lowerS = s.toLowerCase(Locale.ENGLISH);
 
-        if (lowerS.contains("version information appears invalid") ||
-                lowerS.contains("version information not available")) {
+        if ((lowerS.contains("version information appears invalid") ||
+                lowerS.contains("version information not available")) &&
+                    !lowerS.contains(S_30_VQ_100)) {
             v.mBranch = Branch.ERROR;
             return v;
         }
@@ -230,6 +237,7 @@ public class ProxmarkVersion {
     }
 
     public boolean isSupportedVersion() {
+        if (allowAllProxmarkDevices()) return true;
         if (mBranch != Branch.OFFICIAL) return false;
         if (mSuperSuspect) return false;
 

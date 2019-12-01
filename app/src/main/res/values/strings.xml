@@ -123,6 +123,11 @@
     <string name="connectivity_settings">Connectivity settings</string>
     <string name="transport_layer">Transport layer</string>
 
+    <string name="devices_settings">Devices settings</string>
+    <string name="connect_to_proxmark_rdv4">Allow Proxmark RDV4 connection</string>
+    <string name="connect_to_proxmark_on">All Proxmark version allowed (RDV3-RDV4)</string>
+    <string name="connect_to_proxmark_off">Allowed Only Proxmark RDV3</string>
+
     <string-array name="conn_modes">
         <item>USB</item>
         <item>TCP/IP</item>

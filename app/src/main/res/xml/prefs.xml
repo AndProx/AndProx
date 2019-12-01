@@ -10,6 +10,13 @@
             />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/devices_settings">
+        <CheckBoxPreference android:key="pref_android_allowed_devices"
+            android:title="@string/connect_to_proxmark_rdv4"
+            android:summaryOn="@string/connect_to_proxmark_on"
+            android:summaryOff="@string/connect_to_proxmark_off" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/tcp_ip_settings">
         <CheckBoxPreference android:key="pref_android_emu_host"
             android:title="@string/connect_android_host"

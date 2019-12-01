@@ -52,6 +52,7 @@ import au.id.micolous.andprox.natives.Natives;
  * AndProx application reference.
  */
 public class AndProxApplication extends Application {
+    public static final String PREF_ALLOWED_DEVICES = "pref_android_allowed_devices";
     public static final String PREF_CONN_MODE = "pref_conn_mode";
     public static final String PREF_ANDROID_EMU_HOST = "pref_android_emu_host";
     public static final String PREF_TCP_HOST = "pref_tcp_host";
@@ -221,6 +222,10 @@ public class AndProxApplication extends Application {
         }
 
         return defaultValue;
+    }
+
+    public static boolean allowAllProxmarkDevices() {
+        return getBooleanPref(PREF_ALLOWED_DEVICES, false);
     }
 
     public static boolean useAndroidEmulatorHost() {
