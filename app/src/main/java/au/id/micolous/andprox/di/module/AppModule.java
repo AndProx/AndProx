@@ -6,6 +6,7 @@ import android.net.UrlQuerySanitizer;
 import javax.inject.Singleton;
 
 import au.id.micolous.andprox.AndProxApplication;
+import au.id.micolous.andprox.behavior.version.ProxmarkDetection;
 import au.id.micolous.andprox.device.ISharedPreferences;
 import au.id.micolous.andprox.device.SharedPreferencesImpl;
 import dagger.Module;
@@ -24,6 +25,12 @@ public class AppModule {
     @Singleton
     public ISharedPreferences provideSharedPreferences(Context context) {
         return new SharedPreferencesImpl(context);
+    }
+
+    @Provides
+    @Singleton
+    public ProxmarkDetection provideProxmarkDetection() {
+        return new ProxmarkDetection();
     }
 
 }
