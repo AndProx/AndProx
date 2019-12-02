@@ -27,15 +27,18 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-package au.id.micolous.andprox;
+package au.id.micolous.andprox.device;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
+import au.id.micolous.andprox.AndProxApplication;
+import au.id.micolous.andprox.R;
+
 public enum ConnectivityMode {
-    USB(AndProxApplication.PREF_CONN_USB, R.string.connect_button_usb),
-    TCP(AndProxApplication.PREF_CONN_TCP, R.string.connect_button_tcp),
-    NONE(AndProxApplication.PREF_CONN_NONE, R.string.connect_button_none);
+    USB(ISharedPreferences.PREF_CONN_USB, R.string.connect_button_usb),
+    TCP(ISharedPreferences.PREF_CONN_TCP, R.string.connect_button_tcp),
+    NONE(ISharedPreferences.PREF_CONN_NONE, R.string.connect_button_none);
 
     @NonNull
     private final String mMode;

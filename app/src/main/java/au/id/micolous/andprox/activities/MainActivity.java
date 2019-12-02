@@ -65,7 +65,7 @@ import java.util.List;
 import java.util.Locale;
 
 import au.id.micolous.andprox.AndProxApplication;
-import au.id.micolous.andprox.ConnectivityMode;
+import au.id.micolous.andprox.device.ConnectivityMode;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
 import au.id.micolous.andprox.natives.Natives;
