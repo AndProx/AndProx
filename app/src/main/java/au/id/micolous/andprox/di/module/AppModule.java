@@ -1,11 +1,12 @@
 package au.id.micolous.andprox.di.module;
 
 import android.content.Context;
-import android.net.UrlQuerySanitizer;
 
 import javax.inject.Singleton;
 
 import au.id.micolous.andprox.AndProxApplication;
+import au.id.micolous.andprox.behavior.format.FormatDeviceImpl;
+import au.id.micolous.andprox.behavior.format.IFormatDevice;
 import au.id.micolous.andprox.behavior.version.ProxmarkDetection;
 import au.id.micolous.andprox.device.ISharedPreferences;
 import au.id.micolous.andprox.device.SharedPreferencesImpl;
@@ -31,6 +32,12 @@ public class AppModule {
     @Singleton
     public ProxmarkDetection provideProxmarkDetection() {
         return new ProxmarkDetection();
+    }
+
+    @Provides
+    @Singleton
+    public IFormatDevice provideFormatDevice(ProxmarkDetection detection, Context context, ISharedPreferences sharedPreferences) {
+        return new FormatDeviceImpl(detection, context, sharedPreferences);
     }
 
 }
