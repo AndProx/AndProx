@@ -46,13 +46,14 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 import java.io.IOException;
 import java.util.List;
 
+import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
+import au.id.micolous.andprox.behavior.version.ProxmarkDumpDevice;
 import au.id.micolous.andprox.handlers.HandlerInterface;
 import au.id.micolous.andprox.handlers.UsbBroadcastHandler;
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
 import au.id.micolous.andprox.serial.UsbSerialAdapter;
 
 import static au.id.micolous.andprox.activities.MainActivity.ACTION_USB_PERMISSION_AUTOCONNECT;
-import static au.id.micolous.andprox.activities.MainActivity.dumpUsbDeviceInfo;
 
 public class ConnectUSBTask extends ConnectTask {
     private static final String TAG = "ConnectUSBTask";
@@ -60,8 +61,11 @@ public class ConnectUSBTask extends ConnectTask {
     private UsbManager mUsbManager;
     private UsbDevice mDevice = null;
 
-    public ConnectUSBTask(Context context) {
-        super(context);
+    private ProxmarkDumpDevice dumpDevice;
+
+    public ConnectUSBTask(Context context, ProxmarkParser parser, ProxmarkDumpDevice dumpDevice) {
+        super(context, parser);
+        this.dumpDevice = dumpDevice;
     }
 
     @Override
@@ -73,7 +77,7 @@ public class ConnectUSBTask extends ConnectTask {
     @Nullable
     protected NativeSerialWrapper connectToDevice(boolean firstTry) {
         // List all the devices
-        dumpUsbDeviceInfo(mUsbManager);
+        dumpDevice.dumpUsbDeviceInfo(mUsbManager);
 
         // Try to connect to proxmark
         // Find all available drivers from attached devices.

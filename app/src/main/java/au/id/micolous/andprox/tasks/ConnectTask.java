@@ -40,6 +40,7 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
+import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
 import au.id.micolous.andprox.behavior.version.ProxmarkVersion;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.activities.CliActivity;
@@ -109,8 +110,11 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
         }
     }
 
-    ConnectTask(Context context) {
+    private ProxmarkParser parser;
+
+    ConnectTask(Context context, ProxmarkParser parser) {
         mContext = new WeakReference<>(context);
+        this.parser = parser;
     }
 
     public Context getContext() {
@@ -175,7 +179,7 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
         }
 
         // Check if this version is good for us.
-        ProxmarkVersion v = ProxmarkVersion.parse(version);
+        ProxmarkVersion v = parser.apply(version);
         if (v != null && v.isSupportedVersion()) {
             // Port is left open at this point.
             return new ConnectTaskResult().setSuccess();
