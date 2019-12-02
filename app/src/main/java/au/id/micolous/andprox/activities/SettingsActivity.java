@@ -40,11 +40,13 @@ import android.support.annotation.StringRes;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
 
-import static au.id.micolous.andprox.AndProxApplication.*;
+import static au.id.micolous.andprox.device.ISharedPreferences.PREF_ANDROID_EMU_HOST;
+import static au.id.micolous.andprox.device.ISharedPreferences.PREF_CONN_MODE;
+import static au.id.micolous.andprox.device.ISharedPreferences.PREF_CONN_USB;
+import static au.id.micolous.andprox.device.ISharedPreferences.PREF_TCP_PORT;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements Preference.OnPreferenceChangeListener {
 
@@ -72,12 +74,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Pre
                 emuHost.setSummaryOff(null);
                 emuHost.setSummaryOn(null);
             }
-            emuHost.setChecked(AndProxApplication.useAndroidEmulatorHost());
+            emuHost.setChecked(preferences.useAndroidEmulatorHost());
         }
 
         p = manager.findPreference(PREF_CONN_MODE);
         if (p != null && p instanceof ListPreference) {
-            ((ListPreference)p).setValue(AndProxApplication.getConnectivityModeStr());
+            ((ListPreference)p).setValue(preferences.getConnectivityModeStr());
         }
 
         Utils.setPreferenceListeners(getPreferenceScreen(), this);
@@ -117,7 +119,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Pre
 
         if (PREF_CONN_MODE.equals(preference.getKey())) {
             final String v = (String) newValue;
-            if (PREF_CONN_USB.equals(v) && !hasUsbHostSupport()) {
+            if (PREF_CONN_USB.equals(v) && !preferences.hasUsbHostSupport()) {
                 showInputError(R.string.no_usb_host_title, R.string.no_usb_host);
                 return false;
             }
