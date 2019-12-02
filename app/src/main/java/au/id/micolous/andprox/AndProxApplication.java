@@ -38,33 +38,9 @@ import android.app.Application;
 public class AndProxApplication extends Application {
 
     private static AndProxApplication sInstance;
-    private String mExtraDeviceInfo = "";
-
-    private boolean mProxmarkDetected = false;
-    private boolean mOldProxmarkDetected = false;
 
     public AndProxApplication() {
         sInstance = this;
-    }
-
-    public void setExtraDeviceInfo(String extraDeviceInfo) {
-        mExtraDeviceInfo = extraDeviceInfo;
-    }
-
-    public void setProxmarkDetected(boolean state) {
-        mProxmarkDetected = state;
-    }
-
-    public boolean isProxmarkDetected() {
-        return mProxmarkDetected;
-    }
-
-    public void setOldProxmarkDetected(boolean state) {
-        mOldProxmarkDetected = state;
-    }
-
-    public boolean isOldProxmarkDetected() {
-        return mOldProxmarkDetected;
     }
 
     public static AndProxApplication getInstance() {
