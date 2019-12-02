@@ -51,19 +51,19 @@ public class ProxmarkParser implements Function<String, ProxmarkVersion> {
 
         if ((lowerS.contains("version information appears invalid") ||
                 lowerS.contains("version information not available"))) {
-            v.mBranch = ProxmarkVersion.Branch.ERROR;
+            v.setBranch(ProxmarkVersion.Branch.ERROR);
             return v;
         }
 
         if (lowerS.contains("taobao") || lowerS.contains("alibaba") || lowerS.contains("163.com")) {
-            v.mBranch = ProxmarkVersion.Branch.CHINA;
+            v.setBranch(ProxmarkVersion.Branch.CHINA);
             return v;
         }
 
         if ((lowerS.contains("[ arm ]") && lowerS.contains("[ fpga ]"))) {
             // Looks like Iceman firmware.
             // TODO: parse this string better when we can support iceman version
-            v.mBranch = ProxmarkVersion.Branch.ICEMAN;
+            v.setBranch(ProxmarkVersion.Branch.ICEMAN);
             return v;
         }
 
@@ -71,56 +71,56 @@ public class ProxmarkParser implements Function<String, ProxmarkVersion> {
         String lines[] = s.split("\n");
         for (String line : lines) {
             line = line.trim();
-            if (line.startsWith("os: ") && v.mOsVersion == null) {
-                v.mOsVersion = line.substring(4);
+            if (line.startsWith("os: ") && v.getOsVersion() == null) {
+                v.setOsVersion(line.substring(4));
             }
 
-            if (line.startsWith("bootrom: ") && v.mBootromVersion == null) {
-                v.mBootromVersion = line.substring(9);
+            if (line.startsWith("bootrom: ") && v.getBootromVersion() == null) {
+                v.setBootromVersion(line.substring(9));
             }
         }
 
-        if (v.mOsVersion == null) {
-            v.mBranch = ProxmarkVersion.Branch.UNKNOWN;
+        if (v.getOsVersion() == null) {
+            v.setBranch(ProxmarkVersion.Branch.UNKNOWN);
         } else {
-            if (v.mOsVersion.contains("iceman")) {
-                v.mBranch = ProxmarkVersion.Branch.ICEMAN;
+            if (v.getOsVersion().contains("iceman")) {
+                v.setBranch(ProxmarkVersion.Branch.ICEMAN);
             }
 
-            if (v.mOsVersion.contains("-dirty") || v.mOsVersion.contains("-unclean")) {
-                v.mDirty = true;
+            if (v.getOsVersion().contains("-dirty") || v.getOsVersion().contains("-unclean")) {
+                v.setDirty(true);
             }
 
-            if (v.mOsVersion.contains("-suspect")) {
-                v.mSuspect = true;
+            if (v.getOsVersion().contains("-suspect")) {
+                v.setSuspect(true);
             }
 
-            v.mSuperSuspect = v.mOsVersion.contains("/-suspect");
-            v.mOsBuildTime = parseIsoDateTime(v.mOsVersion);
+            v.setSuperSuspect(v.getOsVersion().contains("/-suspect"));
+            v.setOsBuildTime(parseIsoDateTime(v.getOsVersion()));
 
             try {
-                Matcher m = PM3_VERSION_MATCHER.matcher(v.mOsVersion);
+                Matcher m = PM3_VERSION_MATCHER.matcher(v.getOsVersion());
                 if (m.find()) {
-                    v.mOsMajorVersion = Integer.parseInt(m.group(1));
-                    v.mOsMinorVersion = Integer.parseInt(m.group(2));
-                    v.mOsPatchVersion = Integer.parseInt(m.group(3));
+                    v.setOsMajorVersion(Integer.parseInt(m.group(1)));
+                    v.setOsMinorVersion(Integer.parseInt(m.group(2)));
+                    v.setOsPatchVersion(Integer.parseInt(m.group(3)));
 
                     if (m.groupCount() == 6) {
                         // Git version available too!
-                        v.mOsCommitCount = Integer.parseInt(m.group(5));
-                        v.mOsCommitHash = m.group(6);
+                        v.setOsCommitCount(Integer.parseInt(m.group(5)));
+                        v.setOsCommitHash(m.group(6));
                     }
                 }
             } catch (NumberFormatException ignored) {}
 
-            if (v.mBranch == ProxmarkVersion.Branch.UNKNOWN && v.mOsBuildTime != null) {
-                v.mBranch = ProxmarkVersion.Branch.OFFICIAL;
+            if (v.getBranch() == ProxmarkVersion.Branch.UNKNOWN && v.getOSBuildTime() != null) {
+                v.setBranch(ProxmarkVersion.Branch.OFFICIAL);
             }
         }
 
-        if (v.mBootromVersion != null) {
-            v.mBootromSuperSuspect = v.mBootromVersion.contains("/-suspect");
-            v.mBootromBuildTime = parseIsoDateTime(v.mBootromVersion);
+        if (v.getBootromVersion() != null) {
+            v.setBootromSuperSuspect(v.getBootromVersion().contains("/-suspect"));
+            v.setBootromBuildTime(parseIsoDateTime(v.getBootromVersion()));
         }
 
 

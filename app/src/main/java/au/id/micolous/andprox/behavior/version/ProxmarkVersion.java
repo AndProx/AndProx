@@ -93,6 +93,36 @@ public class ProxmarkVersion {
         return mBranch;
     }
 
+    public void setBranch(@NonNull Branch mBranch) {
+        this.mBranch = mBranch;
+    }
+
+    @Nullable
+    public String getOsVersion() {
+        return mOsVersion;
+    }
+
+    public void setOsVersion(@Nullable String mOsVersion) {
+        this.mOsVersion = mOsVersion;
+    }
+
+    @Nullable
+    public String getBootromVersion() {
+        return mBootromVersion;
+    }
+
+    public void setBootromVersion(@Nullable String mBootromVersion) {
+        this.mBootromVersion = mBootromVersion;
+    }
+
+    public void setBootromSuperSuspect(boolean mBootromSuperSuspect) {
+        this.mBootromSuperSuspect = mBootromSuperSuspect;
+    }
+
+    public void setBootromBuildTime(@Nullable Calendar mBootromBuildTime) {
+        this.mBootromBuildTime = mBootromBuildTime;
+    }
+
     public boolean isSupportedVersion() {
         if (preferences.allowAllProxmarkDevices()) return true;
         if (mBranch != Branch.OFFICIAL) return false;
@@ -115,11 +145,19 @@ public class ProxmarkVersion {
         return mDirty;
     }
 
+    public void setDirty(boolean mDirty) {
+        this.mDirty = mDirty;
+    }
+
     /**
      * Does this version contain "suspect" tag. (This appears to be ~all builds)
      */
     public boolean isSuspect() {
         return mSuspect;
+    }
+
+    public void setSuspect(boolean mSuspect) {
+        this.mSuspect = mSuspect;
     }
 
     /**
@@ -129,8 +167,16 @@ public class ProxmarkVersion {
         return mSuperSuspect;
     }
 
+    public void setSuperSuspect(boolean mSuperSuspect) {
+        this.mSuperSuspect = mSuperSuspect;
+    }
+
     public Calendar getOSBuildTime() {
         return mOsBuildTime;
+    }
+
+    public void setOsBuildTime(@Nullable Calendar mOsBuildTime) {
+        this.mOsBuildTime = mOsBuildTime;
     }
 
     public Calendar getBootromBuildTime() {
@@ -141,20 +187,40 @@ public class ProxmarkVersion {
         return mOsMajorVersion;
     }
 
+    public void setOsMajorVersion(int mOsMajorVersion) {
+        this.mOsMajorVersion = mOsMajorVersion;
+    }
+
     public int getOSMinorVersion() {
         return mOsMinorVersion;
+    }
+
+    public void setOsMinorVersion(int mOsMinorVersion) {
+        this.mOsMinorVersion = mOsMinorVersion;
     }
 
     public int getOSPatchVersion() {
         return mOsPatchVersion;
     }
 
+    public void setOsPatchVersion(int mOsPatchVersion) {
+        this.mOsPatchVersion = mOsPatchVersion;
+    }
+
     public int getOSCommitCount() {
         return mOsCommitCount;
+    }
+
+    public void setOsCommitCount(int mOsCommitCount) {
+        this.mOsCommitCount = mOsCommitCount;
     }
 
     @Nullable
     public String getOSCommitHash() {
         return mOsCommitHash;
+    }
+
+    public void setOsCommitHash(String mOsCommitHash) {
+        this.mOsCommitHash = mOsCommitHash;
     }
 }
