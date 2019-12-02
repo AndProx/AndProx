@@ -32,9 +32,7 @@ package au.id.micolous.andprox.test;
 
 import org.junit.Test;
 
-import java.text.DateFormat;
-
-import au.id.micolous.andprox.ProxmarkVersion;
+import au.id.micolous.andprox.behavior.version.ProxmarkVersion;
 import static org.junit.Assert.*;
 
 /**

@@ -27,7 +27,7 @@
  *  (d) You may not use the names of licensors or authors for publicity
  *      purposes, without explicit written permission.
  */
-package au.id.micolous.andprox;
+package au.id.micolous.andprox.behavior.version;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

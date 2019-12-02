@@ -40,7 +40,7 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
-import au.id.micolous.andprox.ProxmarkVersion;
+import au.id.micolous.andprox.behavior.version.ProxmarkVersion;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.activities.CliActivity;
 import au.id.micolous.andprox.activities.MainActivity;
