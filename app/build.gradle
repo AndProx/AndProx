@@ -100,9 +100,9 @@ dependencies {
     implementation "com.android.support:cardview-v7:$support_version"
     implementation "com.android.support:support-annotations:$support_version"
 
-    api 'com.google.dagger:dagger-android:2.25.2'
-    api 'com.google.dagger:dagger-android-support:2.25.2'
-    annotationProcessor 'com.google.dagger:dagger-android-processor:2.25.2'
+    api 'com.google.dagger:dagger-android:2.21'
+    api 'com.google.dagger:dagger-android-support:2.21'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.21'
 
     testImplementation 'junit:junit:4.12'
     implementation project(':natives')

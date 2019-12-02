@@ -38,16 +38,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import javax.inject.Inject;
+
 import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
+import au.id.micolous.andprox.behavior.format.IFormatDevice;
 import au.id.micolous.andprox.natives.Natives;
+import dagger.android.support.DaggerFragment;
 
 
 /**
  * Fragment which displays the AndProx and Proxmark3 versions.
  */
-public class AboutAndProxFragment extends Fragment {
+public class AboutAndProxFragment extends DaggerFragment {
+
+    @Inject
+    protected IFormatDevice formatDevice;
 
     public AboutAndProxFragment() {
         // Required empty public constructor
@@ -75,7 +82,7 @@ public class AboutAndProxFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_about_and_prox, container, false);
 
         ((TextView)v.findViewById(R.id.tvVersionString)).setText(
-                Utils.localizeString(R.string.app_version, AndProxApplication.getVersionString()));
+                Utils.localizeString(R.string.app_version, formatDevice.getVersionString()));
 
         ((TextView)v.findViewById(R.id.tvPm3ClientVersion)).setText(
                 Utils.localizeString(R.string.pm3_client_version, Natives.getProxmarkClientVersion()));
