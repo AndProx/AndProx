@@ -12,6 +12,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import au.id.micolous.andprox.Utils;
+import au.id.micolous.andprox.behavior.version.ProxmarkDetection;
 import au.id.micolous.andprox.device.ISharedPreferences;
 import au.id.micolous.andprox.natives.Natives;
 
@@ -21,10 +22,13 @@ public class FormatDeviceImpl implements IFormatDevice {
 
     private Context context;
     private ISharedPreferences preferences;
+    private ProxmarkDetection proxmarkDetection;
 
     @Inject
-    public FormatDeviceImpl(Context context, ISharedPreferences preferences) {
+    public FormatDeviceImpl(ProxmarkDetection proxmarkDetection, Context context, ISharedPreferences preferences) {
         this.context = context;
+        this.preferences = preferences;
+        this.proxmarkDetection = proxmarkDetection;
     }
 
     @Override
@@ -74,7 +78,7 @@ public class FormatDeviceImpl implements IFormatDevice {
                 Build.ID,
                 // USB:
                 preferences.hasUsbHostSupport() ? "yes" : "no",
-                getInstance().mExtraDeviceInfo);
+                proxmarkDetection.getExtraDeviceInfo());
     }
 
     @Override
