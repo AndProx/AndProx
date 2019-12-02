@@ -52,15 +52,22 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
+import au.id.micolous.andprox.device.ISharedPreferences;
 import au.id.micolous.andprox.handlers.HandlerInterface;
 import au.id.micolous.andprox.hw.TuneTask;
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.tasks.SendCommandTask;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class CliActivity extends AppCompatActivity implements SendCommandTask.SendCommandCallback {
+public class CliActivity extends DaggerAppCompatActivity implements SendCommandTask.SendCommandCallback {
     private static final String TAG = "CliActivity";
+
+    @Inject
+    protected ISharedPreferences preferences;
 
     private EditText etCommandInput;
     private TextView tvOutputBuffer;
@@ -108,7 +115,7 @@ public class CliActivity extends AppCompatActivity implements SendCommandTask.Se
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cli);
-        if (!AndProxApplication.allowSleep()) {
+        if (!preferences.allowSleep()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
