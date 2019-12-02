@@ -72,10 +72,11 @@ import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.tasks.ConnectTCPTask;
 import au.id.micolous.andprox.tasks.ConnectUSBTask;
 import au.id.micolous.andprox.tasks.CopyTask;
+import dagger.android.support.DaggerAppCompatActivity;
 
 import static au.id.micolous.andprox.AndProxApplication.allowAllProxmarkDevices;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends DaggerAppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String ACTION_USB_PERMISSION = "au.id.micolous.andprox.USB_PERMISSION";
@@ -119,62 +120,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
-    public static void dumpUsbDeviceInfo(UsbManager manager) {
-        // List all the devices
-        StringBuilder deviceInfo = new StringBuilder();
-        AndProxApplication app = AndProxApplication.getInstance();
-        app.setProxmarkDetected(false);
-        app.setOldProxmarkDetected(false);
-
-        HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-        deviceInfo.append(String.format(Locale.ENGLISH, "Found %d USB device(s):\n", deviceList.size()));
-
-        for (UsbDevice d : deviceList.values()) {
-            deviceInfo.append(String.format(Locale.ENGLISH, "- %s (%04x:%04x)\n", d.getDeviceName(), d.getVendorId(), d.getProductId()));
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                deviceInfo.append(String.format(Locale.ENGLISH, "  Name: %s\n", d.getProductName()));
-            }
-
-            if (d.getSerialNumber() != null) {
-                deviceInfo.append(String.format(Locale.ENGLISH, "  Serial: %s\n", d.getSerialNumber()));
-            } else {
-                deviceInfo.append("  Could not retrieve serial number!\n");
-            }
-        }
-
-        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
-        deviceInfo.append(String.format(Locale.ENGLISH, "\nFound %d suitable driver(s):\n", availableDrivers.size()));
-
-        for (UsbSerialDriver d : availableDrivers) {
-            UsbDevice dev = d.getDevice();
-
-            deviceInfo.append(String.format(Locale.ENGLISH, "- %s (%04x:%04x)\n",
-                    dev.getDeviceName(), dev.getVendorId(), dev.getProductId()));
-
-            for (UsbSerialPort p : d.getPorts()) {
-                deviceInfo.append(String.format(Locale.ENGLISH, "  Port %d: %s\n", p.getPortNumber(), p.getClass().getSimpleName()));
-
-                if (allowAllProxmarkDevices()) {
-                    deviceInfo.append("  Detected PM3!\n");
-                    app.setProxmarkDetected(true);
-                } else {
-                    if (dev.getVendorId() == UsbId.VENDOR_PROXMARK3 && dev.getProductId() == UsbId.PROXMARK3) {
-                        deviceInfo.append("  Detected PM3!\n");
-                        app.setProxmarkDetected(true);
-                    } else if (dev.getVendorId() == UsbId.VENDOR_PROXMARK3_OLD && dev.getProductId() == UsbId.PROXMARK3_OLD) {
-                        deviceInfo.append("  Old PM3 firmware -- needs update!\n");
-                        app.setOldProxmarkDetected(true);
-                    }
-                }
-            }
-        }
-
-        Log.d(TAG, deviceInfo.toString());
-        app.setExtraDeviceInfo(deviceInfo.toString());
-
-    }
 
     private void updateIntroText() {
         TextView tvIntroText = findViewById(R.id.tvIntroText);
