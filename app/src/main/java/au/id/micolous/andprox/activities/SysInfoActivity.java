@@ -41,16 +41,23 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
+import au.id.micolous.andprox.behavior.format.IFormatDevice;
+import dagger.android.support.DaggerAppCompatActivity;
 
 /**
  * Displays system information and debugging info that is useful to troubleshoot AndProx issues.
  */
-public class SysInfoActivity extends AppCompatActivity {
+public class SysInfoActivity extends DaggerAppCompatActivity {
 
     private String debugOutput;
     private static final String CLIP_TITLE = "AndProx";
+
+    @Inject
+    protected IFormatDevice formatDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +66,7 @@ public class SysInfoActivity extends AppCompatActivity {
         setTitle(R.string.sys_info_title);
 
         // Generate debugging information
-        debugOutput = AndProxApplication.getDeviceInfo(getBaseContext());
+        debugOutput = formatDevice.getDeviceInfo();
         TextView tvDebugOutput = findViewById(R.id.tvDebugOutput);
         tvDebugOutput.setText(debugOutput);
         tvDebugOutput.setMovementMethod(new ScrollingMovementMethod());
