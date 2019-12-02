@@ -41,42 +41,50 @@ import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.hoho.android.usbserial.driver.UsbId;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
-import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+
+import javax.inject.Inject;
 
 import au.id.micolous.andprox.AndProxApplication;
-import au.id.micolous.andprox.device.ConnectivityMode;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
+import au.id.micolous.andprox.behavior.version.ProxmarkDetection;
+import au.id.micolous.andprox.behavior.version.ProxmarkDumpDevice;
+import au.id.micolous.andprox.device.ConnectivityMode;
+import au.id.micolous.andprox.device.ISharedPreferences;
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.tasks.ConnectTCPTask;
 import au.id.micolous.andprox.tasks.ConnectUSBTask;
 import au.id.micolous.andprox.tasks.CopyTask;
 import dagger.android.support.DaggerAppCompatActivity;
 
-import static au.id.micolous.andprox.AndProxApplication.allowAllProxmarkDevices;
 
 public class MainActivity extends DaggerAppCompatActivity {
+
+    @Inject
+    protected ISharedPreferences preferences;
+
+    @Inject
+    protected ProxmarkDetection detection;
+
+    @Inject
+    protected ProxmarkDumpDevice dumpDevice;
+
 
     private static final String TAG = "MainActivity";
     private static final String ACTION_USB_PERMISSION = "au.id.micolous.andprox.USB_PERMISSION";
@@ -115,7 +123,7 @@ public class MainActivity extends DaggerAppCompatActivity {
             String action = intent.getAction();
             if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action) || UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
                 UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-                dumpUsbDeviceInfo(manager);
+                dumpDevice.dumpUsbDeviceInfo(manager);
                 MainActivity.this.runOnUiThread(MainActivity.this::updateIntroText);
             }
         }
@@ -124,12 +132,12 @@ public class MainActivity extends DaggerAppCompatActivity {
     private void updateIntroText() {
         TextView tvIntroText = findViewById(R.id.tvIntroText);
         final Button btnConnect = findViewById(R.id.btnConnect);
-        ConnectivityMode mode = AndProxApplication.getConnectivityMode();
+        ConnectivityMode mode = preferences.getConnectivityMode();
         btnConnect.setText(mode.getConnectButtonText());
 
         switch (mode) {
             case USB:
-                if (!AndProxApplication.hasUsbHostSupport()) {
+                if (!preferences.hasUsbHostSupport()) {
                     tvIntroText.setText(R.string.no_usb_host);
                     btnConnect.setEnabled(false);
                     return;
@@ -138,9 +146,9 @@ public class MainActivity extends DaggerAppCompatActivity {
                 btnConnect.setEnabled(true);
                 AndProxApplication app = AndProxApplication.getInstance();
 
-                if (app.isProxmarkDetected()) {
+                if (detection.isProxmarkDetected()) {
                     tvIntroText.setText(R.string.intro_text_usb_detected);
-                } else if (app.isOldProxmarkDetected()) {
+                } else if (detection.isOldProxmarkDetected()) {
                     tvIntroText.setText(R.string.intro_text_old_pm3);
                 } else {
                     tvIntroText.setText(R.string.intro_text_default);
@@ -148,7 +156,7 @@ public class MainActivity extends DaggerAppCompatActivity {
                 break;
 
             case TCP:
-                tvIntroText.setText(Utils.localizeString(R.string.intro_text_tcp, AndProxApplication.getTcpHostStr(), AndProxApplication.getTcpPort()));
+                tvIntroText.setText(Utils.localizeString(R.string.intro_text_tcp, preferences.getTcpHostStr(), preferences.getTcpPort()));
                 btnConnect.setEnabled(true);
                 break;
 
@@ -172,7 +180,7 @@ public class MainActivity extends DaggerAppCompatActivity {
 
         UsbManager manager = null;
 
-        if (AndProxApplication.hasUsbHostSupport()) {
+        if (preferences.hasUsbHostSupport()) {
             manager = (UsbManager) getSystemService(Context.USB_SERVICE);
         }
 
@@ -185,7 +193,7 @@ public class MainActivity extends DaggerAppCompatActivity {
             registerReceiver(mUsbDeviceChangeReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_ATTACHED));
             registerReceiver(mUsbDeviceChangeReceiver, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
-            dumpUsbDeviceInfo(manager);
+            dumpDevice.dumpUsbDeviceInfo(manager);
             updateIntroText();
 
             List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
@@ -287,14 +295,14 @@ public class MainActivity extends DaggerAppCompatActivity {
         AndProxApplication app = AndProxApplication.getInstance();
         InetAddress addr = null;
 
-        switch (AndProxApplication.getConnectivityMode()) {
+        switch (preferences.getConnectivityMode()) {
             case USB:
-                if (app.isOldProxmarkDetected()) {
+                if (detection.isOldProxmarkDetected()) {
                     unsupportedFirmwareError(MainActivity.this);
                     return;
                 }
 
-                if (AndProxApplication.hasUsbHostSupport()) {
+                if (preferences.hasUsbHostSupport()) {
                     // If passed with a view, then we are called from the button.
                     new ConnectUSBTask(this).execute(view != null);
                 }
@@ -302,12 +310,12 @@ public class MainActivity extends DaggerAppCompatActivity {
 
             case TCP:
                 try {
-                    addr = AndProxApplication.getTcpHost();
+                    addr = preferences.getTcpHost();
                 } catch (UnknownHostException e) {
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.tcp_error)
                             .setMessage(Utils.localizeString(R.string.tcp_error_host_not_found,
-                                    AndProxApplication.getTcpHostStr(), e.getLocalizedMessage()))
+                                    preferences.getTcpHostStr(), e.getLocalizedMessage()))
                             .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
                             .show();
                     return;
@@ -317,13 +325,13 @@ public class MainActivity extends DaggerAppCompatActivity {
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.tcp_error)
                             .setMessage(Utils.localizeString(R.string.tcp_error_host_not_found,
-                                    AndProxApplication.getTcpHostStr(), "null"))
+                                    preferences.getTcpHostStr(), "null"))
                             .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
                             .show();
                     return;
                 }
 
-                new ConnectTCPTask(this, addr, AndProxApplication.getTcpPort()).execute(true);
+                new ConnectTCPTask(this, addr, preferences.getTcpPort()).execute(true);
                 break;
 
             case NONE:
