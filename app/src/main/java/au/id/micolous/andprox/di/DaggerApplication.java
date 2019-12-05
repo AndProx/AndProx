@@ -2,29 +2,26 @@ package au.id.micolous.andprox.di;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 
 import javax.inject.Inject;
 
-import au.id.micolous.andprox.di.component.DaggerAppComponent;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
-import dagger.android.HasFragmentInjector;
+import dagger.android.support.HasSupportFragmentInjector;
 
-public class DaggerApplication extends Application implements HasActivityInjector, HasFragmentInjector {
+public class DaggerApplication extends Application implements HasActivityInjector, HasSupportFragmentInjector {
 
     @Inject
     DispatchingAndroidInjector<Activity> activityInjector;
 
     @Inject
-    DispatchingAndroidInjector<Fragment> framentInjector;
+    DispatchingAndroidInjector<Fragment> fragmentInjector;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        DaggerAppComponent.builder().application(this)
-                .build().inject(this);
     }
 
     @Override
@@ -33,7 +30,7 @@ public class DaggerApplication extends Application implements HasActivityInjecto
     }
 
     @Override
-    public AndroidInjector<Fragment> fragmentInjector() {
-        return framentInjector;
+    public AndroidInjector<Fragment> supportFragmentInjector() {
+        return fragmentInjector;
     }
 }

@@ -63,10 +63,12 @@ import javax.inject.Inject;
 import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
+import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
 import au.id.micolous.andprox.behavior.version.ProxmarkDetection;
 import au.id.micolous.andprox.behavior.version.ProxmarkDumpDevice;
 import au.id.micolous.andprox.device.ConnectivityMode;
 import au.id.micolous.andprox.device.ISharedPreferences;
+import au.id.micolous.andprox.functional.Supplier;
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.tasks.ConnectTCPTask;
 import au.id.micolous.andprox.tasks.ConnectUSBTask;
@@ -84,6 +86,12 @@ public class MainActivity extends DaggerAppCompatActivity {
 
     @Inject
     protected ProxmarkDumpDevice dumpDevice;
+
+    @Inject
+    protected Supplier<ConnectUSBTask> usbTaskSupplier;
+
+    @Inject
+    protected ProxmarkParser parser;
 
 
     private static final String TAG = "MainActivity";
@@ -304,7 +312,7 @@ public class MainActivity extends DaggerAppCompatActivity {
 
                 if (preferences.hasUsbHostSupport()) {
                     // If passed with a view, then we are called from the button.
-                    new ConnectUSBTask(this).execute(view != null);
+                    usbTaskSupplier.get().execute(view != null);
                 }
                 break;
 
@@ -331,7 +339,7 @@ public class MainActivity extends DaggerAppCompatActivity {
                     return;
                 }
 
-                new ConnectTCPTask(this, addr, preferences.getTcpPort()).execute(true);
+                new ConnectTCPTask(this, parser, addr, preferences.getTcpPort()).execute(true);
                 break;
 
             case NONE:

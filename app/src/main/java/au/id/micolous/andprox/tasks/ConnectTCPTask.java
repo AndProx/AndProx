@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
 import au.id.micolous.andprox.natives.NativeSerialWrapper;
 import au.id.micolous.andprox.serial.TcpSerialAdapter;
 
@@ -47,8 +48,8 @@ public class ConnectTCPTask extends ConnectTask {
     private final InetAddress mAddress;
     private final int mPort;
 
-    public ConnectTCPTask(Context context, @NonNull InetAddress addr, int port) {
-        super(context);
+    public ConnectTCPTask(Context context, ProxmarkParser parser, @NonNull InetAddress addr, int port) {
+        super(context, parser);
 
         mAddress = addr;
         mPort = port;
