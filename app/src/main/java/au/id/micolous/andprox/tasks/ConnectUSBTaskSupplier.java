@@ -15,6 +15,7 @@ public class ConnectUSBTaskSupplier implements Supplier<ConnectUSBTask> {
     private ProxmarkParser parser;
     private ProxmarkDumpDevice dumpDevice;
 
+    @Inject
     public ConnectUSBTaskSupplier(Context context, ProxmarkParser parser, ProxmarkDumpDevice dumpDevice) {
         this.context = context;
         this.parser = parser;

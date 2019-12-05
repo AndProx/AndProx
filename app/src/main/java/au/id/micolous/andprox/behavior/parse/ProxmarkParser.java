@@ -11,6 +11,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import au.id.micolous.andprox.behavior.version.ProxmarkVersion;
 import au.id.micolous.andprox.device.ISharedPreferences;
 
@@ -30,6 +32,7 @@ public class ProxmarkParser implements Function<String, ProxmarkVersion> {
 
     private ISharedPreferences preferences;
 
+    @Inject
     public ProxmarkParser(ISharedPreferences preferences) {
         this.preferences = preferences;
     }

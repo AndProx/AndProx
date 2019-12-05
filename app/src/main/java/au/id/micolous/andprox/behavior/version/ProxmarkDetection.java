@@ -1,10 +1,17 @@
 package au.id.micolous.andprox.behavior.version;
 
+import javax.inject.Inject;
+
 public class ProxmarkDetection {
 
     private String mExtraDeviceInfo;
     private boolean mProxmarkDetected;
     private boolean mOldProxmarkDetected;
+
+    @Inject
+    public ProxmarkDetection() {
+
+    }
 
     public void setExtraDeviceInfo(String extraDeviceInfo) {
         mExtraDeviceInfo = extraDeviceInfo;

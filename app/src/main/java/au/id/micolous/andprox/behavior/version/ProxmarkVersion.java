@@ -34,6 +34,8 @@ import android.support.annotation.Nullable;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
+
 import au.id.micolous.andprox.device.ISharedPreferences;
 
 /**
@@ -59,6 +61,7 @@ public class ProxmarkVersion {
 
     private ISharedPreferences preferences;
 
+    @Inject
     public ProxmarkVersion(ISharedPreferences preferences) {
         this.preferences = preferences;
     }

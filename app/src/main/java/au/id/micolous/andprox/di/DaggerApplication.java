@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 
 import javax.inject.Inject;
 
+import au.id.micolous.andprox.di.component.DaggerAppComponent;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
@@ -19,9 +20,15 @@ public class DaggerApplication extends Application implements HasActivityInjecto
     @Inject
     DispatchingAndroidInjector<Fragment> fragmentInjector;
 
+    @Inject
+    public DaggerApplication() {super();}
+
     @Override
     public void onCreate() {
         super.onCreate();
+        DaggerAppComponent.builder()
+                .create(this)
+                .inject(this);
     }
 
     @Override

@@ -41,8 +41,9 @@ import android.support.v7.widget.Toolbar;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.components.AboutAndProxFragment;
 import au.id.micolous.andprox.components.LicenseFragment;
+import dagger.android.support.DaggerAppCompatActivity;
 
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends DaggerAppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide

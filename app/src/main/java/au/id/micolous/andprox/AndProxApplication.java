@@ -30,21 +30,22 @@
 
 package au.id.micolous.andprox;
 
-import android.app.Application;
+import javax.inject.Inject;
+
+import au.id.micolous.andprox.di.DaggerApplication;
 
 /**
  * AndProx application reference.
  */
-public class AndProxApplication extends Application {
+public class AndProxApplication extends DaggerApplication {
 
-    private static AndProxApplication sInstance;
-
+    @Inject
     public AndProxApplication() {
-        sInstance = this;
+        super();
     }
-
-    public static AndProxApplication getInstance() {
-        return sInstance;
+    
+    @Override
+    public void onCreate() {
+        super.onCreate();
     }
-
 }

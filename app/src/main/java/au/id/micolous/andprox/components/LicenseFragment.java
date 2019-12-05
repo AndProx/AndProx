@@ -50,11 +50,12 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 
 import au.id.micolous.andprox.R;
+import dagger.android.support.DaggerFragment;
 
 /**
  * Fragment which displays all the license acknowledgements.
  */
-public class LicenseFragment extends Fragment {
+public class LicenseFragment extends DaggerFragment {
     private static final String TAG = LicenseFragment.class.getSimpleName();
 
     public LicenseFragment() {

@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.inject.Inject;
+
 import au.id.micolous.andprox.Utils;
 
 public class SharedPreferencesImpl implements ISharedPreferences {
@@ -16,6 +18,7 @@ public class SharedPreferencesImpl implements ISharedPreferences {
     private Context context;
     private SharedPreferences prefs;
 
+    @Inject
     public SharedPreferencesImpl(Context context) {
         this.context = context;
         this.prefs = PreferenceManager.getDefaultSharedPreferences(context);

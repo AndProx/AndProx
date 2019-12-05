@@ -24,7 +24,7 @@ public class AppModule {
     @Provides
     @Singleton
     public Context provideContext(AndProxApplication application) {
-        return application;
+        return application.getApplicationContext();
     }
 
     @Provides

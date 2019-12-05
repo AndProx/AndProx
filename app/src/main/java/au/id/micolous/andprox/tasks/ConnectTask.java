@@ -234,7 +234,7 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
                     .setCancelable(false);
             builder.show();
         } else if (result.unsupported) {
-            MainActivity.unsupportedFirmwareError(c);
+            //MainActivity.unsupportedFirmwareError(c);
         } else if (result.success) {
             // Start main activity, yay!
             Intent intent = new Intent(c, CliActivity.class);

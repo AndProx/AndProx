@@ -29,6 +29,7 @@
  */
 package au.id.micolous.andprox;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.preference.Preference;
@@ -88,8 +89,8 @@ public final class Utils {
      * @param formatArgs     Formatting arguments to pass
      * @return Localized string
      */
-    public static String localizeString(@StringRes int stringResource, Object... formatArgs) {
-        Resources res = AndProxApplication.getInstance().getResources();
+    public static String localizeString(Context context, @StringRes int stringResource, Object... formatArgs) {
+        Resources res = context.getResources();
         return res.getString(stringResource, formatArgs);
     }
 
@@ -102,8 +103,8 @@ public final class Utils {
      * @param formatArgs     Formatting arguments to pass
      * @return Localized string
      */
-    public static String localizePlural(@PluralsRes int pluralResource, int quantity, Object... formatArgs) {
-        Resources res = AndProxApplication.getInstance().getResources();
+    public static String localizePlural(Context context, @PluralsRes int pluralResource, int quantity, Object... formatArgs) {
+        Resources res = context.getResources();
         return res.getQuantityString(pluralResource, quantity, formatArgs);
     }
 

@@ -34,10 +34,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
+import dagger.android.support.DaggerAppCompatActivity;
+
 /**
  * Leanback (Android TV) activity.
  */
-public class LeanbackActivity extends Activity {
+public class LeanbackActivity extends DaggerAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

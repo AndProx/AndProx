@@ -82,13 +82,13 @@ public class AboutAndProxFragment extends DaggerFragment {
         View v = inflater.inflate(R.layout.fragment_about_and_prox, container, false);
 
         ((TextView)v.findViewById(R.id.tvVersionString)).setText(
-                Utils.localizeString(R.string.app_version, formatDevice.getVersionString()));
+                Utils.localizeString(getContext(), R.string.app_version, formatDevice.getVersionString()));
 
         ((TextView)v.findViewById(R.id.tvPm3ClientVersion)).setText(
-                Utils.localizeString(R.string.pm3_client_version, Natives.getProxmarkClientVersion()));
+                Utils.localizeString(getContext(), R.string.pm3_client_version, Natives.getProxmarkClientVersion()));
 
         ((TextView)v.findViewById(R.id.tvPm3BuildTS)).setText(
-                Utils.localizeString(R.string.pm3_build_ts, Natives.getProxmarkClientBuildTimestamp()));
+                Utils.localizeString(getContext(), R.string.pm3_build_ts, Natives.getProxmarkClientBuildTimestamp()));
 
         v.findViewById(R.id.btnWebsite).setOnClickListener(v1 -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/AndProx/AndProx"))));

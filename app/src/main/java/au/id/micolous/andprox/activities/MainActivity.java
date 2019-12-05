@@ -152,7 +152,6 @@ public class MainActivity extends DaggerAppCompatActivity {
                 }
 
                 btnConnect.setEnabled(true);
-                AndProxApplication app = AndProxApplication.getInstance();
 
                 if (detection.isProxmarkDetected()) {
                     tvIntroText.setText(R.string.intro_text_usb_detected);
@@ -164,7 +163,7 @@ public class MainActivity extends DaggerAppCompatActivity {
                 break;
 
             case TCP:
-                tvIntroText.setText(Utils.localizeString(R.string.intro_text_tcp, preferences.getTcpHostStr(), preferences.getTcpPort()));
+                tvIntroText.setText(Utils.localizeString(this, R.string.intro_text_tcp, preferences.getTcpHostStr(), preferences.getTcpPort()));
                 btnConnect.setEnabled(true);
                 break;
 
@@ -300,7 +299,6 @@ public class MainActivity extends DaggerAppCompatActivity {
      * Attempt to connect to the proxmark
      */
     public void btnConnect(@Nullable View view) {
-        AndProxApplication app = AndProxApplication.getInstance();
         InetAddress addr = null;
 
         switch (preferences.getConnectivityMode()) {
@@ -322,7 +320,7 @@ public class MainActivity extends DaggerAppCompatActivity {
                 } catch (UnknownHostException e) {
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.tcp_error)
-                            .setMessage(Utils.localizeString(R.string.tcp_error_host_not_found,
+                            .setMessage(Utils.localizeString(this, R.string.tcp_error_host_not_found,
                                     preferences.getTcpHostStr(), e.getLocalizedMessage()))
                             .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
                             .show();
@@ -332,7 +330,7 @@ public class MainActivity extends DaggerAppCompatActivity {
                 if (addr == null) {
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.tcp_error)
-                            .setMessage(Utils.localizeString(R.string.tcp_error_host_not_found,
+                            .setMessage(Utils.localizeString(this, R.string.tcp_error_host_not_found,
                                     preferences.getTcpHostStr(), "null"))
                             .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
                             .show();
@@ -361,9 +359,9 @@ public class MainActivity extends DaggerAppCompatActivity {
      * Show an error that the firmware version is unsupported.
      * @param context Context of where we were called from.
      */
-    public static void unsupportedFirmwareError(@NonNull Context context) {
+    public void unsupportedFirmwareError(@NonNull Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(Utils.localizeString(R.string.reflash_required_message, Natives.getProxmarkClientVersion()))
+        builder.setMessage(Utils.localizeString(this, R.string.reflash_required_message, Natives.getProxmarkClientVersion()))
                 .setTitle(R.string.reflash_required_title)
                 .setPositiveButton(R.string.instructions, (dialog, which) -> {
                     context.startActivity(

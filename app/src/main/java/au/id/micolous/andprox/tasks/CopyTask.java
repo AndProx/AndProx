@@ -60,7 +60,7 @@ public class CopyTask extends AsyncTask<Void, Pair<Integer, Integer>, Boolean> {
         final Context c = mContext.get();
         mProgressDialog = new ProgressDialog(c);
         mProgressDialog.setTitle(R.string.copying_assets);
-        mProgressDialog.setMessage(Utils.localizeString(R.string.wait_long));
+        mProgressDialog.setMessage(Utils.localizeString(c, R.string.wait_long));
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setCancelable(false);
