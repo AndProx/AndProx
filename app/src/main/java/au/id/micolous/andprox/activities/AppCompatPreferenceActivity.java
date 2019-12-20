@@ -43,8 +43,10 @@ import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
+import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.device.ISharedPreferences;
-import dagger.android.AndroidInjection;
+import au.id.micolous.andprox.di.component.DaggerAppComponent;
+import au.id.micolous.andprox.di.module.AppModule;
 
 /**
  * A {@link android.preference.PreferenceActivity} which implements and proxies the necessary calls
@@ -59,7 +61,7 @@ public abstract class AppCompatPreferenceActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AndroidInjection.inject(this);
+        ((AndProxApplication)getApplication()).inject(this);
         getDelegate().installViewFactory();
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);

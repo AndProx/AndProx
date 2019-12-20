@@ -38,7 +38,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -52,22 +51,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import javax.inject.Inject;
-
-import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
-import au.id.micolous.andprox.device.ISharedPreferences;
 import au.id.micolous.andprox.handlers.HandlerInterface;
 import au.id.micolous.andprox.hw.TuneTask;
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.tasks.SendCommandTask;
-import dagger.android.support.DaggerAppCompatActivity;
 
-public class CliActivity extends DaggerAppCompatActivity implements SendCommandTask.SendCommandCallback {
+public class CliActivity extends InjectableActivity implements SendCommandTask.SendCommandCallback {
     private static final String TAG = "CliActivity";
-
-    @Inject
-    protected ISharedPreferences preferences;
 
     private EditText etCommandInput;
     private TextView tvOutputBuffer;

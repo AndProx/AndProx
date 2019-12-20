@@ -1,27 +1,22 @@
 package au.id.micolous.andprox.di.component;
 
-import android.app.Activity;
-import android.support.v4.app.Fragment;
-
 import javax.inject.Singleton;
 
-import au.id.micolous.andprox.di.DaggerApplication;
-import au.id.micolous.andprox.di.module.ActivityModule;
+import au.id.micolous.andprox.activities.AppCompatPreferenceActivity;
+import au.id.micolous.andprox.activities.InjectableActivity;
+import au.id.micolous.andprox.components.InjectableFragment;
 import au.id.micolous.andprox.di.module.AppModule;
-import au.id.micolous.andprox.di.module.MainModule;
 import dagger.Component;
-import dagger.android.AndroidInjector;
-import dagger.android.support.AndroidSupportInjectionModule;
 
 @Singleton
 @Component(modules = {
-        AndroidSupportInjectionModule.class,
-        ActivityModule.class,
-        MainModule.class,
         AppModule.class
 })
-public interface AppComponent extends AndroidInjector<DaggerApplication> {
+public interface AppComponent {
 
-    @Component.Builder
-    abstract class Builder extends AndroidInjector.Builder<DaggerApplication> { }
+    void inject(InjectableFragment fragment);
+
+    void inject(InjectableActivity activity);
+
+    void inject(AppCompatPreferenceActivity preferenceActivity);
 }

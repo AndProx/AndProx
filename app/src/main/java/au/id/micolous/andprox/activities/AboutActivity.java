@@ -43,7 +43,7 @@ import au.id.micolous.andprox.components.AboutAndProxFragment;
 import au.id.micolous.andprox.components.LicenseFragment;
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class AboutActivity extends DaggerAppCompatActivity {
+public class AboutActivity extends InjectableActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide

@@ -33,7 +33,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
@@ -41,23 +40,15 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import javax.inject.Inject;
-
-import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
-import au.id.micolous.andprox.behavior.format.IFormatDevice;
-import dagger.android.support.DaggerAppCompatActivity;
 
 /**
  * Displays system information and debugging info that is useful to troubleshoot AndProx issues.
  */
-public class SysInfoActivity extends DaggerAppCompatActivity {
+public class SysInfoActivity extends InjectableActivity {
 
     private String debugOutput;
     private static final String CLIP_TITLE = "AndProx";
-
-    @Inject
-    protected IFormatDevice formatDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

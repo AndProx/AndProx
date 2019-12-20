@@ -21,10 +21,16 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
+    private AndProxApplication andProxApplication;
+
+    public AppModule(AndProxApplication application) {
+        this.andProxApplication = application;
+    }
+
     @Provides
     @Singleton
-    public Context provideContext(AndProxApplication application) {
-        return application.getApplicationContext();
+    public Context provideContext() {
+        return this.andProxApplication.getApplicationContext();
     }
 
     @Provides

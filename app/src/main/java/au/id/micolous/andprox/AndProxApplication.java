@@ -30,22 +30,40 @@
 
 package au.id.micolous.andprox;
 
-import javax.inject.Inject;
 
-import au.id.micolous.andprox.di.DaggerApplication;
+import android.app.Application;
+
+import au.id.micolous.andprox.activities.AppCompatPreferenceActivity;
+import au.id.micolous.andprox.activities.InjectableActivity;
+import au.id.micolous.andprox.components.InjectableFragment;
+import au.id.micolous.andprox.di.component.AppComponent;
+import au.id.micolous.andprox.di.component.DaggerAppComponent;
+import au.id.micolous.andprox.di.module.AppModule;
 
 /**
  * AndProx application reference.
  */
-public class AndProxApplication extends DaggerApplication {
+public class AndProxApplication extends Application {
 
-    @Inject
-    public AndProxApplication() {
-        super();
-    }
-    
+    private AppComponent appComponent;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        appComponent = DaggerAppComponent.builder()
+                .appModule(new AppModule(this))
+                .build();
+    }
+
+    public void inject(InjectableFragment fragment) {
+        appComponent.inject(fragment);
+    }
+
+    public void inject(InjectableActivity activity) {
+        appComponent.inject(activity);
+    }
+
+    public void inject(AppCompatPreferenceActivity activity) {
+        appComponent.inject(activity);
     }
 }

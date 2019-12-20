@@ -58,40 +58,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
-import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
-import au.id.micolous.andprox.behavior.version.ProxmarkDetection;
-import au.id.micolous.andprox.behavior.version.ProxmarkDumpDevice;
 import au.id.micolous.andprox.device.ConnectivityMode;
-import au.id.micolous.andprox.device.ISharedPreferences;
-import au.id.micolous.andprox.functional.Supplier;
 import au.id.micolous.andprox.natives.Natives;
 import au.id.micolous.andprox.tasks.ConnectTCPTask;
-import au.id.micolous.andprox.tasks.ConnectUSBTask;
 import au.id.micolous.andprox.tasks.CopyTask;
-import dagger.android.support.DaggerAppCompatActivity;
 
 
-public class MainActivity extends DaggerAppCompatActivity {
-
-    @Inject
-    protected ISharedPreferences preferences;
-
-    @Inject
-    protected ProxmarkDetection detection;
-
-    @Inject
-    protected ProxmarkDumpDevice dumpDevice;
-
-    @Inject
-    protected Supplier<ConnectUSBTask> usbTaskSupplier;
-
-    @Inject
-    protected ProxmarkParser parser;
+public class MainActivity extends InjectableActivity {
 
 
     private static final String TAG = "MainActivity";

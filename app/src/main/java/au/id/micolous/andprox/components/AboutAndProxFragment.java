@@ -40,21 +40,16 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import au.id.micolous.andprox.AndProxApplication;
 import au.id.micolous.andprox.R;
 import au.id.micolous.andprox.Utils;
 import au.id.micolous.andprox.behavior.format.IFormatDevice;
 import au.id.micolous.andprox.natives.Natives;
-import dagger.android.support.DaggerFragment;
 
 
 /**
  * Fragment which displays the AndProx and Proxmark3 versions.
  */
-public class AboutAndProxFragment extends DaggerFragment {
-
-    @Inject
-    protected IFormatDevice formatDevice;
+public class AboutAndProxFragment extends InjectableFragment {
 
     public AboutAndProxFragment() {
         // Required empty public constructor
