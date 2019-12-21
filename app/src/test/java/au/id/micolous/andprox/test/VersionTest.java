@@ -30,9 +30,13 @@
 package au.id.micolous.andprox.test;
 
 
+import org.junit.Before;
 import org.junit.Test;
 
+import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
 import au.id.micolous.andprox.behavior.version.ProxmarkVersion;
+import au.id.micolous.andprox.device.ISharedPreferences;
+
 import static org.junit.Assert.*;
 
 /**
@@ -42,6 +46,38 @@ import static org.junit.Assert.*;
  *   site:proxmark.org os bootrom fpga
  */
 public class VersionTest {
+
+    private ProxmarkParser proxmarkV3;
+    private ISharedPreferences preferencesOnlyV3;
+
+    private ProxmarkParser proxmarkRDV4;
+    private ISharedPreferences preferencesAllProxmarks;
+
+    @Before
+    public void setUp() throws Exception {
+        preferencesOnlyV3 = new MockProxmarkV3Only();
+        proxmarkV3 = new ProxmarkParser(preferencesOnlyV3);
+
+        preferencesAllProxmarks = new MockAllProxmarkAllowed();
+        proxmarkRDV4 = new ProxmarkParser(preferencesAllProxmarks);
+    }
+
+    @Test
+    public void testAllProxmarkVersionAllowed() {
+        String s = " [ ARM ]\n" +
+                " bootrom: master/v2.2 2015-07-31 11:28:11\n" +
+                "      os: iceman/master/ice_v3.1.0-1032-g60f1610f-dirty-unclean 2018-09-02 21:41:35\n" +
+                "\n" +
+                " [ FPGA ]\n" +
+                " LF image built for 2s30vq100 on 2017/10/25 at 19:50:50\n" +
+                " HF image built for 2s30vq100 on 2018/ 8/10 at 11:48:34";
+
+        ProxmarkVersion v = proxmarkRDV4.apply(s);
+
+        assertNotNull(v);
+        assertTrue(v.isSupportedVersion());
+    }
+
     @Test
     public void testIceman() {
         String s = " [ ARM ]\n" +
@@ -52,7 +88,7 @@ public class VersionTest {
                 " LF image built for 2s30vq100 on 2017/10/25 at 19:50:50\n" +
                 " HF image built for 2s30vq100 on 2018/ 8/10 at 11:48:34";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
 
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.ICEMAN, v.getBranch());
@@ -67,7 +103,7 @@ public class VersionTest {
                 "LF FPGA image built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
                 "HF FPGA image built for 2s30vq100 on 2015/11/ 2 at  9: 8: 8";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
 
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.ICEMAN, v.getBranch());
@@ -78,7 +114,7 @@ public class VersionTest {
                 "LF FPGA image built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
                 "HF FPGA image built for 2s30vq100 on 2015/11/ 2 at  9: 8: 8";
 
-        v = ProxmarkVersion.parse(s);
+        v = proxmarkV3.apply(s);
 
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.ICEMAN, v.getBranch());
@@ -92,7 +128,7 @@ public class VersionTest {
                 "LF FPGA image built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
                 "HF FPGA image built for 2s30vq100 on 2017/10/27 at 08:30:59\n";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
 
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
@@ -118,7 +154,7 @@ public class VersionTest {
                 "fpga_lf.bit built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
                 "fpga_hf.bit built for 2s30vq100 on 2018/09/12 at 15:18:46\n";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
         assertTrue(v.isSuspect());
@@ -143,7 +179,7 @@ public class VersionTest {
                 "fpga_lf.bit built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
                 "fpga_hf.bit built for 2s30vq100 on 2018/09/12 at 15:18:46\n";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
         assertTrue(v.isSuspect());
@@ -168,7 +204,7 @@ public class VersionTest {
                 "fpga_lf.bit built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
                 "fpga_hf.bit built for 2s30vq100 on 2018/09/12 at 15:18:46\n";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
         assertTrue(v.isSuspect());
@@ -194,7 +230,7 @@ public class VersionTest {
                 "fpga_lf.bit built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
                 "fpga_hf.bit built for 2s30vq100 on 2019/03/20 at 08:08:07";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.OFFICIAL, v.getBranch());
         assertTrue(v.isSuspect());
@@ -227,7 +263,7 @@ public class VersionTest {
                 "\n" +
                 "     proxmark3.taobao.com";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
 
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.CHINA, v.getBranch());
@@ -239,7 +275,7 @@ public class VersionTest {
                 "os: /-suspect 2015-04-02 15:12:11          \n" +
                 "HF FPGA image built on 2015/03/09 at 08:41:42    ";
 
-        v = ProxmarkVersion.parse(s);
+        v = proxmarkV3.apply(s);
 
         assertNotNull(v);
         assertFalse(v.isSupportedVersion());
@@ -253,7 +289,7 @@ public class VersionTest {
                 "LF FPGA image built for 2s30vq100 on 2015/03/06 at 07:38:04\n" +
                 "HF FPGA image built for 2s30vq100 on 2015/11/ 2 at  9: 8: 8";
 
-        ProxmarkVersion v = ProxmarkVersion.parse(s);
+        ProxmarkVersion v = proxmarkV3.apply(s);
 
         assertNotNull(v);
         assertEquals(ProxmarkVersion.Branch.ERROR, v.getBranch());
