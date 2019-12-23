@@ -46,6 +46,7 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 import java.io.IOException;
 import java.util.List;
 
+import au.id.micolous.andprox.behavior.firmware.IFirmwareManager;
 import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
 import au.id.micolous.andprox.behavior.version.ProxmarkDumpDevice;
 import au.id.micolous.andprox.handlers.HandlerInterface;
@@ -63,8 +64,10 @@ public class ConnectUSBTask extends ConnectTask {
 
     private ProxmarkDumpDevice dumpDevice;
 
-    public ConnectUSBTask(Context context, ProxmarkParser parser, ProxmarkDumpDevice dumpDevice) {
-        super(context, parser);
+    public ConnectUSBTask(Context context, ProxmarkParser parser,
+                          ProxmarkDumpDevice dumpDevice,
+                          IFirmwareManager firmwareManager) {
+        super(context, parser, firmwareManager);
         this.dumpDevice = dumpDevice;
     }
 

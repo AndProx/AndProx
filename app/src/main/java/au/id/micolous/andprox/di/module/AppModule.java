@@ -5,6 +5,8 @@ import android.content.Context;
 import javax.inject.Singleton;
 
 import au.id.micolous.andprox.AndProxApplication;
+import au.id.micolous.andprox.behavior.firmware.FirmwareManagerImpl;
+import au.id.micolous.andprox.behavior.firmware.IFirmwareManager;
 import au.id.micolous.andprox.behavior.format.FormatDeviceImpl;
 import au.id.micolous.andprox.behavior.format.IFormatDevice;
 import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
@@ -62,8 +64,14 @@ public class AppModule {
     }
 
     @Provides
-    public Supplier<ConnectUSBTask> providesConnectUSBTaskSupplier(Context context, ProxmarkParser parser, ProxmarkDumpDevice dumpDevice) {
-        return new ConnectUSBTaskSupplier(context, parser, dumpDevice);
+    public Supplier<ConnectUSBTask> providesConnectUSBTaskSupplier(Context context, ProxmarkParser parser,
+                                                                   ProxmarkDumpDevice dumpDevice, IFirmwareManager firmwareManager) {
+        return new ConnectUSBTaskSupplier(context, parser, dumpDevice, firmwareManager);
+    }
+
+    @Provides
+    public IFirmwareManager providesFirmwareManager(Context context) {
+        return new FirmwareManagerImpl(context);
     }
 
 }

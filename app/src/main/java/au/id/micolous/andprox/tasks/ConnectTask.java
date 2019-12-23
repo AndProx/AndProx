@@ -40,6 +40,7 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
+import au.id.micolous.andprox.behavior.firmware.IFirmwareManager;
 import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
 import au.id.micolous.andprox.behavior.version.ProxmarkVersion;
 import au.id.micolous.andprox.R;
@@ -111,10 +112,12 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
     }
 
     private ProxmarkParser parser;
+    private IFirmwareManager firmwareManager;
 
-    ConnectTask(Context context, ProxmarkParser parser) {
-        mContext = new WeakReference<>(context);
+    ConnectTask(Context context, ProxmarkParser parser, IFirmwareManager firmwareManager) {
+        this.mContext = new WeakReference<>(context);
         this.parser = parser;
+        this.firmwareManager = firmwareManager;
     }
 
     public Context getContext() {
@@ -234,7 +237,7 @@ public abstract class ConnectTask extends AsyncTask<Boolean, Void, ConnectTask.C
                     .setCancelable(false);
             builder.show();
         } else if (result.unsupported) {
-            //MainActivity.unsupportedFirmwareError(c);
+            firmwareManager.unsupportedFirmwareError();
         } else if (result.success) {
             // Start main activity, yay!
             Intent intent = new Intent(c, CliActivity.class);

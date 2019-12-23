@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import javax.inject.Inject;
 
 import au.id.micolous.andprox.AndProxApplication;
+import au.id.micolous.andprox.behavior.firmware.IFirmwareManager;
 import au.id.micolous.andprox.behavior.format.IFormatDevice;
 import au.id.micolous.andprox.behavior.parse.ProxmarkParser;
 import au.id.micolous.andprox.behavior.version.ProxmarkDetection;
@@ -34,6 +35,9 @@ public abstract class InjectableActivity extends AppCompatActivity {
 
     @Inject
     protected IFormatDevice formatDevice;
+
+    @Inject
+    protected IFirmwareManager firmwareManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

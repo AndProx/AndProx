@@ -40,7 +40,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -279,7 +278,7 @@ public class MainActivity extends InjectableActivity {
         switch (preferences.getConnectivityMode()) {
             case USB:
                 if (detection.isOldProxmarkDetected()) {
-                    unsupportedFirmwareError(MainActivity.this);
+                    firmwareManager.unsupportedFirmwareError();
                     return;
                 }
 
@@ -312,7 +311,8 @@ public class MainActivity extends InjectableActivity {
                     return;
                 }
 
-                new ConnectTCPTask(this, parser, addr, preferences.getTcpPort()).execute(true);
+                new ConnectTCPTask(this, parser, firmwareManager,
+                        addr, preferences.getTcpPort()).execute(true);
                 break;
 
             case NONE:
@@ -328,25 +328,5 @@ public class MainActivity extends InjectableActivity {
     public void btnSettings(View view) {
         final Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
         startActivityForResult(intent, SETTINGS_CALLBACK);
-    }
-
-    /**
-     * Show an error that the firmware version is unsupported.
-     * @param context Context of where we were called from.
-     */
-    public void unsupportedFirmwareError(@NonNull Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(Utils.localizeString(this, R.string.reflash_required_message, Natives.getProxmarkClientVersion()))
-                .setTitle(R.string.reflash_required_title)
-                .setPositiveButton(R.string.instructions, (dialog, which) -> {
-                    context.startActivity(
-                            new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/Proxmark/proxmark3/wiki/flashing")));
-                    dialog.dismiss();
-                })
-                .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                    dialog.dismiss();
-                })
-                .setCancelable(false);
-        builder.show();
     }
 }
