@@ -1,3 +1,10 @@
+# This project is no longer actively maintained.
+
+Please see https://github.com/AndProx/AndProx/issues/53 for more
+information.
+
+---
+
 # ![logo](https://github.com/AndProx/AndProx/raw/master/app/src/main/res/mipmap-hdpi/ic_launcher.png) AndProx
 
 [![Build Status](https://travis-ci.org/AndProx/AndProx.svg?branch=master)](https://travis-ci.org/AndProx/AndProx)
